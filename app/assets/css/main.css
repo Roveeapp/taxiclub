@@ -1,0 +1,127 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-brand-dark: #0c0c13;
+    --color-brand-gold: #f0b429;
+    --color-brand-white: #ffffff;
+    --color-surface-dark: #14141e;
+    --color-surface-card: rgba(255, 255, 255, 0.05);
+    --color-surface-card-border: rgba(255, 255, 255, 0.09);
+    --color-surface-input: #f4f4f8;
+    --color-surface-divider: #ebebf0;
+    --color-text-on-dark: #ffffff;
+    --color-text-muted-dark: rgba(255, 255, 255, 0.45);
+    --color-text-on-light: #0c0c13;
+    --color-text-muted-light: #999999;
+    --color-success: #1a9e6a;
+    --color-warning: #e5990a;
+    --color-error: #d93025;
+    --color-info: #2563eb;
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    min-height: 100vh;
+    background-color: var(--color-brand-dark);
+    color: var(--color-text-on-dark);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-brand-dark text-white border-none rounded-btn py-4 px-5 text-[15px] font-medium w-full transition-opacity;
+  }
+
+  .btn-primary:disabled {
+    @apply opacity-40 cursor-not-allowed;
+  }
+
+  .btn-primary:not(:disabled):active {
+    @apply scale-[0.97];
+  }
+
+  .badge-discount {
+    @apply text-[11px] font-semibold rounded-[5px] py-[3px] px-2;
+    background: rgba(240, 180, 41, 0.18);
+    color: #f0b429;
+  }
+
+  .badge-pending {
+    @apply text-[11px] font-semibold uppercase rounded-[5px] py-[3px] px-2;
+    background: #fff8e1;
+    color: #b45309;
+  }
+
+  .badge-confirmed {
+    @apply text-[11px] font-semibold uppercase rounded-[5px] py-[3px] px-2;
+    background: #ecfdf5;
+    color: #065f46;
+  }
+
+  .badge-cancelled {
+    @apply text-[11px] font-semibold uppercase rounded-[5px] py-[3px] px-2;
+    background: #fef2f2;
+    color: #991b1b;
+  }
+
+  .badge-completed {
+    @apply text-[11px] font-semibold uppercase rounded-[5px] py-[3px] px-2;
+    background: #eff6ff;
+    color: #1e40af;
+  }
+
+  .brand-dot {
+    @apply w-[7px] h-[7px] rounded-full;
+    background: #f0b429;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  .icon-wrap-dark {
+    @apply w-7 h-7 rounded-full flex items-center justify-center;
+    background: #0c0c13;
+  }
+
+  .icon-wrap-gold {
+    @apply w-7 h-7 rounded-full flex items-center justify-center;
+    background: #f0b429;
+  }
+
+  .icon-wrap-subtle {
+    @apply w-[42px] h-[42px] rounded-[11px] flex items-center justify-center;
+    background: rgba(240, 180, 41, 0.12);
+  }
+
+  .field-label {
+    @apply text-[11px] font-medium uppercase tracking-[0.08em];
+    color: var(--color-text-muted-light);
+  }
+
+  .field-value {
+    @apply text-sm font-normal;
+    color: var(--color-text-on-light);
+  }
+}

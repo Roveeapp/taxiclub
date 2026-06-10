@@ -1,0 +1,66 @@
+<template>
+  <aside class="fixed left-0 top-0 bottom-0 w-64 bg-brand-dark text-white flex flex-col">
+    <div class="p-6 border-b border-white/10">
+      <NuxtLink :to="dashboardLink" class="flex items-center gap-2">
+        <BrandDot />
+        <span class="font-semibold text-base">Club Taxis</span>
+      </NuxtLink>
+    </div>
+    <nav class="flex-1 py-4 overflow-y-auto">
+      <NuxtLink
+        v-for="item in navItems"
+        :key="item.to"
+        :to="item.to"
+        class="flex items-center gap-3 px-6 py-3 text-sm text-white/60 hover:text-white hover:bg-white/5 transition-colors"
+        active-class="!text-brand-gold bg-white/5"
+      >
+        <Icon :name="item.icon" size="18" />
+        <span>{{ item.label }}</span>
+      </NuxtLink>
+    </nav>
+    <div class="p-4 border-t border-white/10">
+      <button
+        class="flex items-center gap-3 w-full px-2 py-2 text-sm text-white/60 hover:text-white transition-colors"
+        @click="handleLogout"
+      >
+        <Icon name="ti:logout" size="18" />
+        <span>Cerrar sesión</span>
+      </button>
+    </div>
+  </aside>
+</template>
+
+<script setup lang="ts">
+const route = useRoute()
+
+const isTaxista = computed(() => route.path.startsWith('/taxista'))
+const dashboardLink = computed(() => isTaxista.value ? '/taxista' : '/admin')
+
+const navItems = computed(() => {
+  if (isTaxista.value) {
+    return [
+      { to: '/taxista', icon: 'ti:layout-dashboard', label: 'Dashboard' },
+      { to: '/taxista/reservas', icon: 'ti:calendar-event', label: 'Reservas' },
+      { to: '/taxista/disponibilidad', icon: 'ti:calendar', label: 'Disponibilidad' },
+      { to: '/taxista/vehiculos', icon: 'ti:steering-wheel', label: 'Vehículos' },
+      { to: '/taxista/ofertas', icon: 'ti:bolt', label: 'Ofertas' },
+      { to: '/taxista/liquidaciones', icon: 'ti:coin', label: 'Liquidaciones' },
+      { to: '/taxista/cuenta', icon: 'ti:user', label: 'Mi cuenta' },
+    ]
+  }
+  return [
+    { to: '/admin', icon: 'ti:layout-dashboard', label: 'Dashboard' },
+    { to: '/admin/conductores', icon: 'ti:users', label: 'Conductores' },
+    { to: '/admin/reservas', icon: 'ti:calendar-event', label: 'Reservas' },
+    { to: '/admin/paradas', icon: 'ti:map-pin', label: 'Paradas' },
+    { to: '/admin/liquidaciones', icon: 'ti:coin', label: 'Liquidaciones' },
+    { to: '/admin/configuracion', icon: 'ti:settings', label: 'Configuración' },
+  ]
+})
+
+const handleLogout = async () => {
+  const supabase = useSupabaseClient()
+  await supabase.auth.signOut()
+  navigateTo('/')
+}
+</script>

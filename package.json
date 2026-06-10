@@ -1,0 +1,52 @@
+{
+  "name": "club-taxis-asturias",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "typecheck": "nuxt typecheck",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio",
+    "test": "vitest",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "nuxt": "^3.16.0",
+    "vue": "^3.5.13",
+    "vue-router": "^4.5.0",
+    "@nuxt/ui": "^2.21.0",
+    "@nuxtjs/supabase": "^1.4.6",
+    "drizzle-orm": "^0.38.4",
+    "postgres": "^3.4.5",
+    "stripe": "^17.6.0",
+    "resend": "^4.1.2",
+    "twilio": "^5.4.4",
+    "@vueuse/core": "^12.5.0",
+    "@vueuse/nuxt": "^12.5.0",
+    "pinia": "^2.3.1",
+    "@pinia/nuxt": "^0.9.0",
+    "v-calendar": "^3.1.2",
+    "web-push": "^3.6.7",
+    "@vite-pwa/nuxt": "^0.10.6",
+    "@tabler/icons-vue": "^3.29.0"
+  },
+  "devDependencies": {
+    "@nuxt/eslint": "^0.7.5",
+    "eslint": "^9.18.0",
+    "drizzle-kit": "^0.30.4",
+    "typescript": "^5.7.3",
+    "vitest": "^3.2.0",
+    "@nuxt/test-utils": "^3.15.4",
+    "@playwright/test": "^1.49.1",
+    "prettier": "^3.4.2",
+    "vue-tsc": "^2.2.0"
+  }
+}
