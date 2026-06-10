@@ -1,23 +1,123 @@
 <template>
   <div>
-    <h1 class="text-2xl font-semibold mb-6">Dashboard</h1>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="flex items-center justify-between mb-6">
+      <h1 class="text-2xl font-semibold">Dashboard</h1>
+      <span class="text-sm text-gray-500">{{ today }}</span>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
       <div class="bg-white rounded-xl p-6 border border-gray-200">
-        <p class="text-sm text-gray-500 mb-1">Próximas reservas</p>
-        <p class="text-3xl font-semibold text-gray-900">0</p>
+        <div class="flex items-center gap-3 mb-2">
+          <div class="w-10 h-10 rounded-lg bg-gold-50 flex items-center justify-center">
+            <Icon name="ti:calendar-event" size="20" class="text-brand-gold" />
+          </div>
+          <p class="text-sm text-gray-500">Próximas reservas</p>
+        </div>
+        <p class="text-3xl font-semibold text-gray-900">{{ upcomingCount }}</p>
       </div>
       <div class="bg-white rounded-xl p-6 border border-gray-200">
-        <p class="text-sm text-gray-500 mb-1">Este mes</p>
-        <p class="text-3xl font-semibold text-gray-900">0</p>
+        <div class="flex items-center gap-3 mb-2">
+          <div class="w-10 h-10 rounded-lg bg-success/10 flex items-center justify-center">
+            <Icon name="ti:check" size="20" class="text-success" />
+          </div>
+          <p class="text-sm text-gray-500">Completadas este mes</p>
+        </div>
+        <p class="text-3xl font-semibold text-gray-900">{{ completedCount }}</p>
       </div>
       <div class="bg-white rounded-xl p-6 border border-gray-200">
-        <p class="text-sm text-gray-500 mb-1">Ingresos estimados</p>
-        <p class="text-3xl font-semibold text-gray-900">0 €</p>
+        <div class="flex items-center gap-3 mb-2">
+          <div class="w-10 h-10 rounded-lg bg-info/10 flex items-center justify-center">
+            <Icon name="ti:coin" size="20" class="text-info" />
+          </div>
+          <p class="text-sm text-gray-500">Ingresos estimados</p>
+        </div>
+        <p class="text-3xl font-semibold text-gray-900">{{ estimatedEarnings }} €</p>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-xl border border-gray-200">
+      <div class="flex items-center justify-between p-6 border-b border-gray-200">
+        <h2 class="text-lg font-medium">Próximas reservas</h2>
+        <NuxtLink to="/taxista/reservas" class="text-sm text-brand-gold hover:text-gold-600">
+          Ver todas
+        </NuxtLink>
+      </div>
+      <div v-if="loading" class="p-6">
+        <AppSkeleton />
+      </div>
+      <div v-else-if="upcomingBookings.length > 0" class="divide-y divide-gray-100">
+        <NuxtLink
+          v-for="booking in upcomingBookings.slice(0, 5)"
+          :key="booking.id"
+          :to="`/taxista/reservas/${booking.id}`"
+          class="flex items-center justify-between p-4 hover:bg-gray-50 transition-colors"
+        >
+          <div class="flex items-center gap-3">
+            <div class="icon-wrap-dark">
+              <Icon name="ti:map-pin-2" size="14" class="text-brand-gold" />
+            </div>
+            <div>
+              <p class="text-sm font-medium text-gray-900">{{ booking.origin_station_name }}</p>
+              <p class="text-xs text-gray-500">→ {{ booking.destination_address }}</p>
+            </div>
+          </div>
+          <div class="text-right">
+            <p class="text-sm font-medium text-gray-900">{{ formatTime(booking.pickup_at) }}</p>
+            <AppBadge
+              :variant="booking.status"
+              :label="booking.status === 'pending' ? 'Pendiente' : booking.status === 'confirmed' ? 'Confirmada' : booking.status"
+            />
+          </div>
+        </NuxtLink>
+      </div>
+      <div v-else class="p-6 text-center">
+        <p class="text-gray-400 text-sm">No tienes reservas próximas</p>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-definePageMeta({ layout: 'dashboard' })
+definePageMeta({ layout: 'dashboard', middleware: 'auth' })
+
+const user = useSupabaseUser()
+const reservations = ref<any[]>([])
+const loading = ref(true)
+
+const today = computed(() =>
+  new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' }),
+)
+
+const upcomingBookings = computed(() =>
+  reservations.value.filter((r: any) =>
+    r.status === 'pending' || r.status === 'confirmed',
+  ).sort((a: any, b: any) => new Date(a.pickup_at).getTime() - new Date(b.pickup_at).getTime()),
+)
+
+const upcomingCount = computed(() => upcomingBookings.value.length)
+
+const completedCount = computed(() =>
+  reservations.value.filter((r: any) => r.status === 'completed').length,
+)
+
+const estimatedEarnings = computed(() => {
+  const completed = reservations.value.filter((r: any) => r.status === 'completed')
+  return completed.reduce((sum: number, r: any) => sum + Number(r.total_price || 0), 0).toFixed(0)
+})
+
+function formatTime(dateStr: string) {
+  const date = new Date(dateStr)
+  return date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
+}
+
+onMounted(async () => {
+  try {
+    const data = await $fetch('/api/taxista/reservas')
+    reservations.value = data as any[]
+  } catch (e) {
+    console.error('Error loading reservations:', e)
+  } finally {
+    loading.value = false
+  }
+})
 </script>
