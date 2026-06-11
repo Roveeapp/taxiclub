@@ -41,6 +41,7 @@
     "web-push": "^3.6.7"
   },
   "devDependencies": {
+    "@iconify-json/tabler": "^1.2.35",
     "@nuxt/eslint": "^0.7.5",
     "@nuxt/test-utils": "^3.15.4",
     "@playwright/test": "^1.49.1",
