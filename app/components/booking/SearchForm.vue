@@ -86,13 +86,13 @@
       </div>
       <div class="space-y-xs">
         <label class="font-label-caps text-label-caps text-slate-500 uppercase">Hora</label>
-        <label class="flex items-center bg-surface-input px-md py-sm rounded-lg cursor-pointer">
+        <div class="flex items-center bg-surface-input px-md py-sm rounded-lg">
           <Icon name="tabler:clock" size="18" class="text-slate-400 mr-xs" />
-          <input v-model="time" type="time" :min="minTime" class="w-full bg-transparent border-none focus:ring-0 focus:outline-none outline-none text-slate-900 text-xs" />
-        </label>
-        <p v-if="date === minDate && time && time < minTime" class="text-status-error text-[10px] mt-xs">
-          Mínimo {{ minTime }}h
-        </p>
+          <select v-model="time" class="w-full bg-transparent border-none focus:ring-0 focus:outline-none outline-none text-slate-900 text-xs appearance-none">
+            <option value="" disabled>Seleccionar hora</option>
+            <option v-for="t in timeSlots" :key="t.value" :value="t.value">{{ t.label }}</option>
+          </select>
+        </div>
       </div>
     </div>
 
@@ -170,20 +170,42 @@ const selectedAccessories = ref(new Set<string>())
 
 const minDate = computed(() => new Date().toISOString().split('T')[0])
 
-const minTime = computed(() => {
-  if (date.value !== minDate.value) return ''
+const timeSlots = computed(() => {
+  const slots: Array<{ value: string; label: string }> = []
+  const isToday = date.value === minDate.value
   const now = new Date()
-  const min = new Date(now.getTime() + 2 * 60 * 60 * 1000)
-  return min.toTimeString().slice(0, 5)
+  const startMin = isToday
+    ? new Date(now.getTime() + 2 * 60 * 60 * 1000)
+    : new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0)
+
+  const startH = startMin.getHours()
+  const startM = Math.ceil(startMin.getMinutes() / 15) * 15
+
+  const begin = new Date(startMin)
+  begin.setHours(startH, startM === 60 ? 0 : startM, 0, 0)
+  if (startM === 60) begin.setHours(startH + 1, 0, 0, 0)
+
+  const end = new Date(begin)
+  end.setHours(23, 59, 0, 0)
+
+  while (begin <= end) {
+    const h = begin.getHours().toString().padStart(2, '0')
+    const m = begin.getMinutes().toString().padStart(2, '0')
+    const val = `${h}:${m}`
+    slots.push({ value: val, label: `${h}:${m}h` })
+    begin.setMinutes(begin.getMinutes() + 15)
+  }
+  return slots
 })
+
+const minTimeLabel = computed(() => timeSlots.value[0]?.label || '')
 
 const selectedStationName = computed(() =>
   props.stations.find(s => s.id === originStationId.value)?.name,
 )
 
 const isFormValid = computed(() =>
-  originStationId.value && destination.value && date.value && time.value
-    && (!minTime.value || time.value >= minTime.value),
+  originStationId.value && destination.value && date.value && time.value,
 )
 
 interface SearchFormData {
@@ -268,10 +290,20 @@ function handleClickOutside(e: MouseEvent) {
 onMounted(async () => {
   document.addEventListener('click', handleClickOutside)
 
+  if (timeSlots.value.length > 0) {
+    time.value = timeSlots.value[0].value
+  }
+
   try {
     const data = await $fetch('/api/accessories')
     accessories.value = (data as Accessory[]).slice(0, 6)
-  } catch { /* fallback: sin accesorios */ }
+  } catch { /* fallback */ }
+})
+
+watch(date, () => {
+  if (timeSlots.value.length > 0) {
+    time.value = timeSlots.value[0].value
+  }
 })
 
 onUnmounted(() => document.removeEventListener('click', handleClickOutside))
