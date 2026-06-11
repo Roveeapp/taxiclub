@@ -11,7 +11,7 @@
         <Icon :name="icon" size="18" />
         <span class="text-sm font-medium flex-1">{{ message }}</span>
         <button v-if="dismissible" class="opacity-60 hover:opacity-100" @click="hide">
-          <Icon name="ti:x" size="16" />
+          <Icon name="tabler:x" size="16" />
         </button>
       </div>
     </div>
@@ -35,10 +35,10 @@ let timeout: ReturnType<typeof setTimeout> | null = null
 
 const icon = computed(() => {
   switch (props.type) {
-    case 'success': return 'ti:check'
-    case 'error': return 'ti:x'
-    case 'warning': return 'ti:alert-triangle'
-    default: return 'ti:info-circle'
+    case 'success': return 'tabler:check'
+    case 'error': return 'tabler:x'
+    case 'warning': return 'tabler:alert-triangle'
+    default: return 'tabler:info-circle'
   }
 })
 

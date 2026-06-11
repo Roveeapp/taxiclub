@@ -3,7 +3,7 @@
     <div class="flex items-start justify-between mb-3">
       <div class="flex items-center gap-2">
         <div class="icon-wrap-subtle">
-          <Icon name="ti:bolt" size="20" class="text-brand-gold" />
+          <Icon name="tabler:bolt" size="20" class="text-brand-gold" />
         </div>
         <div>
           <p class="text-sm font-medium text-white">{{ offer.originAddress }}</p>
@@ -17,11 +17,11 @@
 
     <div class="flex items-center gap-4 text-xs text-white/45 mb-3">
       <span class="flex items-center gap-1">
-        <Icon name="ti:clock" size="14" />
+        <Icon name="tabler:clock" size="14" />
         {{ timeWindow }}
       </span>
       <span class="flex items-center gap-1">
-        <Icon name="ti:users" size="14" />
+        <Icon name="tabler:users" size="14" />
         {{ offer.maxPassengers }} plazas
       </span>
     </div>

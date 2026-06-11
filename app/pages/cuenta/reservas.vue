@@ -19,7 +19,7 @@
     </div>
 
     <div v-else class="text-center py-12">
-      <Icon name="ti:calendar" size="48" class="mx-auto text-white/20 mb-4" />
+      <Icon name="tabler:calendar" size="48" class="mx-auto text-white/20 mb-4" />
       <p class="text-white/45 text-sm">No tienes reservas todavía</p>
       <NuxtLink to="/" class="text-brand-gold text-sm mt-2 inline-block">Hacer una reserva</NuxtLink>
     </div>

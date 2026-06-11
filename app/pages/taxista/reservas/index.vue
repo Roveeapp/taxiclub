@@ -33,7 +33,7 @@
         <div class="flex items-start justify-between mb-3">
           <div class="flex items-center gap-3">
             <div class="icon-wrap-dark">
-              <Icon name="ti:map-pin-2" size="14" class="text-brand-gold" />
+              <Icon name="tabler:map-pin-2" size="14" class="text-brand-gold" />
             </div>
             <div>
               <p class="text-sm font-medium text-gray-900">{{ booking.origin_station_name }}</p>
@@ -48,28 +48,28 @@
 
         <div class="flex items-center gap-4 text-xs text-gray-500">
           <span class="flex items-center gap-1">
-            <Icon name="ti:calendar" size="14" />
+            <Icon name="tabler:calendar" size="14" />
             {{ formatDate(booking.pickup_at) }}
           </span>
           <span class="flex items-center gap-1">
-            <Icon name="ti:clock" size="14" />
+            <Icon name="tabler:clock" size="14" />
             {{ formatTime(booking.pickup_at) }}
           </span>
           <span class="flex items-center gap-1">
-            <Icon name="ti:users" size="14" />
+            <Icon name="tabler:users" size="14" />
             {{ booking.passengers }}
           </span>
         </div>
 
         <div v-if="booking.confirmed_at" class="flex items-center gap-2 mt-3 pt-3 border-t border-gray-100">
-          <Icon name="ti:check" size="14" class="text-success" />
+          <Icon name="tabler:check" size="14" class="text-success" />
           <span class="text-xs text-success">Confirmada — {{ booking.confirmed_plate }}</span>
         </div>
       </NuxtLink>
     </div>
 
     <div v-else class="bg-white rounded-xl p-12 border border-gray-200 text-center">
-      <Icon name="ti:calendar" size="48" class="mx-auto text-gray-200 mb-4" />
+      <Icon name="tabler:calendar" size="48" class="mx-auto text-gray-200 mb-4" />
       <p class="text-gray-400">No hay reservas {{ activeFilter !== 'all' ? 'con este estado' : '' }}</p>
     </div>
   </div>

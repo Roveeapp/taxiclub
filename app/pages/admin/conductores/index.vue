@@ -37,7 +37,7 @@
             <td class="px-6 py-4">
               <div class="flex items-center gap-3">
                 <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
-                  <Icon name="ti:user" size="16" class="text-gray-400" />
+                  <Icon name="tabler:user" size="16" class="text-gray-400" />
                 </div>
                 <div>
                   <p class="text-sm font-medium text-gray-900">{{ driver.full_name }}</p>

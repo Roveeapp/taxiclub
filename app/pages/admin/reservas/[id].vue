@@ -1,7 +1,7 @@
 <template>
   <div>
     <NuxtLink to="/admin/reservas" class="flex items-center gap-1 text-sm text-gray-400 hover:text-gray-600 mb-4 transition-colors">
-      <Icon name="ti:chevron-left" size="16" />
+      <Icon name="tabler:chevron-left" size="16" />
       Volver a reservas
     </NuxtLink>
 
@@ -22,7 +22,7 @@
         <div class="space-y-4">
           <div class="flex items-center gap-3">
             <div class="icon-wrap-dark">
-              <Icon name="ti:map-pin-2" size="14" class="text-brand-gold" />
+              <Icon name="tabler:map-pin-2" size="14" class="text-brand-gold" />
             </div>
             <div>
               <span class="field-label block">ORIGEN</span>
@@ -32,7 +32,7 @@
 
           <div class="flex items-center gap-3">
             <div class="icon-wrap-gold">
-              <Icon name="ti:map-pin" size="14" class="text-brand-dark" />
+              <Icon name="tabler:map-pin" size="14" class="text-brand-dark" />
             </div>
             <div>
               <span class="field-label block">DESTINO</span>

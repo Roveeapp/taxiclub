@@ -3,7 +3,7 @@
     <div class="flex items-center justify-between mb-6">
       <h1 class="text-2xl font-semibold">Liquidaciones</h1>
       <AppButton variant="gold" @click="handleProcess" :loading="processing">
-        <Icon name="ti:coin" size="16" class="mr-1" />
+        <Icon name="tabler:coin" size="16" class="mr-1" />
         Procesar liquidaciones del mes
       </AppButton>
     </div>
@@ -52,7 +52,7 @@
     </div>
 
     <div v-else class="bg-white rounded-xl p-12 border border-gray-200 text-center">
-      <Icon name="ti:coin" size="48" class="mx-auto text-gray-200 mb-4" />
+      <Icon name="tabler:coin" size="48" class="mx-auto text-gray-200 mb-4" />
       <p class="text-gray-400">No hay liquidaciones procesadas</p>
     </div>
   </div>

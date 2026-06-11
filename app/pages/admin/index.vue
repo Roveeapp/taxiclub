@@ -6,7 +6,7 @@
       <div class="bg-white rounded-xl p-6 border border-gray-200">
         <div class="flex items-center gap-3 mb-2">
           <div class="w-10 h-10 rounded-lg bg-gold-50 flex items-center justify-center">
-            <Icon name="ti:calendar-event" size="20" class="text-brand-gold" />
+            <Icon name="tabler:calendar-event" size="20" class="text-brand-gold" />
           </div>
           <p class="text-sm text-gray-500">Reservas hoy</p>
         </div>
@@ -15,7 +15,7 @@
       <div class="bg-white rounded-xl p-6 border border-gray-200">
         <div class="flex items-center gap-3 mb-2">
           <div class="w-10 h-10 rounded-lg bg-success/10 flex items-center justify-center">
-            <Icon name="ti:users" size="20" class="text-success" />
+            <Icon name="tabler:users" size="20" class="text-success" />
           </div>
           <p class="text-sm text-gray-500">Conductores activos</p>
         </div>
@@ -24,7 +24,7 @@
       <div class="bg-white rounded-xl p-6 border border-gray-200">
         <div class="flex items-center gap-3 mb-2">
           <div class="w-10 h-10 rounded-lg bg-info/10 flex items-center justify-center">
-            <Icon name="ti:coin" size="20" class="text-info" />
+            <Icon name="tabler:coin" size="20" class="text-info" />
           </div>
           <p class="text-sm text-gray-500">Ingresos del mes</p>
         </div>
@@ -33,7 +33,7 @@
       <div class="bg-white rounded-xl p-6 border border-gray-200">
         <div class="flex items-center gap-3 mb-2">
           <div class="w-10 h-10 rounded-lg bg-warning/10 flex items-center justify-center">
-            <Icon name="ti:bolt" size="20" class="text-warning" />
+            <Icon name="tabler:bolt" size="20" class="text-warning" />
           </div>
           <p class="text-sm text-gray-500">Ofertas activas</p>
         </div>
@@ -81,7 +81,7 @@
           >
             <div class="flex items-center gap-3">
               <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
-                <Icon name="ti:user" size="16" class="text-gray-400" />
+                <Icon name="tabler:user" size="16" class="text-gray-400" />
               </div>
               <div>
                 <p class="text-sm font-medium text-gray-900">{{ driver.full_name }}</p>

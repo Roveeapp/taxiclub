@@ -51,7 +51,7 @@
     </div>
 
     <div v-else class="bg-white rounded-xl p-12 border border-gray-200 text-center">
-      <Icon name="ti:coin" size="48" class="mx-auto text-gray-200 mb-4" />
+      <Icon name="tabler:coin" size="48" class="mx-auto text-gray-200 mb-4" />
       <p class="text-gray-400">No hay liquidaciones todavía</p>
     </div>
   </div>

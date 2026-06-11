@@ -7,7 +7,7 @@
           class="p-2 rounded-lg hover:bg-gray-100 transition-colors"
           @click="prevMonth"
         >
-          <Icon name="ti:chevron-left" size="18" />
+          <Icon name="tabler:chevron-left" size="18" />
         </button>
         <span class="text-sm font-medium text-text-on-light min-w-[120px] text-center">
           {{ monthLabel }}
@@ -16,7 +16,7 @@
           class="p-2 rounded-lg hover:bg-gray-100 transition-colors"
           @click="nextMonth"
         >
-          <Icon name="ti:chevron-right" size="18" />
+          <Icon name="tabler:chevron-right" size="18" />
         </button>
       </div>
     </div>

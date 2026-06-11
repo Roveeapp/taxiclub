@@ -1,7 +1,7 @@
 <template>
   <div>
     <NuxtLink to="/taxista/reservas" class="flex items-center gap-1 text-sm text-gray-400 hover:text-gray-600 mb-4 transition-colors">
-      <Icon name="ti:chevron-left" size="16" />
+      <Icon name="tabler:chevron-left" size="16" />
       Volver a reservas
     </NuxtLink>
 
@@ -22,7 +22,7 @@
         <div class="space-y-4">
           <div class="flex items-center gap-3">
             <div class="icon-wrap-dark">
-              <Icon name="ti:map-pin-2" size="14" class="text-brand-gold" />
+              <Icon name="tabler:map-pin-2" size="14" class="text-brand-gold" />
             </div>
             <div>
               <span class="field-label block">ORIGEN</span>
@@ -32,7 +32,7 @@
 
           <div class="flex items-center gap-3">
             <div class="icon-wrap-gold">
-              <Icon name="ti:map-pin" size="14" class="text-brand-dark" />
+              <Icon name="tabler:map-pin" size="14" class="text-brand-dark" />
             </div>
             <div>
               <span class="field-label block">DESTINO</span>
@@ -53,17 +53,17 @@
 
           <div class="grid grid-cols-3 gap-4">
             <div class="bg-gray-50 rounded-xl p-4 text-center">
-              <Icon name="ti:users" size="18" class="mx-auto text-gray-400 mb-1" />
+              <Icon name="tabler:users" size="18" class="mx-auto text-gray-400 mb-1" />
               <span class="text-sm font-medium text-gray-900">{{ reservation.passengers }}</span>
               <span class="text-xs text-gray-500 block">pasajeros</span>
             </div>
             <div class="bg-gray-50 rounded-xl p-4 text-center">
-              <Icon name="ti:luggage" size="18" class="mx-auto text-gray-400 mb-1" />
+              <Icon name="tabler:luggage" size="18" class="mx-auto text-gray-400 mb-1" />
               <span class="text-sm font-medium text-gray-900">{{ reservation.luggage_big }}</span>
               <span class="text-xs text-gray-500 block">maletas</span>
             </div>
             <div class="bg-gray-50 rounded-xl p-4 text-center">
-              <Icon name="ti:briefcase" size="18" class="mx-auto text-gray-400 mb-1" />
+              <Icon name="tabler:briefcase" size="18" class="mx-auto text-gray-400 mb-1" />
               <span class="text-sm font-medium text-gray-900">{{ reservation.luggage_hand }}</span>
               <span class="text-xs text-gray-500 block">mano</span>
             </div>
@@ -97,7 +97,7 @@
 
       <div v-else-if="reservation.confirmed_at" class="bg-success/5 rounded-xl p-6 border border-success/20">
         <div class="flex items-center gap-2 mb-3">
-          <Icon name="ti:check" size="18" class="text-success" />
+          <Icon name="tabler:check" size="18" class="text-success" />
           <h2 class="text-lg font-medium text-success">Reserva confirmada</h2>
         </div>
         <div class="space-y-2 text-sm">

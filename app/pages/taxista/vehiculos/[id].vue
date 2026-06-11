@@ -1,7 +1,7 @@
 <template>
   <div>
     <NuxtLink to="/taxista/vehiculos" class="flex items-center gap-1 text-sm text-gray-400 hover:text-gray-600 mb-4 transition-colors">
-      <Icon name="ti:chevron-left" size="16" />
+      <Icon name="tabler:chevron-left" size="16" />
       Volver a vehículos
     </NuxtLink>
 
@@ -38,10 +38,10 @@
         <div>
           <span class="field-label block mb-3">Extras</span>
           <div class="flex flex-wrap gap-2">
-            <AppChip v-model:active="form.hasChildSeat" icon="ti:armchair">Silla bebé</AppChip>
-            <AppChip v-model:active="form.hasPetFriendly" icon="ti:paw">Mascota</AppChip>
-            <AppChip v-model:active="form.isAccessible" icon="ti:wheelchair">PMR</AppChip>
-            <AppChip v-model:active="form.isLargeVehicle" icon="ti:car">Vehículo grande</AppChip>
+            <AppChip v-model:active="form.hasChildSeat" icon="tabler:armchair">Silla bebé</AppChip>
+            <AppChip v-model:active="form.hasPetFriendly" icon="tabler:paw">Mascota</AppChip>
+            <AppChip v-model:active="form.isAccessible" icon="tabler:wheelchair">PMR</AppChip>
+            <AppChip v-model:active="form.isLargeVehicle" icon="tabler:car">Vehículo grande</AppChip>
           </div>
         </div>
 

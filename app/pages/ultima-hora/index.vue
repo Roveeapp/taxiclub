@@ -19,7 +19,7 @@
     </div>
 
     <div v-else class="text-center py-12">
-      <Icon name="ti:bolt" size="48" class="mx-auto text-white/20 mb-4" />
+      <Icon name="tabler:bolt" size="48" class="mx-auto text-white/20 mb-4" />
       <p class="text-white/45 text-sm">No hay ofertas disponibles en este momento</p>
       <p class="text-white/30 text-xs mt-2">Las ofertas de retorno aparecen aquí cuando un taxista publica un viaje de vuelta</p>
     </div>

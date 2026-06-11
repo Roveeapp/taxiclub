@@ -15,7 +15,7 @@
           class="w-full flex items-start gap-3 px-4 py-3 text-left hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-0"
           @click="selectResult(result)"
         >
-          <Icon name="ti:map-pin" size="16" class="text-brand-gold mt-0.5 flex-shrink-0" />
+          <Icon name="tabler:map-pin" size="16" class="text-brand-gold mt-0.5 flex-shrink-0" />
           <div class="min-w-0">
             <p class="text-sm text-gray-900 truncate">{{ result.display_name.split(',')[0] }}</p>
             <p class="text-xs text-gray-500 truncate">{{ result.display_name.split(',').slice(1).join(',').trim() }}</p>
@@ -25,7 +25,7 @@
     </Transition>
 
     <div v-if="selected" class="mt-2 flex items-center gap-2 text-xs text-success">
-      <Icon name="ti:check" size="14" />
+      <Icon name="tabler:check" size="14" />
       <span class="truncate">{{ shortAddress }}</span>
     </div>
   </div>

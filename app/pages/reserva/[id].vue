@@ -1,7 +1,7 @@
 <template>
   <div class="pt-6">
     <div v-if="loading" class="text-center py-12">
-      <Icon name="ti:loader" size="32" class="mx-auto text-white/40 animate-spin mb-4" />
+      <Icon name="tabler:loader" size="32" class="mx-auto text-white/40 animate-spin mb-4" />
       <p class="text-white/45">Cargando reserva...</p>
     </div>
 
@@ -13,7 +13,7 @@
       <div class="bg-white rounded-card p-6">
         <div class="flex items-center gap-3 mb-4">
           <div class="icon-wrap-dark">
-            <Icon name="ti:map-pin-2" size="14" class="text-brand-gold" />
+            <Icon name="tabler:map-pin-2" size="14" class="text-brand-gold" />
           </div>
           <div>
             <span class="field-label block">DESDE</span>
@@ -23,7 +23,7 @@
 
         <div class="flex items-center gap-3 mb-4">
           <div class="icon-wrap-gold">
-            <Icon name="ti:map-pin" size="14" class="text-brand-dark" />
+            <Icon name="tabler:map-pin" size="14" class="text-brand-dark" />
           </div>
           <div>
             <span class="field-label block">HASTA</span>
@@ -56,7 +56,7 @@
       </div>
 
       <div v-else class="bg-white/5 border border-white/10 rounded-card p-6 text-center">
-        <Icon name="ti:loader" size="24" class="mx-auto text-brand-gold animate-spin mb-2" />
+        <Icon name="tabler:loader" size="24" class="mx-auto text-brand-gold animate-spin mb-2" />
         <p class="text-sm text-white/60">El conductor confirmará en breve</p>
         <p class="text-xs text-white/40 mt-1">Te notificaremos cuando tengamos la matrícula</p>
       </div>
@@ -73,7 +73,7 @@
     </div>
 
     <div v-else class="text-center py-12">
-      <Icon name="ti:calendar-x" size="48" class="mx-auto text-white/20 mb-4" />
+      <Icon name="tabler:calendar-x" size="48" class="mx-auto text-white/20 mb-4" />
       <p class="text-white/45">Reserva no encontrada</p>
       <NuxtLink to="/" class="text-brand-gold text-sm mt-2 inline-block">Volver al inicio</NuxtLink>
     </div>

@@ -23,7 +23,7 @@
         class="flex items-center gap-3 w-full px-2 py-2 text-sm text-white/60 hover:text-white transition-colors"
         @click="handleLogout"
       >
-        <Icon name="ti:logout" size="18" />
+        <Icon name="tabler:logout" size="18" />
         <span>Cerrar sesión</span>
       </button>
     </div>
@@ -39,22 +39,22 @@ const dashboardLink = computed(() => isTaxista.value ? '/taxista' : '/admin')
 const navItems = computed(() => {
   if (isTaxista.value) {
     return [
-      { to: '/taxista', icon: 'ti:layout-dashboard', label: 'Dashboard' },
-      { to: '/taxista/reservas', icon: 'ti:calendar-event', label: 'Reservas' },
-      { to: '/taxista/disponibilidad', icon: 'ti:calendar', label: 'Disponibilidad' },
-      { to: '/taxista/vehiculos', icon: 'ti:steering-wheel', label: 'Vehículos' },
-      { to: '/taxista/ofertas', icon: 'ti:bolt', label: 'Ofertas' },
-      { to: '/taxista/liquidaciones', icon: 'ti:coin', label: 'Liquidaciones' },
-      { to: '/taxista/cuenta', icon: 'ti:user', label: 'Mi cuenta' },
+      { to: '/taxista', icon: 'tabler:layout-dashboard', label: 'Dashboard' },
+      { to: '/taxista/reservas', icon: 'tabler:calendar-event', label: 'Reservas' },
+      { to: '/taxista/disponibilidad', icon: 'tabler:calendar', label: 'Disponibilidad' },
+      { to: '/taxista/vehiculos', icon: 'tabler:steering-wheel', label: 'Vehículos' },
+      { to: '/taxista/ofertas', icon: 'tabler:bolt', label: 'Ofertas' },
+      { to: '/taxista/liquidaciones', icon: 'tabler:coin', label: 'Liquidaciones' },
+      { to: '/taxista/cuenta', icon: 'tabler:user', label: 'Mi cuenta' },
     ]
   }
   return [
-    { to: '/admin', icon: 'ti:layout-dashboard', label: 'Dashboard' },
-    { to: '/admin/conductores', icon: 'ti:users', label: 'Conductores' },
-    { to: '/admin/reservas', icon: 'ti:calendar-event', label: 'Reservas' },
-    { to: '/admin/paradas', icon: 'ti:map-pin', label: 'Paradas' },
-    { to: '/admin/liquidaciones', icon: 'ti:coin', label: 'Liquidaciones' },
-    { to: '/admin/configuracion', icon: 'ti:settings', label: 'Configuración' },
+    { to: '/admin', icon: 'tabler:layout-dashboard', label: 'Dashboard' },
+    { to: '/admin/conductores', icon: 'tabler:users', label: 'Conductores' },
+    { to: '/admin/reservas', icon: 'tabler:calendar-event', label: 'Reservas' },
+    { to: '/admin/paradas', icon: 'tabler:map-pin', label: 'Paradas' },
+    { to: '/admin/liquidaciones', icon: 'tabler:coin', label: 'Liquidaciones' },
+    { to: '/admin/configuracion', icon: 'tabler:settings', label: 'Configuración' },
   ]
 })
 

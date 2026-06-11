@@ -14,7 +14,7 @@
         :options="stationOptions"
         label="Destino · Parada base"
         placeholder="Seleccionar parada"
-        icon="ti:map-pin"
+        icon="tabler:map-pin"
       />
 
       <div class="grid grid-cols-2 gap-4">
@@ -93,7 +93,7 @@ const form = reactive({
 })
 
 const stationOptions = computed(() =>
-  (props.stations || []).map(s => ({ value: s.id, label: s.name, icon: 'ti:map-pin' })),
+  (props.stations || []).map(s => ({ value: s.id, label: s.name, icon: 'tabler:map-pin' })),
 )
 
 const formattedPrice = computed(() => {

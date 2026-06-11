@@ -1,7 +1,7 @@
 <template>
   <div>
     <NuxtLink to="/taxista/ofertas" class="flex items-center gap-1 text-sm text-gray-400 hover:text-gray-600 mb-4 transition-colors">
-      <Icon name="ti:chevron-left" size="16" />
+      <Icon name="tabler:chevron-left" size="16" />
       Volver a ofertas
     </NuxtLink>
 

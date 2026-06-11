@@ -49,7 +49,7 @@
             class="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
           >
             <div class="flex items-center gap-2">
-              <Icon name="ti:map-pin" size="16" class="text-brand-gold" />
+              <Icon name="tabler:map-pin" size="16" class="text-brand-gold" />
               <span class="text-sm text-gray-900">{{ station.name }}</span>
             </div>
             <span class="text-xs text-gray-500">{{ station.city }}</span>

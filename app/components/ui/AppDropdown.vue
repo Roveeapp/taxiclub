@@ -14,7 +14,7 @@
         </span>
       </div>
       <Icon
-        name="ti:chevron-down"
+        name="tabler:chevron-down"
         size="16"
         class="text-gray-400 transition-transform"
         :class="{ 'rotate-180': isOpen }"
@@ -32,7 +32,7 @@
         >
           <Icon v-if="option.icon" :name="option.icon" size="16" />
           <span>{{ option.label }}</span>
-          <Icon v-if="option.value === modelValue" name="ti:check" size="16" class="ml-auto text-brand-gold" />
+          <Icon v-if="option.value === modelValue" name="tabler:check" size="16" class="ml-auto text-brand-gold" />
         </button>
       </div>
     </Transition>

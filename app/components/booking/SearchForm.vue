@@ -2,7 +2,7 @@
   <div class="bg-white rounded-card p-6">
     <div class="flex items-center gap-3 mb-4">
       <div class="icon-wrap-dark">
-        <Icon name="ti:map-pin-2" size="16" class="text-brand-gold" />
+        <Icon name="tabler:map-pin-2" size="16" class="text-brand-gold" />
       </div>
       <div class="flex-1">
         <span class="field-label block">DESDE · PARADA</span>
@@ -21,7 +21,7 @@
 
     <div class="flex items-center gap-3 mb-4">
       <div class="icon-wrap-gold">
-        <Icon name="ti:map-pin" size="16" class="text-brand-dark" />
+        <Icon name="tabler:map-pin" size="16" class="text-brand-dark" />
       </div>
       <div class="flex-1">
         <span class="field-label block">HASTA</span>
@@ -73,10 +73,10 @@
     </div>
 
     <div class="flex flex-wrap gap-2 mb-6">
-      <AppChip v-model:active="needsChildSeat" icon="ti:armchair">Silla bebé</AppChip>
-      <AppChip v-model:active="needsPetFriendly" icon="ti:paw">Mascota</AppChip>
-      <AppChip v-model:active="needsAccessible" icon="ti:wheelchair">PMR</AppChip>
-      <AppChip v-model:active="needsLargeVehicle" icon="ti:car">Vehículo grande</AppChip>
+      <AppChip v-model:active="needsChildSeat" icon="tabler:armchair">Silla bebé</AppChip>
+      <AppChip v-model:active="needsPetFriendly" icon="tabler:paw">Mascota</AppChip>
+      <AppChip v-model:active="needsAccessible" icon="tabler:wheelchair">PMR</AppChip>
+      <AppChip v-model:active="needsLargeVehicle" icon="tabler:car">Vehículo grande</AppChip>
     </div>
 
     <AppButton :disabled="!isFormValid" @click="handleSearch">

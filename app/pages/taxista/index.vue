@@ -9,7 +9,7 @@
       <div class="bg-white rounded-xl p-6 border border-gray-200">
         <div class="flex items-center gap-3 mb-2">
           <div class="w-10 h-10 rounded-lg bg-gold-50 flex items-center justify-center">
-            <Icon name="ti:calendar-event" size="20" class="text-brand-gold" />
+            <Icon name="tabler:calendar-event" size="20" class="text-brand-gold" />
           </div>
           <p class="text-sm text-gray-500">Próximas reservas</p>
         </div>
@@ -18,7 +18,7 @@
       <div class="bg-white rounded-xl p-6 border border-gray-200">
         <div class="flex items-center gap-3 mb-2">
           <div class="w-10 h-10 rounded-lg bg-success/10 flex items-center justify-center">
-            <Icon name="ti:check" size="20" class="text-success" />
+            <Icon name="tabler:check" size="20" class="text-success" />
           </div>
           <p class="text-sm text-gray-500">Completadas este mes</p>
         </div>
@@ -27,7 +27,7 @@
       <div class="bg-white rounded-xl p-6 border border-gray-200">
         <div class="flex items-center gap-3 mb-2">
           <div class="w-10 h-10 rounded-lg bg-info/10 flex items-center justify-center">
-            <Icon name="ti:coin" size="20" class="text-info" />
+            <Icon name="tabler:coin" size="20" class="text-info" />
           </div>
           <p class="text-sm text-gray-500">Ingresos estimados</p>
         </div>
@@ -54,7 +54,7 @@
         >
           <div class="flex items-center gap-3">
             <div class="icon-wrap-dark">
-              <Icon name="ti:map-pin-2" size="14" class="text-brand-gold" />
+              <Icon name="tabler:map-pin-2" size="14" class="text-brand-gold" />
             </div>
             <div>
               <p class="text-sm font-medium text-gray-900">{{ booking.origin_station_name }}</p>

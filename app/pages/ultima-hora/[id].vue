@@ -1,7 +1,7 @@
 <template>
   <div class="pt-6">
     <NuxtLink to="/ultima-hora" class="flex items-center gap-1 text-sm text-white/45 hover:text-white mb-4 transition-colors">
-      <Icon name="ti:chevron-left" size="16" />
+      <Icon name="tabler:chevron-left" size="16" />
       Volver a Última Hora
     </NuxtLink>
 
@@ -15,13 +15,13 @@
           <div>
             <div class="flex items-center gap-2 mb-2">
               <div class="icon-wrap-dark">
-                <Icon name="ti:map-pin-2" size="14" class="text-brand-gold" />
+                <Icon name="tabler:map-pin-2" size="14" class="text-brand-gold" />
               </div>
               <span class="text-white font-medium">{{ offer.originAddress }}</span>
             </div>
             <div class="flex items-center gap-2">
               <div class="icon-wrap-gold">
-                <Icon name="ti:map-pin" size="14" class="text-brand-dark" />
+                <Icon name="tabler:map-pin" size="14" class="text-brand-dark" />
               </div>
               <span class="text-white font-medium">{{ offer.destinationStationName }}</span>
             </div>
@@ -64,7 +64,7 @@
     </div>
 
     <div v-else class="text-center py-12">
-      <Icon name="ti:bolt" size="48" class="mx-auto text-white/20 mb-4" />
+      <Icon name="tabler:bolt" size="48" class="mx-auto text-white/20 mb-4" />
       <p class="text-white/45">Oferta no disponible</p>
     </div>
   </div>

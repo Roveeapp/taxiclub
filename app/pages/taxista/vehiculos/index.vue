@@ -4,7 +4,7 @@
       <h1 class="text-2xl font-semibold">Mis vehículos</h1>
       <NuxtLink to="/taxista/vehiculos/nuevo">
         <AppButton>
-          <Icon name="ti:plus" size="16" class="mr-1" />
+          <Icon name="tabler:plus" size="16" class="mr-1" />
           Añadir vehículo
         </AppButton>
       </NuxtLink>
@@ -26,7 +26,7 @@
     </div>
 
     <div v-else class="bg-white rounded-xl p-12 border border-gray-200 text-center">
-      <Icon name="ti:steering-wheel" size="48" class="mx-auto text-gray-200 mb-4" />
+      <Icon name="tabler:steering-wheel" size="48" class="mx-auto text-gray-200 mb-4" />
       <p class="text-gray-400 mb-4">No tienes vehículos registrados</p>
       <NuxtLink to="/taxista/vehiculos/nuevo">
         <AppButton>Añadir primer vehículo</AppButton>

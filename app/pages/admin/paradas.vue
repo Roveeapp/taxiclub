@@ -3,7 +3,7 @@
     <div class="flex items-center justify-between mb-6">
       <h1 class="text-2xl font-semibold">Paradas</h1>
       <AppButton @click="showCreateModal = true">
-        <Icon name="ti:plus" size="16" class="mr-1" />
+        <Icon name="tabler:plus" size="16" class="mr-1" />
         Nueva parada
       </AppButton>
     </div>
@@ -28,7 +28,7 @@
           <tr v-for="station in stations" :key="station.id" class="hover:bg-gray-50">
             <td class="px-6 py-4">
               <div class="flex items-center gap-2">
-                <Icon name="ti:map-pin" size="16" class="text-brand-gold" />
+                <Icon name="tabler:map-pin" size="16" class="text-brand-gold" />
                 <span class="text-sm font-medium text-gray-900">{{ station.name }}</span>
               </div>
             </td>

@@ -3,7 +3,7 @@
     <div class="flex items-start justify-between">
       <div class="flex items-center gap-3">
         <div class="icon-wrap-subtle">
-          <Icon name="ti:steering-wheel" size="20" class="text-brand-gold" />
+          <Icon name="tabler:steering-wheel" size="20" class="text-brand-gold" />
         </div>
         <div>
           <p class="text-sm font-semibold text-text-on-light">{{ vehicle.plate }}</p>
@@ -23,15 +23,15 @@
 
     <div class="grid grid-cols-4 gap-2 mt-3 pt-3 border-t border-surface-divider">
       <div class="text-center">
-        <Icon name="ti:users" size="14" class="mx-auto text-text-muted-light mb-1" />
+        <Icon name="tabler:users" size="14" class="mx-auto text-text-muted-light mb-1" />
         <span class="text-xs text-text-on-light">{{ vehicle.maxPassengers }}</span>
       </div>
       <div class="text-center">
-        <Icon name="ti:luggage" size="14" class="mx-auto text-text-muted-light mb-1" />
+        <Icon name="tabler:luggage" size="14" class="mx-auto text-text-muted-light mb-1" />
         <span class="text-xs text-text-on-light">{{ vehicle.maxLuggageBig }}</span>
       </div>
       <div class="text-center">
-        <Icon name="ti:briefcase" size="14" class="mx-auto text-text-muted-light mb-1" />
+        <Icon name="tabler:briefcase" size="14" class="mx-auto text-text-muted-light mb-1" />
         <span class="text-xs text-text-on-light">{{ vehicle.maxLuggageHand }}</span>
       </div>
       <div class="text-center">

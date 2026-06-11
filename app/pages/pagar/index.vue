@@ -1,7 +1,7 @@
 <template>
   <div class="pt-6">
     <NuxtLink to="/" class="flex items-center gap-1 text-sm text-white/45 hover:text-white mb-4 transition-colors">
-      <Icon name="ti:chevron-left" size="16" />
+      <Icon name="tabler:chevron-left" size="16" />
       Volver
     </NuxtLink>
 
@@ -11,7 +11,7 @@
       <div class="space-y-4 mb-6">
         <div class="flex items-center gap-3">
           <div class="icon-wrap-dark">
-            <Icon name="ti:map-pin-2" size="14" class="text-brand-gold" />
+            <Icon name="tabler:map-pin-2" size="14" class="text-brand-gold" />
           </div>
           <div>
             <span class="field-label block">DESDE</span>
@@ -21,7 +21,7 @@
 
         <div class="flex items-center gap-3">
           <div class="icon-wrap-gold">
-            <Icon name="ti:map-pin" size="14" class="text-brand-dark" />
+            <Icon name="tabler:map-pin" size="14" class="text-brand-dark" />
           </div>
           <div>
             <span class="field-label block">HASTA</span>
@@ -42,11 +42,11 @@
 
         <div class="flex items-center gap-4 text-sm text-text-muted-light">
           <span class="flex items-center gap-1">
-            <Icon name="ti:users" size="14" />
+            <Icon name="tabler:users" size="14" />
             {{ bookingData?.passengers }} pasajeros
           </span>
           <span v-if="bookingData?.luggageBig" class="flex items-center gap-1">
-            <Icon name="ti:luggage" size="14" />
+            <Icon name="tabler:luggage" size="14" />
             {{ bookingData.luggageBig }} maletas
           </span>
         </div>

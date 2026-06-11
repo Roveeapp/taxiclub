@@ -7,7 +7,7 @@
       </NuxtLink>
       <div class="flex items-center gap-3">
         <NuxtLink to="/cuenta" class="text-white/60 hover:text-white transition-colors">
-          <Icon name="ti:user" size="20" />
+          <Icon name="tabler:user" size="20" />
         </NuxtLink>
       </div>
     </div>

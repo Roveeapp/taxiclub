@@ -13,7 +13,7 @@
     <div v-if="user" class="bg-white rounded-card p-6">
       <div class="flex items-center gap-4 mb-6">
         <div class="w-14 h-14 rounded-full bg-brand-gold/10 flex items-center justify-center">
-          <Icon name="ti:user" size="24" class="text-brand-gold" />
+          <Icon name="tabler:user" size="24" class="text-brand-gold" />
         </div>
         <div>
           <p class="text-base font-medium text-text-on-light">{{ user.user_metadata?.full_name || 'Usuario' }}</p>
@@ -30,10 +30,10 @@
           class="flex items-center justify-between p-3 rounded-input hover:bg-surface-input transition-colors"
         >
           <span class="flex items-center gap-3 text-sm text-text-on-light">
-            <Icon name="ti:calendar-event" size="18" class="text-text-muted-light" />
+            <Icon name="tabler:calendar-event" size="18" class="text-text-muted-light" />
             Mis reservas
           </span>
-          <Icon name="ti:chevron-right" size="16" class="text-text-muted-light" />
+          <Icon name="tabler:chevron-right" size="16" class="text-text-muted-light" />
         </NuxtLink>
       </div>
     </div>

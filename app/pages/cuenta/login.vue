@@ -3,7 +3,7 @@
     <div class="text-center mb-8">
       <div class="flex justify-center mb-4">
         <div class="w-12 h-12 rounded-full bg-brand-gold/10 flex items-center justify-center">
-          <Icon name="ti:user" size="24" class="text-brand-gold" />
+          <Icon name="tabler:user" size="24" class="text-brand-gold" />
         </div>
       </div>
       <h1 class="text-[22px] font-medium text-white mb-1">
@@ -51,7 +51,7 @@
                 : 'border-gray-200 text-gray-600 hover:border-brand-dark'"
               @click="accountType = 'client'"
             >
-              <Icon name="ti:user" size="16" />
+              <Icon name="tabler:user" size="16" />
               Cliente
             </button>
             <button
@@ -61,7 +61,7 @@
                 : 'border-gray-200 text-gray-600 hover:border-brand-dark'"
               @click="accountType = 'driver'"
             >
-              <Icon name="ti:steering-wheel" size="16" />
+              <Icon name="tabler:steering-wheel" size="16" />
               Taxista
             </button>
           </div>

@@ -4,7 +4,7 @@
       <h1 class="text-2xl font-semibold">Mis ofertas</h1>
       <NuxtLink to="/taxista/ofertas/nueva">
         <AppButton>
-          <Icon name="ti:plus" size="16" class="mr-1" />
+          <Icon name="tabler:plus" size="16" class="mr-1" />
           Nueva oferta
         </AppButton>
       </NuxtLink>
@@ -38,11 +38,11 @@
 
         <div class="flex items-center gap-4 text-xs text-gray-500 mb-3">
           <span class="flex items-center gap-1">
-            <Icon name="ti:clock" size="14" />
+            <Icon name="tabler:clock" size="14" />
             {{ formatTime(offer.available_from) }} – {{ formatTime(offer.available_until) }}
           </span>
           <span class="flex items-center gap-1">
-            <Icon name="ti:users" size="14" />
+            <Icon name="tabler:users" size="14" />
             {{ offer.max_passengers }} plazas
           </span>
         </div>
@@ -61,7 +61,7 @@
     </div>
 
     <div v-else class="bg-white rounded-xl p-12 border border-gray-200 text-center">
-      <Icon name="ti:bolt" size="48" class="mx-auto text-gray-200 mb-4" />
+      <Icon name="tabler:bolt" size="48" class="mx-auto text-gray-200 mb-4" />
       <p class="text-gray-400 mb-4">No tienes ofertas activas</p>
       <NuxtLink to="/taxista/ofertas/nueva">
         <AppButton>Crear primera oferta</AppButton>

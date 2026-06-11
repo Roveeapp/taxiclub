@@ -1,7 +1,7 @@
 <template>
   <div>
     <NuxtLink to="/admin/conductores" class="flex items-center gap-1 text-sm text-gray-400 hover:text-gray-600 mb-4 transition-colors">
-      <Icon name="ti:chevron-left" size="16" />
+      <Icon name="tabler:chevron-left" size="16" />
       Volver a conductores
     </NuxtLink>
 
@@ -13,7 +13,7 @@
       <div class="bg-white rounded-xl p-6 border border-gray-200">
         <div class="flex items-center gap-4 mb-6">
           <div class="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center">
-            <Icon name="ti:user" size="28" class="text-gray-400" />
+            <Icon name="tabler:user" size="28" class="text-gray-400" />
           </div>
           <div>
             <h1 class="text-xl font-semibold">{{ driver.full_name }}</h1>

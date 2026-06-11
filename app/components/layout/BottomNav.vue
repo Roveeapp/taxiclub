@@ -6,7 +6,7 @@
         class="flex flex-col items-center gap-1 text-white/60 hover:text-white transition-colors"
         active-class="text-brand-gold"
       >
-        <Icon name="ti:home" size="20" />
+        <Icon name="tabler:home" size="20" />
         <span class="text-[10px]">Inicio</span>
       </NuxtLink>
       <NuxtLink
@@ -14,7 +14,7 @@
         class="flex flex-col items-center gap-1 text-white/60 hover:text-white transition-colors"
         active-class="text-brand-gold"
       >
-        <Icon name="ti:bolt" size="20" />
+        <Icon name="tabler:bolt" size="20" />
         <span class="text-[10px]">Última Hora</span>
       </NuxtLink>
       <NuxtLink
@@ -22,7 +22,7 @@
         class="flex flex-col items-center gap-1 text-white/60 hover:text-white transition-colors"
         active-class="text-brand-gold"
       >
-        <Icon name="ti:user" size="20" />
+        <Icon name="tabler:user" size="20" />
         <span class="text-[10px]">Cuenta</span>
       </NuxtLink>
     </div>
