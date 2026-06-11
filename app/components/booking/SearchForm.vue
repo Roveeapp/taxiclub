@@ -1,12 +1,12 @@
 <template>
-  <div class="bg-white rounded-xl shadow-2xl p-lg space-y-md relative overflow-hidden active-scale">
+  <div class="bg-white rounded-xl shadow-2xl p-lg space-y-md relative overflow-hidden">
     <div class="space-y-xs">
       <label class="font-label-caps text-label-caps text-on-primary-container block">ORIGEN (PARADA)</label>
       <div class="flex items-center bg-surface-input rounded-lg px-md py-sm border-2 border-transparent focus-within:border-secondary transition-all">
         <Icon name="tabler:map-pin-filled" size="18" class="text-on-primary-container mr-sm" />
         <select
           :value="originStationId"
-          class="w-full bg-transparent border-none focus:ring-0 text-primary-container font-body-md appearance-none"
+          class="w-full bg-transparent border-none focus:ring-0 text-primary-container font-body-md text-xs appearance-none"
           @change="$emit('update:originStationId', ($event.target as HTMLSelectElement).value)"
         >
           <option value="" disabled>Seleccionar parada</option>
