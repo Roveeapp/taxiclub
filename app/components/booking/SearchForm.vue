@@ -31,17 +31,50 @@
       </div>
     </div>
 
-    <!-- DESTINO Input -->
+    <!-- DESTINO Autocomplete -->
     <div class="space-y-xs">
-      <label class="font-label-caps text-label-caps text-slate-500 uppercase">Destino</label>
-      <div class="w-full flex items-center bg-surface-input px-md py-sm rounded-lg border border-slate-200">
-        <Icon name="tabler:map-pin" size="18" class="text-slate-400 mr-sm" />
-        <input
-          v-model="destination"
-          type="text"
-          placeholder="Introduce destino..."
-          class="w-full bg-transparent border-none focus:ring-0 text-slate-900 placeholder:text-slate-400 font-body-md"
-        />
+      <div class="flex items-center gap-md p-sm bg-surface-input rounded-lg border-2 transition-all"
+        :class="destFocused ? 'border-secondary ring-4 ring-secondary/10' : 'border-transparent'"
+      >
+        <Icon :name="destFocused || destination ? 'tabler:map-pin-filled' : 'tabler:map-pin'" size="20" :class="destFocused || destination ? 'text-secondary' : 'text-slate-400'" />
+        <div class="flex flex-col flex-1">
+          <label class="font-label-caps text-label-caps" :class="destFocused ? 'text-secondary font-bold' : 'text-slate-500'">DESTINO FINAL</label>
+          <input
+            v-model="destQuery"
+            type="text"
+            placeholder="Escribe una dirección..."
+            class="w-full bg-transparent border-none focus:ring-0 text-slate-900 placeholder:text-slate-400 font-body-md"
+            @focus="onDestFocus"
+            @blur="onDestBlur"
+            @input="onDestInput"
+          />
+        </div>
+        <button v-if="destQuery" class="text-slate-400 hover:text-slate-600" @click="clearDest">
+          <Icon name="tabler:x" size="18" />
+        </button>
+      </div>
+
+      <!-- Autocomplete Results -->
+      <div v-if="destSuggestions.length > 0 && destFocused" class="border-t border-surface-divider mt-xs bg-white rounded-lg border border-slate-200 overflow-hidden shadow-lg">
+        <ul class="divide-y divide-surface-divider">
+          <li
+            v-for="(result, i) in destSuggestions"
+            :key="result.id"
+            class="p-md hover:bg-gold-50 cursor-pointer transition-colors flex items-center gap-md group animate-fade-in"
+            :style="{ animationDuration: `${0.4 + i * 0.05}s` }"
+            @mousedown.prevent="selectDest(result)"
+          >
+            <div class="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center text-secondary flex-shrink-0">
+              <Icon :name="result.icon" size="18" />
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="font-body-md text-slate-900 font-semibold truncate">{{ result.label }}</p>
+              <p class="font-label-caps text-on-primary-container truncate">{{ result.description }}</p>
+            </div>
+            <span v-if="result.source === 'saved'" class="text-[10px] bg-secondary/10 text-secondary px-xs py-0.5 rounded-full font-medium">Guardado</span>
+            <Icon name="tabler:chevron-right" size="18" class="text-outline group-hover:text-secondary transition-colors" />
+          </li>
+        </ul>
       </div>
     </div>
 
@@ -121,7 +154,11 @@ const emit = defineEmits<{
 }>()
 
 const originStationId = ref('')
+const destQuery = ref('')
 const destination = ref('')
+const destFocused = ref(false)
+const destSuggestions = ref<Array<{ id: string; label: string; description: string; source: string; icon: string; lat?: number; lng?: number }>>([])
+let destDebounce: ReturnType<typeof setTimeout> | null = null
 const date = ref('')
 const time = ref('')
 const passengers = ref(1)
@@ -153,6 +190,43 @@ interface SearchFormData {
 function selectStation(station: Station) {
   originStationId.value = station.id
   originOpen.value = false
+}
+
+function onDestFocus() {
+  destFocused.value = true
+}
+
+function onDestBlur() {
+  setTimeout(() => { destFocused.value = false }, 200)
+}
+
+function onDestInput() {
+  if (destDebounce) clearTimeout(destDebounce)
+  destDebounce = setTimeout(async () => {
+    if (destQuery.value.length < 2) {
+      destSuggestions.value = []
+      return
+    }
+    try {
+      const data = await $fetch(`/api/addresses/search?q=${encodeURIComponent(destQuery.value)}`)
+      destSuggestions.value = data as any[]
+    } catch {
+      destSuggestions.value = []
+    }
+  }, 300)
+}
+
+function selectDest(result: { id: string; label: string; description: string; lat?: number; lng?: number }) {
+  destQuery.value = result.description || result.label
+  destination.value = result.description || result.label
+  destSuggestions.value = []
+  destFocused.value = false
+}
+
+function clearDest() {
+  destQuery.value = ''
+  destination.value = ''
+  destSuggestions.value = []
 }
 
 function toggleAccessory(id: string) {

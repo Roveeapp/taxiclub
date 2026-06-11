@@ -110,11 +110,16 @@ export default <Config>{
       },
       animation: {
         'pulse-brand': 'pulse 2s ease-in-out infinite',
+        'fade-in': 'fadeInUp 0.3s ease-out forwards',
       },
       keyframes: {
         pulse: {
           '0%, 100%': { opacity: '1', transform: 'scale(1)' },
           '50%': { opacity: '0.5', transform: 'scale(1.3)' },
+        },
+        fadeInUp: {
+          '0%': { opacity: '0', transform: 'translateY(8px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
         },
       },
     },
