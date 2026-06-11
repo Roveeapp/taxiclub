@@ -53,8 +53,8 @@ export default defineEventHandler(async (event) => {
         const parts = r.display_name.split(',')
         results.push({
           id: `osm:${r.lat}:${r.lon}`,
-          label: parts[0].trim(),
-          description: parts.slice(1, 3).join(',').trim(),
+          label: parts.filter((p: string) => p.trim()).slice(0, 2).join(', ').trim(),
+          description: parts.filter((p: string) => p.trim()).slice(0, 4).join(', ').trim(),
           source: 'osm',
           icon: 'tabler:map-pin',
           lat: parseFloat(r.lat),
