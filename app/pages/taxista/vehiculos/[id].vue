@@ -36,12 +36,18 @@
         </div>
 
         <div>
-          <span class="field-label block mb-3">Extras</span>
+          <span class="field-label block mb-3">Accesorios y extras</span>
+          <div v-if="allAccessories.length === 0" class="text-sm text-gray-400">Cargando...</div>
           <div class="flex flex-wrap gap-2">
-            <AppChip v-model:active="form.hasChildSeat" icon="tabler:armchair">Silla bebé</AppChip>
-            <AppChip v-model:active="form.hasPetFriendly" icon="tabler:paw">Mascota</AppChip>
-            <AppChip v-model:active="form.isAccessible" icon="tabler:wheelchair">PMR</AppChip>
-            <AppChip v-model:active="form.isLargeVehicle" icon="tabler:car">Vehículo grande</AppChip>
+            <AppChip
+              v-for="acc in allAccessories"
+              :key="acc.id"
+              :active="form.accessoryIds.includes(acc.id)"
+              :icon="acc.icon"
+              @update:active="(val: boolean) => toggleAccessory(acc.id, val)"
+            >
+              {{ acc.name }}
+            </AppChip>
           </div>
         </div>
 
@@ -66,6 +72,7 @@ const router = useRouter()
 
 const isEdit = computed(() => route.params.id && route.params.id !== 'nuevo')
 const saving = ref(false)
+const allAccessories = ref<Array<{ id: string; name: string; icon: string }>>([])
 
 const form = reactive({
   plate: '',
@@ -80,9 +87,23 @@ const form = reactive({
   hasPetFriendly: false,
   isAccessible: false,
   isLargeVehicle: false,
+  accessoryIds: [] as string[],
 })
 
+function toggleAccessory(id: string, active: boolean) {
+  if (active) {
+    if (!form.accessoryIds.includes(id)) form.accessoryIds.push(id)
+  } else {
+    form.accessoryIds = form.accessoryIds.filter(a => a !== id)
+  }
+}
+
 onMounted(async () => {
+  try {
+    const data = await $fetch('/api/accessories')
+    allAccessories.value = data as any[]
+  } catch { /* */ }
+
   if (isEdit.value) {
     try {
       const data = await $fetch(`/api/taxista/vehiculos/${route.params.id}`)
@@ -99,6 +120,7 @@ onMounted(async () => {
       form.hasPetFriendly = v.has_pet_friendly
       form.isAccessible = v.is_accessible
       form.isLargeVehicle = v.is_large_vehicle
+      form.accessoryIds = Array.isArray(v.accessories) ? v.accessories.map((a: any) => a.id) : []
     } catch (e) {
       console.error('Error loading vehicle:', e)
     }

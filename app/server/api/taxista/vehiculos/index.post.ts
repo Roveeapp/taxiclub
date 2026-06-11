@@ -17,5 +17,15 @@ export default defineEventHandler(async (event) => {
     RETURNING *
   `
 
+  if (body.accessoryIds && Array.isArray(body.accessoryIds) && body.accessoryIds.length > 0) {
+    for (const aid of body.accessoryIds) {
+      await sql`
+        INSERT INTO vehicle_accessories (vehicle_id, accessory_id)
+        VALUES (${vehicle.id}, ${aid})
+        ON CONFLICT DO NOTHING
+      `
+    }
+  }
+
   return vehicle
 })

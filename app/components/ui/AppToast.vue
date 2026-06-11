@@ -10,15 +10,23 @@
       >
         <Icon :name="icon" size="18" />
         <span class="text-sm font-medium flex-1">{{ message }}</span>
-        <button v-if="dismissible" class="opacity-60 hover:opacity-100" @click="hide">
-          <Icon name="tabler:x" size="16" />
-        </button>
+        <Button
+          v-if="dismissible"
+          icon="tabler:x"
+          severity="secondary"
+          text
+          rounded
+          :pt="dismissPt"
+          @click="hide"
+        />
       </div>
     </div>
   </Transition>
 </template>
 
 <script setup lang="ts">
+import Button from 'primevue/button'
+
 const props = withDefaults(defineProps<{
   message: string
   type?: 'success' | 'error' | 'warning' | 'info'
@@ -50,6 +58,10 @@ const toastClass = computed(() => {
     default: return 'bg-info text-white'
   }
 })
+
+const dismissPt = {
+  root: { class: '!text-white/60 hover:!text-white !p-1 !w-7 !h-7' },
+}
 
 function show() {
   visible.value = true

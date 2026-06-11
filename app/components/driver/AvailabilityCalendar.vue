@@ -3,21 +3,25 @@
     <div class="flex items-center justify-between mb-4">
       <h3 class="text-lg font-medium text-text-on-light">Disponibilidad</h3>
       <div class="flex items-center gap-2">
-        <button
-          class="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+        <Button
+          icon="tabler:chevron-left"
+          severity="secondary"
+          text
+          rounded
+          :pt="navBtnPt"
           @click="prevMonth"
-        >
-          <Icon name="tabler:chevron-left" size="18" />
-        </button>
+        />
         <span class="text-sm font-medium text-text-on-light min-w-[120px] text-center">
           {{ monthLabel }}
         </span>
-        <button
-          class="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+        <Button
+          icon="tabler:chevron-right"
+          severity="secondary"
+          text
+          rounded
+          :pt="navBtnPt"
           @click="nextMonth"
-        >
-          <Icon name="tabler:chevron-right" size="18" />
-        </button>
+        />
       </div>
     </div>
 
@@ -53,6 +57,8 @@
 </template>
 
 <script setup lang="ts">
+import Button from 'primevue/button'
+
 interface CalendarDay {
   date: string
   day: number
@@ -146,5 +152,9 @@ function nextMonth() {
   const d = new Date(currentDate.value)
   d.setMonth(d.getMonth() + 1)
   currentDate.value = d
+}
+
+const navBtnPt = {
+  root: { class: '!p-2 !text-slate-600 hover:!bg-slate-100 !w-9 !h-9 !rounded-lg !border-none !shadow-none' },
 }
 </script>

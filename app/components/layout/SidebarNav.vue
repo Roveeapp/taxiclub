@@ -20,19 +20,23 @@
       </NuxtLink>
     </nav>
     <div class="p-4 border-t" style="border-color: var(--outline-variant)">
-      <button
-        class="flex items-center gap-3 w-full px-2 py-2 text-sm transition-colors"
-        style="color: var(--on-surface-variant)"
+      <Button
+        severity="secondary"
+        text
+        :pt="logoutPt"
+        class="w-full flex justify-start"
         @click="handleLogout"
       >
         <Icon name="tabler:logout" size="18" />
-        <span>Cerrar sesión</span>
-      </button>
+        <span class="ml-3">Cerrar sesión</span>
+      </Button>
     </div>
   </aside>
 </template>
 
 <script setup lang="ts">
+import Button from 'primevue/button'
+
 const route = useRoute()
 
 const isTaxista = computed(() => route.path.startsWith('/taxista'))
@@ -64,5 +68,9 @@ const handleLogout = async () => {
   const supabase = useSupabaseClient()
   await supabase.auth.signOut()
   navigateTo('/')
+}
+
+const logoutPt = {
+  root: { class: '!text-[var(--on-surface-variant)] !py-2 !px-2 !text-sm !font-normal !justify-start !border-none !shadow-none' },
 }
 </script>

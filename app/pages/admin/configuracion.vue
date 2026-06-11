@@ -12,23 +12,23 @@
         <div class="space-y-4">
           <div>
             <label class="field-label block mb-1">Horas mínimas de antelación</label>
-            <input
-              v-model.number="config.min_advance_hours"
-              type="number"
-              min="1"
-              max="72"
-              class="w-full bg-gray-50 rounded-input px-4 py-3 text-sm text-gray-900 border border-gray-200 focus:border-brand-gold focus:outline-none"
+            <InputNumber
+              v-model="config.min_advance_hours"
+              :min="1"
+              :max="72"
+              :pt="numberPt"
+              class="w-full"
             />
             <p class="text-xs text-gray-500 mt-1">Tiempo mínimo entre la reserva y la recogida</p>
           </div>
           <div>
             <label class="field-label block mb-1">Horas máximas para cancelar</label>
-            <input
-              v-model.number="config.max_cancel_hours_before"
-              type="number"
-              min="1"
-              max="168"
-              class="w-full bg-gray-50 rounded-input px-4 py-3 text-sm text-gray-900 border border-gray-200 focus:border-brand-gold focus:outline-none"
+            <InputNumber
+              v-model="config.max_cancel_hours_before"
+              :min="1"
+              :max="168"
+              :pt="numberPt"
+              class="w-full"
             />
             <p class="text-xs text-gray-500 mt-1">Horas antes del viaje en que se puede cancelar</p>
           </div>
@@ -40,22 +40,22 @@
         <div class="space-y-4">
           <div>
             <label class="field-label block mb-1">Comisión miembros (%)</label>
-            <input
-              v-model.number="config.commission_member_pct"
-              type="number"
-              min="0"
-              max="50"
-              class="w-full bg-gray-50 rounded-input px-4 py-3 text-sm text-gray-900 border border-gray-200 focus:border-brand-gold focus:outline-none"
+            <InputNumber
+              v-model="config.commission_member_pct"
+              :min="0"
+              :max="50"
+              :pt="numberPt"
+              class="w-full"
             />
           </div>
           <div>
             <label class="field-label block mb-1">Comisión no miembros (%)</label>
-            <input
-              v-model.number="config.commission_non_member_pct"
-              type="number"
-              min="0"
-              max="50"
-              class="w-full bg-gray-50 rounded-input px-4 py-3 text-sm text-gray-900 border border-gray-200 focus:border-brand-gold focus:outline-none"
+            <InputNumber
+              v-model="config.commission_non_member_pct"
+              :min="0"
+              :max="50"
+              :pt="numberPt"
+              class="w-full"
             />
           </div>
         </div>
@@ -65,12 +65,13 @@
         <h2 class="text-lg font-medium mb-4">Membresía</h2>
         <div>
           <label class="field-label block mb-1">Cuota mensual (€)</label>
-          <input
-            v-model.number="config.membership_monthly_fee"
-            type="number"
-            min="0"
-            step="0.01"
-            class="w-full bg-gray-50 rounded-input px-4 py-3 text-sm text-gray-900 border border-gray-200 focus:border-brand-gold focus:outline-none"
+          <InputNumber
+            v-model="config.membership_monthly_fee"
+            :min="0"
+            :min-fraction-digits="2"
+            :max-fraction-digits="2"
+            :pt="numberPt"
+            class="w-full"
           />
         </div>
       </div>
@@ -86,11 +87,17 @@
 </template>
 
 <script setup lang="ts">
+import InputNumber from 'primevue/inputnumber'
+
 definePageMeta({ layout: 'dashboard', middleware: 'auth' })
 
 const config = ref<Record<string, any>>({})
 const loading = ref(true)
 const saving = ref(false)
+
+const numberPt = {
+  input: { class: '!bg-gray-50 !rounded-lg !border !border-gray-200 !text-sm !text-gray-900 !shadow-none focus:!border-brand-gold' },
+}
 
 onMounted(async () => {
   try {

@@ -1,8 +1,8 @@
 <template>
-  <div class="bg-white rounded-xl shadow-2xl p-md space-y-md">
+  <div class="bg-white rounded-xl shadow-2xl p-4 space-y-4">
     <!-- ORIGEN -->
-    <div class="space-y-xs">
-      <label class="font-label-caps text-label-caps text-slate-500 uppercase block">Origen (Parada)</label>
+    <div class="space-y-1">
+      <label class="text-xs font-medium text-slate-500 uppercase tracking-wide block">Origen (Parada)</label>
       <Select
         v-model="originStationId"
         :options="stationOptions"
@@ -10,65 +10,90 @@
         option-value="id"
         placeholder="Seleccionar parada"
         class="w-full"
-        :pt="selectPt"
-        @change="onOriginChange"
+        variant="filled"
+        append-to="self"
       >
+        <template #value="slotProps">
+          <div class="flex items-center gap-3">
+            <Icon name="tabler:map-pin" size="18" class="text-secondary flex-shrink-0" />
+            <span :class="slotProps.value ? 'text-sm font-medium text-slate-900' : 'text-sm text-slate-400'">
+              {{ slotProps.value ? stationOptions.find(s => s.id === slotProps.value)?.name : slotProps.placeholder }}
+            </span>
+          </div>
+        </template>
+        <template #option="slotProps">
+          <div class="flex items-center gap-3">
+            <Icon name="tabler:map-pin" size="18" class="text-slate-400 flex-shrink-0" />
+            <span class="text-sm text-slate-700">{{ slotProps.option.name }}</span>
+          </div>
+        </template>
         <template #dropdownicon>
           <Icon name="tabler:chevron-down" size="18" class="text-slate-400" />
         </template>
       </Select>
     </div>
 
-    <!-- DESTINO Autocomplete -->
-    <div class="space-y-xs dest-dropdown">
-      <label class="font-label-caps text-label-caps text-slate-500 uppercase block">Destino</label>
-      <AutoComplete
-        v-model="destQuery"
-        :suggestions="destSuggestions"
-        option-label="description"
-        placeholder="Escribe una dirección..."
-        class="w-full"
-        :pt="autocompletePt"
-        @complete="onDestSearch"
-        @item-select="selectDest"
-        @focus="destFocused = true"
-        @blur="destFocused = false"
-      >
-        <template #option="{ option }">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center text-secondary flex-shrink-0">
-              <Icon :name="option.icon" size="18" />
-            </div>
-            <div class="flex-1 min-w-0">
-              <p class="font-body-md text-slate-900 font-semibold truncate">{{ option.label }}</p>
-              <p class="font-label-caps text-on-primary-container truncate">{{ option.description }}</p>
-            </div>
-            <span v-if="option.source === 'saved'" class="text-[10px] bg-secondary/10 text-secondary px-xs py-0.5 rounded-full font-medium">Guardado</span>
+    <!-- DESTINO -->
+    <div class="space-y-1">
+      <label class="text-xs font-medium text-slate-500 uppercase tracking-wide block">Destino</label>
+        <div class="relative flex items-center" style="height: 3rem;">
+          <div class="absolute left-4 z-10 pointer-events-none" style="top: 50%; transform: translateY(-50%);">
+            <Icon name="tabler:search" size="18" class="text-secondary" />
           </div>
-        </template>
-      </AutoComplete>
+        <AutoComplete
+          v-model="destQuery"
+          :suggestions="destSuggestions"
+          option-label="description"
+          placeholder="Escribe una dirección..."
+          class="w-full"
+          variant="filled"
+          append-to="self"
+          @complete="onDestSearch"
+          @item-select="selectDest"
+          @focus="destFocused = true"
+          @blur="destFocused = false"
+        >
+          <template #option="{ option }">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center text-secondary flex-shrink-0">
+                <Icon name="tabler:map-pin" size="18" />
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-semibold text-slate-900 truncate">{{ option.label }}</p>
+                <p class="text-xs text-slate-500 truncate">{{ option.description }}</p>
+              </div>
+              <span v-if="option.source === 'saved'" class="text-[10px] bg-secondary/10 text-secondary px-2 py-0.5 rounded-full font-medium">Guardado</span>
+            </div>
+          </template>
+        </AutoComplete>
+      </div>
     </div>
 
     <!-- FECHA y HORA -->
-    <div class="grid grid-cols-2 gap-sm">
-      <div class="space-y-xs">
-        <label class="font-label-caps text-label-caps text-slate-500 uppercase block">Fecha</label>
-        <DatePicker
-          v-model="date"
-          :min-date="minDateObj"
-          date-format="dd/mm/yy"
-          placeholder="Seleccionar"
-          class="w-full"
-          :pt="selectPt"
-          show-icon
-        >
-          <template #dropdownicon>
-            <Icon name="tabler:calendar" size="18" class="text-slate-400" />
-          </template>
-        </DatePicker>
+    <div class="grid grid-cols-2 gap-3">
+      <div class="space-y-1">
+        <label class="text-xs font-medium text-slate-500 uppercase tracking-wide block">Fecha</label>
+        <div class="relative flex items-center" style="height: 3rem;">
+          <div class="absolute left-4 z-10 pointer-events-none" style="top: 50%; transform: translateY(-50%);">
+            <Icon name="tabler:calendar" size="18" class="text-secondary" />
+          </div>
+          <DatePicker
+            v-model="date"
+            :min-date="minDateObj"
+            date-format="dd/mm/yy"
+            placeholder="Seleccionar"
+            class="w-full"
+            variant="filled"
+            append-to="self"
+          >
+            <template #dropdownicon>
+              <Icon name="tabler:chevron-down" size="18" class="text-secondary" />
+            </template>
+          </DatePicker>
+        </div>
       </div>
-      <div class="space-y-xs">
-        <label class="font-label-caps text-label-caps text-slate-500 uppercase block">Hora</label>
+      <div class="space-y-1">
+        <label class="text-xs font-medium text-slate-500 uppercase tracking-wide block">Hora</label>
         <Select
           v-model="time"
           :options="timeSlots"
@@ -76,35 +101,49 @@
           option-value="value"
           placeholder="Seleccionar"
           class="w-full"
-          :pt="selectPt"
+          variant="filled"
+          append-to="self"
         >
+          <template #value="slotProps">
+            <div class="flex items-center gap-3">
+              <Icon name="tabler:clock" size="18" class="text-secondary flex-shrink-0" />
+              <span class="text-sm font-medium text-slate-900">{{ slotProps.value?.label || slotProps.placeholder }}</span>
+            </div>
+          </template>
           <template #dropdownicon>
-            <Icon name="tabler:clock" size="18" class="text-slate-400" />
+            <Icon name="tabler:chevron-down" size="18" class="text-slate-400" />
           </template>
         </Select>
       </div>
     </div>
 
     <!-- PASAJEROS y EQUIPAJE -->
-    <div class="grid grid-cols-2 gap-sm">
-      <div class="space-y-xs">
-        <label class="font-label-caps text-label-caps text-slate-500 uppercase block">Pasajeros</label>
-        <Select
-          v-model="passengers"
-          :options="passengerOptions"
-          option-label="label"
-          option-value="value"
-          placeholder="1 persona"
-          class="w-full"
-          :pt="selectPt"
-        >
-          <template #dropdownicon>
-            <Icon name="tabler:users" size="18" class="text-slate-400" />
-          </template>
-        </Select>
+    <div class="grid grid-cols-2 gap-3">
+      <div class="space-y-1">
+        <label class="text-xs font-medium text-slate-500 uppercase tracking-wide block">Pasajeros</label>
+        <div class="flex items-center gap-3 bg-white border-2 border-secondary rounded-xl px-4 min-h-[3rem]">
+          <Icon name="tabler:users" size="18" class="text-secondary flex-shrink-0" />
+          <button
+            type="button"
+            class="w-8 h-8 rounded-full bg-secondary/15 text-secondary hover:bg-secondary/25 text-sm font-bold flex items-center justify-center transition-colors"
+            :disabled="passengers <= 1"
+            @click="passengers--"
+          >
+            -
+          </button>
+          <span class="text-sm font-medium text-slate-900 w-6 text-center">{{ passengers }}</span>
+          <button
+            type="button"
+            class="w-8 h-8 rounded-full bg-secondary/15 text-secondary hover:bg-secondary/25 text-sm font-bold flex items-center justify-center transition-colors"
+            :disabled="passengers >= 8"
+            @click="passengers++"
+          >
+            +
+          </button>
+        </div>
       </div>
-      <div class="space-y-xs">
-        <label class="font-label-caps text-label-caps text-slate-500 uppercase block">Equipaje</label>
+      <div class="space-y-1">
+        <label class="text-xs font-medium text-slate-500 uppercase tracking-wide block">Equipaje</label>
         <Select
           v-model="luggageBig"
           :options="luggageOptions"
@@ -112,37 +151,44 @@
           option-value="value"
           placeholder="0 maletas"
           class="w-full"
-          :pt="selectPt"
+          variant="filled"
+          append-to="self"
         >
+          <template #value="slotProps">
+            <div class="flex items-center gap-3">
+              <Icon name="tabler:luggage" size="18" class="text-secondary flex-shrink-0" />
+              <span class="text-sm font-medium text-slate-900">{{ slotProps.value?.label || slotProps.placeholder }}</span>
+            </div>
+          </template>
           <template #dropdownicon>
-            <Icon name="tabler:luggage" size="18" class="text-slate-400" />
+            <Icon name="tabler:chevron-down" size="18" class="text-slate-400" />
           </template>
         </Select>
       </div>
     </div>
 
     <!-- Accesorios -->
-    <div class="flex flex-wrap gap-xs pt-xs">
+    <div class="flex flex-wrap gap-2 pt-2">
       <button
         v-for="acc in accessories"
         :key="acc.id"
-        class="flex items-center gap-xs px-sm py-xs rounded-full border transition-all"
+        class="flex items-center gap-1.5 px-3 py-1.5 rounded-full border transition-all"
         :class="selectedAccessories.has(acc.id) ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-600 border-slate-200'"
         @click="toggleAccessory(acc.id)"
       >
         <Icon :name="acc.icon" size="14" :class="selectedAccessories.has(acc.id) ? 'text-secondary' : 'text-slate-400'" />
-        <span class="text-[12px] font-medium">{{ acc.name }}</span>
+        <span class="text-xs font-medium">{{ acc.name }}</span>
       </button>
     </div>
 
     <!-- CTA -->
-    <Button
-      :label="'Buscar Disponibilidad'"
+    <button
+      class="w-full bg-secondary text-on-secondary font-bold py-4 rounded-xl text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed"
       :disabled="!isFormValid"
-      class="w-full"
-      :pt="buttonPt"
       @click="handleSearch"
-    />
+    >
+      Buscar Disponibilidad
+    </button>
   </div>
 </template>
 
@@ -156,7 +202,6 @@ interface Accessory { id: string; name: string; icon: string }
 interface Station { id: string; name: string }
 
 const props = withDefaults(defineProps<{ stations?: Station[] }>(), { stations: () => [] })
-
 const emit = defineEmits<{ search: [data: SearchFormData] }>()
 
 const originStationId = ref('')
@@ -177,10 +222,9 @@ const selectedAccessories = ref(new Set<string>())
 const minDateObj = computed(() => new Date())
 
 const stationOptions = computed(() =>
-  props.stations.map(s => ({ name: s.name, value: s.id })),
+  props.stations.map(s => ({ name: s.name, id: s.id })),
 )
 
-const passengerOptions = Array.from({ length: 8 }, (_, i) => ({ value: i + 1, label: `${i + 1} ${i === 0 ? 'persona' : 'personas'}` }))
 const luggageOptions = Array.from({ length: 7 }, (_, i) => ({ value: i, label: i === 0 ? 'Sin equipaje' : `${i} ${i === 1 ? 'maleta' : 'maletas'}` }))
 
 const isFormValid = computed(() => !!originStationId.value && !!destQuery.value && !!time.value)
@@ -193,28 +237,6 @@ interface SearchFormData {
   passengers: number
   luggageBig: number
   accessoryIds: string[]
-}
-
-// PrimeVue passthrough styles matching Stitch design
-const selectPt = {
-  root: { class: '!bg-surface-input !rounded-lg !border-none' },
-  input: { class: '!text-slate-900 !text-xs !p-0' },
-  trigger: { class: '!text-slate-400' },
-  overlay: { class: '!bg-white !border !border-slate-200 !rounded-lg !shadow-lg !mt-1' },
-  option: { class: '!text-slate-700 !text-sm hover:!bg-slate-100' },
-  optionCheckIcon: { class: '!text-secondary' },
-  blank: { class: '!text-slate-400 !text-sm' },
-}
-
-const autocompletePt = {
-  root: { class: '!bg-surface-input !rounded-lg !border-none' },
-  input: { class: '!text-slate-900 !text-sm !p-0' },
-  overlay: { class: '!bg-white !border !border-slate-200 !rounded-lg !shadow-lg !mt-1' },
-  option: { class: '!p-0' },
-}
-
-const buttonPt = {
-  root: { class: '!bg-secondary !text-on-secondary !font-bold !py-md !rounded-xl !border-none !text-sm' },
 }
 
 const timeSlots = computed(() => {
@@ -240,8 +262,6 @@ const timeSlots = computed(() => {
   }
   return slots
 })
-
-function onOriginChange() { /* handled by v-model */ }
 
 function onDestSearch(event: { query: string }) {
   if (destDebounce) clearTimeout(destDebounce)
@@ -292,3 +312,146 @@ watch(date, () => {
   if (timeSlots.value.length > 0) time.value = timeSlots.value[0].value
 })
 </script>
+
+<style scoped>
+:deep(.p-select) {
+  border: 2px solid var(--secondary) !important;
+  border-radius: 0.75rem !important;
+  background: white !important;
+  padding: 0 !important;
+  min-height: 3rem !important;
+  display: flex !important;
+  align-items: center !important;
+}
+:deep(.p-select-label) {
+  padding: 0 0.75rem !important;
+  width: 100% !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  border-radius: 0 !important;
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+  color: #0f172a !important;
+  display: flex !important;
+  align-items: center !important;
+  min-height: 2.75rem !important;
+}
+:deep(.p-select-dropdown) {
+  background: transparent !important;
+  border: none !important;
+  width: 2.5rem !important;
+  height: 2.5rem !important;
+  color: #94a3b8 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin-right: 0.25rem !important;
+}
+:deep(.p-select-overlay) {
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 0.75rem !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+  margin-top: 0.5rem !important;
+}
+:deep(.p-select-option) {
+  padding: 0.625rem 1rem !important;
+  font-size: 0.875rem !important;
+  color: #334155 !important;
+  border-radius: 0.5rem !important;
+  margin: 0 0.5rem !important;
+  margin-bottom: 0.125rem !important;
+  cursor: pointer !important;
+}
+:deep(.p-select-option:hover) {
+  background: #fffbeb !important;
+}
+:deep(.p-select-option-selected) {
+  background: #fef3c7 !important;
+  color: #0f172a !important;
+}
+
+:deep(.p-autocomplete) {
+  border: 2px solid var(--secondary) !important;
+  border-radius: 0.75rem !important;
+  background: white !important;
+  padding: 0 !important;
+  min-height: 3rem !important;
+  display: flex !important;
+  align-items: center !important;
+}
+:deep(.p-autocomplete-input) {
+  padding: 0 0.75rem 0 2.5rem !important;
+  width: 100% !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  border-radius: 0 !important;
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+  color: #0f172a !important;
+  display: flex !important;
+  align-items: center !important;
+  min-height: 2.75rem !important;
+}
+:deep(.p-autocomplete-dropdown) {
+  background: transparent !important;
+  border: none !important;
+  width: 2.5rem !important;
+  height: 2.5rem !important;
+  color: #94a3b8 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin-right: 0.25rem !important;
+}
+:deep(.p-autocomplete-overlay) {
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 0.75rem !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+  margin-top: 0.5rem !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 100% !important;
+}
+
+:deep(.p-datepicker) {
+  border: 2px solid var(--secondary) !important;
+  border-radius: 0.75rem !important;
+  background: white !important;
+  padding: 0 !important;
+  min-height: 3rem !important;
+  display: flex !important;
+  align-items: center !important;
+}
+:deep(.p-datepicker-input) {
+  padding: 0 0.75rem 0 2.5rem !important;
+  width: 100% !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  border-radius: 0 !important;
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+  color: #0f172a !important;
+  display: flex !important;
+  align-items: center !important;
+  min-height: 2.75rem !important;
+}
+:deep(.p-datepicker-dropdown) {
+  background: transparent !important;
+  border: none !important;
+  width: 2.5rem !important;
+  height: 2.5rem !important;
+  color: #94a3b8 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  order: -1 !important;
+  margin-left: 0.5rem !important;
+  margin-right: 0 !important;
+}
+</style>

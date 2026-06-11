@@ -20,32 +20,35 @@
       <div class="grid grid-cols-2 gap-4">
         <div>
           <span class="field-label block mb-1">Disponible desde</span>
-          <input
+          <DatePicker
             v-model="form.availableFrom"
-            type="datetime-local"
-            class="w-full bg-surface-input rounded-input px-3 py-2 text-sm text-text-on-light border border-transparent focus:border-brand-gold focus:outline-none"
+            show-time
+            :show-seconds="false"
+            date-format="dd/mm/yy"
+            placeholder="Seleccionar"
+            :pt="datePt"
+            class="w-full"
+            append-to="self"
           />
         </div>
         <div>
           <span class="field-label block mb-1">Disponible hasta</span>
-          <input
+          <DatePicker
             v-model="form.availableUntil"
-            type="datetime-local"
-            class="w-full bg-surface-input rounded-input px-3 py-2 text-sm text-text-on-light border border-transparent focus:border-brand-gold focus:outline-none"
+            show-time
+            :show-seconds="false"
+            date-format="dd/mm/yy"
+            placeholder="Seleccionar"
+            :pt="datePt"
+            class="w-full"
+            append-to="self"
           />
         </div>
       </div>
 
       <div>
         <span class="field-label block mb-2">Descuento: {{ form.discountPct }}%</span>
-        <input
-          v-model.number="form.discountPct"
-          type="range"
-          min="0"
-          max="40"
-          step="5"
-          class="w-full accent-brand-gold"
-        />
+        <Slider v-model="form.discountPct" :min="0" :max="40" :step="5" :pt="sliderPt" class="w-full" />
         <div class="flex justify-between text-xs text-text-muted-light mt-1">
           <span>0%</span>
           <span>40%</span>
@@ -70,6 +73,9 @@
 </template>
 
 <script setup lang="ts">
+import DatePicker from 'primevue/datepicker'
+import Slider from 'primevue/slider'
+
 const props = defineProps<{
   stations?: Array<{ id: string; name: string }>
   initialOrigin?: string
@@ -86,8 +92,8 @@ const submitting = ref(false)
 const form = reactive({
   originAddress: props.initialOrigin || '',
   destinationStationId: props.initialDestinationStationId || '',
-  availableFrom: '',
-  availableUntil: '',
+  availableFrom: null as Date | null,
+  availableUntil: null as Date | null,
   discountPct: 0,
   maxPassengers: 4,
 })
@@ -101,6 +107,18 @@ const formattedPrice = computed(() => {
   const finalPrice = base * (1 - form.discountPct / 100)
   return `${finalPrice.toFixed(2)} €`
 })
+
+const datePt = {
+  root: { class: '!bg-surface-input !rounded-lg !border-none !shadow-none' },
+  input: { class: '!text-slate-900 !text-sm !p-0 !shadow-none' },
+  trigger: { class: '!text-slate-400' },
+}
+
+const sliderPt = {
+  root: { class: '!h-2' },
+  range: { class: '!bg-secondary' },
+  handle: { class: '!bg-secondary !border-secondary !shadow-md' },
+}
 
 async function handleSubmit() {
   submitting.value = true

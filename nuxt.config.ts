@@ -15,14 +15,7 @@ export default defineNuxtConfig({
   ],
 
   primevue: {
-    options: {
-      theme: {
-        preset: 'Aura',
-        options: {
-          darkModeSelector: '.dark',
-        },
-      },
-    },
+    importTheme: { from: '@/themes/clubtaxis' },
   },
 
   icon: {

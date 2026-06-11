@@ -19,11 +19,7 @@
       />
 
       <label class="flex items-center gap-3 cursor-pointer">
-        <input
-          v-model="form.hasSub"
-          type="checkbox"
-          class="w-5 h-5 rounded border-gray-300 text-brand-gold focus:ring-brand-gold"
-        />
+        <Checkbox v-model="form.hasSub" :binary="true" :pt="checkboxPt" />
         <span class="text-sm text-text-on-light">Gestionará el servicio un compañero</span>
       </label>
 
@@ -57,6 +53,8 @@
 </template>
 
 <script setup lang="ts">
+import Checkbox from 'primevue/checkbox'
+
 const props = defineProps<{
   defaultPlate?: string
   defaultPhone?: string
@@ -81,6 +79,11 @@ const isFormValid = computed(() => {
   if (form.hasSub && (!form.subPlate || !form.subPhone)) return false
   return true
 })
+
+const checkboxPt = {
+  root: { class: '!w-5 !h-5 !rounded !border-slate-300' },
+  input: { class: '!accent-secondary' },
+}
 
 async function handleSubmit() {
   if (!isFormValid.value) return

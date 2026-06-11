@@ -1,21 +1,22 @@
 <template>
-  <button
+  <Button
     :class="[
-      'w-full font-bold py-md rounded-xl active-scale flex items-center justify-center gap-sm transition-all',
-      variant === 'gold' && 'bg-secondary text-on-secondary',
-      variant === 'primary' && 'bg-primary-container text-white',
-      variant === 'secondary' && 'bg-white text-primary-container border border-outline-variant',
-      (disabled || loading) && 'opacity-40 cursor-not-allowed',
+      'w-full',
+      variant === 'gold' ? '!bg-secondary !text-on-secondary !border-secondary' : '',
+      variant === 'secondary' ? '!bg-white !text-primary-container !border-outline-variant' : '',
     ]"
     :disabled="disabled || loading"
+    :loading="loading"
+    :pt="buttonPt"
     @click="$emit('click', $event)"
   >
-    <span v-if="loading" class="inline-block w-5 h-5 border-2 border-current/30 border-t-current rounded-full animate-spin mr-2" />
     <slot />
-  </button>
+  </Button>
 </template>
 
 <script setup lang="ts">
+import Button from 'primevue/button'
+
 withDefaults(defineProps<{
   variant?: 'primary' | 'secondary' | 'gold'
   disabled?: boolean
@@ -27,4 +28,8 @@ withDefaults(defineProps<{
 defineEmits<{
   click: [event: MouseEvent]
 }>()
+
+const buttonPt = {
+  root: { class: '!rounded-xl !py-3 !font-bold !text-sm' },
+}
 </script>

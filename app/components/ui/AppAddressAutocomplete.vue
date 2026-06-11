@@ -9,18 +9,21 @@
 
     <Transition name="dropdown">
       <div v-if="results.length > 0 && showResults" class="absolute z-50 w-full mt-1 bg-white rounded-input border border-gray-200 shadow-lg overflow-hidden max-h-60 overflow-y-auto">
-        <button
+        <Button
           v-for="(result, index) in results"
           :key="index"
-          class="w-full flex items-start gap-3 px-4 py-3 text-left hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-0"
+          :pt="suggestionPt"
+          class="w-full flex justify-start"
           @click="selectResult(result)"
         >
-          <Icon name="tabler:map-pin" size="16" class="text-brand-gold mt-0.5 flex-shrink-0" />
-          <div class="min-w-0">
-            <p class="text-sm text-gray-900 truncate">{{ result.display_name.split(',')[0] }}</p>
-            <p class="text-xs text-gray-500 truncate">{{ result.display_name.split(',').slice(1).join(',').trim() }}</p>
+          <div class="flex items-start gap-3">
+            <Icon name="tabler:map-pin" size="16" class="text-brand-gold mt-0.5 flex-shrink-0" />
+            <div class="min-w-0 text-left">
+              <p class="text-sm text-gray-900 truncate">{{ result.display_name.split(',')[0] }}</p>
+              <p class="text-xs text-gray-500 truncate">{{ result.display_name.split(',').slice(1).join(',').trim() }}</p>
+            </div>
           </div>
-        </button>
+        </Button>
       </div>
     </Transition>
 
@@ -32,6 +35,7 @@
 </template>
 
 <script setup lang="ts">
+import Button from 'primevue/button'
 import type { GeocodingResult } from '~/composables/useGeocoding'
 
 const props = withDefaults(defineProps<{
@@ -61,6 +65,11 @@ const shortAddress = computed(() => {
   const parts = selected.value.display_name.split(',')
   return parts.slice(0, 2).join(',').trim()
 })
+
+const suggestionPt = {
+  root: { class: '!bg-transparent !border-0 !rounded-none !text-left !shadow-none !p-0 !justify-start hover:!bg-gray-50' },
+  label: { class: 'flex items-start gap-3 px-4 py-3 w-full' },
+}
 
 function handleInput() {
   emit('update:modelValue', query.value)

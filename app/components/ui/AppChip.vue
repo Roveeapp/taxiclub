@@ -1,21 +1,19 @@
 <template>
-  <button
-    :class="[
-      'flex items-center gap-xs px-md py-xs rounded-full whitespace-nowrap active-scale transition-all',
-      active
-        ? 'bg-primary-container text-white border-none'
-        : 'bg-surface-container-high border border-outline-variant text-on-surface',
-    ]"
-    @click="$emit('update:active', !active)"
+  <ToggleButton
+    :model-value="active"
+    :pt="chipPt"
+    @update:model-value="$emit('update:active', $event)"
   >
     <Icon v-if="icon" :name="icon" size="18" class="text-secondary" />
-    <span class="font-label-caps text-label-caps">
+    <span class="text-xs font-medium">
       <slot />
     </span>
-  </button>
+  </ToggleButton>
 </template>
 
 <script setup lang="ts">
+import ToggleButton from 'primevue/togglebutton'
+
 defineProps<{
   active?: boolean
   icon?: string
@@ -24,4 +22,11 @@ defineProps<{
 defineEmits<{
   'update:active': [value: boolean]
 }>()
+
+const chipPt = {
+  root: { class: '!rounded-full !px-3 !py-1.5 !text-xs !font-medium !border !border-slate-200 !bg-white !text-slate-600 hover:!bg-slate-100' },
+  box: ({ props }: any) => ({
+    class: props.modelValue ? '!bg-primary-container !text-white !border-primary-container' : '',
+  }),
+}
 </script>

@@ -40,10 +40,11 @@
     </div>
 
     <div v-if="hasExtras" class="flex flex-wrap gap-1 mt-3">
-      <span v-if="vehicle.hasChildSeat" class="text-[10px] bg-gold-50 text-gold-800 px-2 py-0.5 rounded-full">Silla bebé</span>
-      <span v-if="vehicle.hasPetFriendly" class="text-[10px] bg-gold-50 text-gold-800 px-2 py-0.5 rounded-full">Mascota</span>
-      <span v-if="vehicle.isAccessible" class="text-[10px] bg-gold-50 text-gold-800 px-2 py-0.5 rounded-full">PMR</span>
-      <span v-if="vehicle.isLargeVehicle" class="text-[10px] bg-gold-50 text-gold-800 px-2 py-0.5 rounded-full">Grande</span>
+      <span v-for="acc in vehicle.accessories" :key="acc.id" class="text-[10px] bg-gold-50 text-gold-800 px-2 py-0.5 rounded-full">{{ acc.name }}</span>
+      <span v-if="vehicle.hasChildSeat && !hasAccessory('Silla Bebé')" class="text-[10px] bg-gold-50 text-gold-800 px-2 py-0.5 rounded-full">Silla bebé</span>
+      <span v-if="vehicle.hasPetFriendly && !hasAccessory('Mascotas')" class="text-[10px] bg-gold-50 text-gold-800 px-2 py-0.5 rounded-full">Mascota</span>
+      <span v-if="vehicle.isAccessible && !hasAccessory('Accesible PMR')" class="text-[10px] bg-gold-50 text-gold-800 px-2 py-0.5 rounded-full">PMR</span>
+      <span v-if="vehicle.isLargeVehicle && !hasAccessory('Vehículo Grande')" class="text-[10px] bg-gold-50 text-gold-800 px-2 py-0.5 rounded-full">Grande</span>
     </div>
 
     <div class="flex gap-2 mt-3 pt-3 border-t border-surface-divider">
@@ -74,6 +75,11 @@ defineEmits<{
 
 const hasExtras = computed(() =>
   props.vehicle.hasChildSeat || props.vehicle.hasPetFriendly ||
-  props.vehicle.isAccessible || props.vehicle.isLargeVehicle,
+  props.vehicle.isAccessible || props.vehicle.isLargeVehicle ||
+  (Array.isArray(props.vehicle.accessories) && props.vehicle.accessories.length > 0),
 )
+
+function hasAccessory(name: string) {
+  return Array.isArray(props.vehicle.accessories) && props.vehicle.accessories.some((a: any) => a.name === name)
+}
 </script>

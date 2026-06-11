@@ -21,5 +21,18 @@ export default defineEventHandler(async (event) => {
     WHERE id = ${id} AND driver_id = ${user.id}
   `
 
+  if (body.accessoryIds !== undefined) {
+    await sql`DELETE FROM vehicle_accessories WHERE vehicle_id = ${id}`
+    if (Array.isArray(body.accessoryIds) && body.accessoryIds.length > 0) {
+      for (const aid of body.accessoryIds) {
+        await sql`
+          INSERT INTO vehicle_accessories (vehicle_id, accessory_id)
+          VALUES (${id}, ${aid})
+          ON CONFLICT DO NOTHING
+        `
+      }
+    }
+  }
+
   return { success: true }
 })

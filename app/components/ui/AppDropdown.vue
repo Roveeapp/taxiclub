@@ -1,45 +1,34 @@
 <template>
-  <div class="relative">
-    <button
-      class="w-full flex items-center gap-3 bg-surface-input rounded-input px-4 py-3 text-left"
-      @click="isOpen = !isOpen"
-    >
-      <div class="icon-wrap-dark">
-        <Icon :name="icon" size="16" class="text-brand-gold" />
+  <Select
+    :model-value="modelValue"
+    :options="options"
+    option-label="label"
+    option-value="value"
+    :placeholder="placeholder"
+    :pt="selectPt"
+    class="w-full"
+    append-to="self"
+    @update:model-value="$emit('update:modelValue', $event)"
+  >
+    <template #value="slotProps">
+      <div v-if="slotProps.value" class="flex items-center gap-2">
+        <Icon v-if="icon" :name="icon" size="16" class="text-brand-gold" />
+        <span>{{ selectedLabel }}</span>
       </div>
-      <div class="flex-1 min-w-0">
-        <span class="field-label block">{{ label }}</span>
-        <span class="text-sm text-text-on-light truncate block">
-          {{ selectedLabel || placeholder }}
-        </span>
+      <span v-else class="text-slate-400">{{ placeholder }}</span>
+    </template>
+    <template #option="slotProps">
+      <div class="flex items-center gap-2">
+        <Icon v-if="slotProps.option.icon" :name="slotProps.option.icon" size="16" />
+        <span>{{ slotProps.option.label }}</span>
       </div>
-      <Icon
-        name="tabler:chevron-down"
-        size="16"
-        class="text-gray-400 transition-transform"
-        :class="{ 'rotate-180': isOpen }"
-      />
-    </button>
-
-    <Transition name="dropdown">
-      <div v-if="isOpen" class="mt-2 bg-white rounded-input border border-gray-200 overflow-hidden shadow-lg">
-        <button
-          v-for="option in options"
-          :key="option.value"
-          class="w-full flex items-center gap-3 px-4 py-3 text-sm text-left hover:bg-gray-50 transition-colors"
-          :class="{ 'bg-gold-50 text-brand-gold': option.value === modelValue }"
-          @click="select(option)"
-        >
-          <Icon v-if="option.icon" :name="option.icon" size="16" />
-          <span>{{ option.label }}</span>
-          <Icon v-if="option.value === modelValue" name="tabler:check" size="16" class="ml-auto text-brand-gold" />
-        </button>
-      </div>
-    </Transition>
-  </div>
+    </template>
+  </Select>
 </template>
 
 <script setup lang="ts">
+import Select from 'primevue/select'
+
 interface Option {
   value: string
   label: string
@@ -49,51 +38,32 @@ interface Option {
 const props = defineProps<{
   modelValue: string
   options: Option[]
-  label: string
+  label?: string
   placeholder?: string
   icon?: string
 }>()
 
-const emit = defineEmits<{
+defineEmits<{
   'update:modelValue': [value: string]
 }>()
-
-const isOpen = ref(false)
 
 const selectedLabel = computed(() => {
   const option = props.options.find(o => o.value === props.modelValue)
   return option?.label
 })
 
-function select(option: Option) {
-  emit('update:modelValue', option.value)
-  isOpen.value = false
+const selectPt = {
+  root: { class: 'w-full !bg-white !border-2 !border-secondary !rounded-xl !shadow-sm !flex !items-center !p-0' },
+  input: { 
+    class: '!text-sm !font-medium !text-slate-900 !flex-1 !min-w-0 !p-3 !px-4 !m-0', 
+    style: 'width: 100%; background: transparent; border: none; box-shadow: none; outline: none; border-radius: 0; appearance: none;' 
+  },
+  trigger: { class: '!w-8 !h-8 !text-slate-400 hover:!text-slate-600 !ml-2 !flex-shrink-0' },
+  overlay: { class: '!bg-slate-50 !border !border-slate-200 !rounded-xl !shadow-lg !mt-2 !overflow-hidden' },
+  list: { class: '!py-2' },
+  option: { class: '!px-4 !py-2.5 !text-slate-700 !text-sm hover:!bg-amber-50 !rounded-lg !mx-2 !mb-0.5 !cursor-pointer' },
+  optionSelected: { class: '!bg-amber-100 !text-slate-900' },
+  optionCheckIcon: { class: '!text-brand-gold !w-4 !h-4 !ml-auto' },
+  focusRing: { class: '!ring-0 !ring-offset-0' },
 }
-
-function handleClickOutside(e: MouseEvent) {
-  const target = e.target as HTMLElement
-  if (!target.closest('.relative')) {
-    isOpen.value = false
-  }
-}
-
-onMounted(() => {
-  document.addEventListener('click', handleClickOutside)
-})
-
-onUnmounted(() => {
-  document.removeEventListener('click', handleClickOutside)
-})
 </script>
-
-<style scoped>
-.dropdown-enter-active,
-.dropdown-leave-active {
-  transition: all 200ms ease-out;
-}
-.dropdown-enter-from,
-.dropdown-leave-to {
-  opacity: 0;
-  transform: translateY(-8px);
-}
-</style>

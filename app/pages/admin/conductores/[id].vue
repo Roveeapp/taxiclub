@@ -47,28 +47,22 @@
         <div class="space-y-4">
           <label class="flex items-center justify-between cursor-pointer">
             <span class="text-sm text-gray-700">Miembro del club</span>
-            <input
+            <ToggleSwitch
               v-model="driver.is_member"
-              type="checkbox"
-              class="w-5 h-5 rounded border-gray-300 text-brand-gold focus:ring-brand-gold"
               @change="handleUpdate('isMember', driver.is_member)"
             />
           </label>
           <label class="flex items-center justify-between cursor-pointer">
             <span class="text-sm text-gray-700">Exento de cuota</span>
-            <input
+            <ToggleSwitch
               v-model="driver.is_exempt"
-              type="checkbox"
-              class="w-5 h-5 rounded border-gray-300 text-brand-gold focus:ring-brand-gold"
               @change="handleUpdate('isExempt', driver.is_exempt)"
             />
           </label>
           <label class="flex items-center justify-between cursor-pointer">
             <span class="text-sm text-gray-700">Activo</span>
-            <input
+            <ToggleSwitch
               v-model="driver.is_active"
-              type="checkbox"
-              class="w-5 h-5 rounded border-gray-300 text-brand-gold focus:ring-brand-gold"
               @change="handleUpdate('isActive', driver.is_active)"
             />
           </label>
@@ -79,6 +73,8 @@
 </template>
 
 <script setup lang="ts">
+import ToggleSwitch from 'primevue/toggleswitch'
+
 definePageMeta({ layout: 'dashboard', middleware: 'auth' })
 
 const route = useRoute()
