@@ -1,14 +1,12 @@
 export default defineEventHandler(async (event) => {
   requireRole(event, 'admin')
-  const sql = useSql()
+  const db = useDb()
 
-  const drivers = await sql`
-    SELECT d.*, u.email, u.full_name, u.phone,
-           (SELECT COUNT(*) FROM vehicles v WHERE v.driver_id = d.id AND v.is_active = TRUE) as vehicle_count
-    FROM drivers d
-    JOIN users u ON u.id = d.id
-    ORDER BY d.created_at DESC
-  `
+  const { data: drivers, error } = await db.rpc('get_admin_drivers')
 
-  return drivers
+  if (error) {
+    throw createError({ statusCode: 500, message: error.message })
+  }
+
+  return drivers || []
 })

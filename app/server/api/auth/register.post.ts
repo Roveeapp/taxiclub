@@ -5,7 +5,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, message: 'Email and password required' })
   }
 
-  const supabase = useSupabaseAdmin()
+  const supabase = useDb()
   const { data, error } = await supabase.auth.admin.createUser({
     email: body.email,
     password: body.password,
@@ -20,18 +20,29 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, message: error.message })
   }
 
-  const sql = useSql()
+  const db = useDb()
 
-  await sql`
-    INSERT INTO users (id, email, full_name, role)
-    VALUES (${data.user.id}, ${body.email}, ${body.fullName || null}, ${body.role || 'client'})
-  `
+  const { error: userError } = await db.from('users').insert({
+    id: data.user.id,
+    email: body.email,
+    full_name: body.fullName || null,
+    role: body.role || 'client',
+  })
+
+  if (userError) {
+    throw createError({ statusCode: 500, message: userError.message })
+  }
 
   if (body.role === 'driver') {
-    await sql`
-      INSERT INTO drivers (id, license_number, license_city)
-      VALUES (${data.user.id}, ${body.licenseNumber || 'PENDING'}, ${body.licenseCity || 'PENDING'})
-    `
+    const { error: driverError } = await db.from('drivers').insert({
+      id: data.user.id,
+      license_number: body.licenseNumber || 'PENDING',
+      license_city: body.licenseCity || 'PENDING',
+    })
+
+    if (driverError) {
+      throw createError({ statusCode: 500, message: driverError.message })
+    }
   }
 
   return { id: data.user.id, email: data.user.email }

@@ -1,7 +1,7 @@
 export default defineEventHandler(async (event) => {
   const user = requireAuth(event)
   const body = await readBody(event)
-  const sql = useSql()
+  const db = useDb()
 
   if (body.dateFrom && body.dateTo) {
     const start = new Date(body.dateFrom)
@@ -11,25 +11,36 @@ export default defineEventHandler(async (event) => {
       dates.push(d.toISOString().split('T')[0])
     }
 
-    for (const date of dates) {
-      await sql`
-        INSERT INTO driver_availability (driver_id, date, is_available, hour_from, hour_to)
-        VALUES (${user.id}, ${date}, ${body.isAvailable}, ${body.hourFrom || null}, ${body.hourTo || null})
-        ON CONFLICT (driver_id, date) DO UPDATE SET
-          is_available = ${body.isAvailable},
-          hour_from = ${body.hourFrom || null},
-          hour_to = ${body.hourTo || null}
-      `
+    const upserts = dates.map((date) => ({
+      driver_id: user.id,
+      date,
+      is_available: body.isAvailable,
+      hour_from: body.hourFrom || null,
+      hour_to: body.hourTo || null,
+    }))
+
+    const { error } = await db.from('driver_availability').upsert(upserts, {
+      onConflict: 'driver_id,date',
+    })
+
+    if (error) {
+      throw createError({ statusCode: 500, message: error.message })
     }
   } else if (body.date) {
-    await sql`
-      INSERT INTO driver_availability (driver_id, date, is_available, hour_from, hour_to)
-      VALUES (${user.id}, ${body.date}, ${body.isAvailable}, ${body.hourFrom || null}, ${body.hourTo || null})
-      ON CONFLICT (driver_id, date) DO UPDATE SET
-        is_available = ${body.isAvailable},
-        hour_from = ${body.hourFrom || null},
-        hour_to = ${body.hourTo || null}
-    `
+    const { error } = await db.from('driver_availability').upsert(
+      {
+        driver_id: user.id,
+        date: body.date,
+        is_available: body.isAvailable,
+        hour_from: body.hourFrom || null,
+        hour_to: body.hourTo || null,
+      },
+      { onConflict: 'driver_id,date' },
+    )
+
+    if (error) {
+      throw createError({ statusCode: 500, message: error.message })
+    }
   }
 
   return { success: true }

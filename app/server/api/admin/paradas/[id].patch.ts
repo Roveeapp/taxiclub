@@ -2,18 +2,24 @@ export default defineEventHandler(async (event) => {
   requireRole(event, 'admin')
   const id = getRouterParam(event, 'id')
   const body = await readBody(event)
-  const sql = useSql()
+  const db = useDb()
 
-  await sql`
-    UPDATE stations SET
-      name = COALESCE(${body.name}, name),
-      city = COALESCE(${body.city}, city),
-      address = COALESCE(${body.address}, address),
-      lat = COALESCE(${body.lat}, lat),
-      lng = COALESCE(${body.lng}, lng),
-      is_active = COALESCE(${body.isActive}, is_active)
-    WHERE id = ${id}
-  `
+  const updateData: Record<string, any> = {}
+  if (body.name !== undefined) updateData.name = body.name
+  if (body.city !== undefined) updateData.city = body.city
+  if (body.address !== undefined) updateData.address = body.address
+  if (body.lat !== undefined) updateData.lat = body.lat
+  if (body.lng !== undefined) updateData.lng = body.lng
+  if (body.isActive !== undefined) updateData.is_active = body.isActive
+
+  const { error } = await db
+    .from('stations')
+    .update(updateData)
+    .eq('id', id)
+
+  if (error) {
+    throw createError({ statusCode: 500, message: error.message })
+  }
 
   return { success: true }
 })

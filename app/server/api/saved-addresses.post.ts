@@ -1,12 +1,24 @@
 export default defineEventHandler(async (event) => {
   const user = requireAuth(event)
   const body = await readBody(event)
-  const sql = useSql()
+  const db = useDb()
 
-  const [address] = await sql`
-    INSERT INTO saved_addresses (user_id, label, address, lat, lng, is_favorite)
-    VALUES (${user.id}, ${body.label}, ${body.address}, ${body.lat || null}, ${body.lng || null}, ${body.is_favorite || false})
-    RETURNING id, label, address, lat, lng, is_favorite
-  `
+  const { data: address, error } = await db
+    .from('saved_addresses')
+    .insert({
+      user_id: user.id,
+      label: body.label,
+      address: body.address,
+      lat: body.lat || null,
+      lng: body.lng || null,
+      is_favorite: body.is_favorite || false,
+    })
+    .select('id, label, address, lat, lng, is_favorite')
+    .single()
+
+  if (error) {
+    throw createError({ statusCode: 500, message: error.message })
+  }
+
   return address
 })

@@ -1,25 +1,26 @@
 export default defineEventHandler(async (event) => {
   requireRole(event, 'admin')
-  const sql = useSql()
+  const db = useDb()
 
   const today = new Date().toISOString().split('T')[0]
-  const monthStart = new Date()
-  monthStart.setDate(1)
 
-  const [bookingsToday] = await sql`
-    SELECT COUNT(*) as count FROM bookings WHERE created_at::date = ${today}
-  `
-  const [activeDrivers] = await sql`
-    SELECT COUNT(*) as count FROM drivers WHERE is_active = TRUE
-  `
-  const [activeOffers] = await sql`
-    SELECT COUNT(*) as count FROM return_offers WHERE status = 'active'
-  `
+  const { data: metrics, error } = await db
+    .rpc('get_metrics', { p_today: today })
 
+  if (error || !metrics || metrics.length === 0) {
+    return {
+      bookingsToday: 0,
+      activeDrivers: 0,
+      monthlyRevenue: 0,
+      activeOffers: 0,
+    }
+  }
+
+  const m = metrics[0]
   return {
-    bookingsToday: Number(bookingsToday?.count || 0),
-    activeDrivers: Number(activeDrivers?.count || 0),
+    bookingsToday: Number(m.bookings_today || 0),
+    activeDrivers: Number(m.active_drivers || 0),
     monthlyRevenue: 0,
-    activeOffers: Number(activeOffers?.count || 0),
+    activeOffers: Number(m.active_offers || 0),
   }
 })

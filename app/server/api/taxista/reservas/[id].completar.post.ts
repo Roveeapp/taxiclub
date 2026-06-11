@@ -1,26 +1,37 @@
 export default defineEventHandler(async (event) => {
   const user = requireAuth(event)
   const id = getRouterParam(event, 'id')
-  const sql = useSql()
+  const db = useDb()
 
-  const assignment = await sql`
-    SELECT * FROM booking_assignments WHERE booking_id = ${id} AND driver_id = ${user.id}
-  `
+  const { data: assignment, error: findError } = await db
+    .from('booking_assignments')
+    .select('*')
+    .eq('booking_id', id)
+    .eq('driver_id', user.id)
+    .single()
 
-  if (assignment.length === 0) {
+  if (findError || !assignment) {
     throw createError({ statusCode: 404, message: 'Assignment not found' })
   }
 
-  await sql`
-    UPDATE bookings SET status = 'completed', updated_at = NOW() WHERE id = ${id}
-  `
+  const { error: updateError } = await db
+    .from('bookings')
+    .update({ status: 'completed', updated_at: new Date().toISOString() })
+    .eq('id', id)
 
-  const booking = await sql`SELECT * FROM bookings WHERE id = ${id}`
-  const b = booking[0] as any
+  if (updateError) {
+    throw createError({ statusCode: 500, message: updateError.message })
+  }
 
-  if (b.stripe_payment_intent_id) {
+  const { data: booking } = await db
+    .from('bookings')
+    .select('stripe_payment_intent_id')
+    .eq('id', id)
+    .single()
+
+  if (booking?.stripe_payment_intent_id) {
     const stripe = useStripe()
-    await stripe.paymentIntents.capture(b.stripe_payment_intent_id)
+    await stripe.paymentIntents.capture(booking.stripe_payment_intent_id)
   }
 
   return { success: true }

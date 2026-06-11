@@ -1,12 +1,17 @@
 export default defineEventHandler(async (event) => {
   const user = requireAuth(event)
   const id = getRouterParam(event, 'id')
-  const sql = useSql()
+  const db = useDb()
 
-  await sql`
-    UPDATE return_offers SET status = 'cancelled'
-    WHERE id = ${id} AND driver_id = ${user.id}
-  `
+  const { error } = await db
+    .from('return_offers')
+    .update({ status: 'cancelled' })
+    .eq('id', id)
+    .eq('driver_id', user.id)
+
+  if (error) {
+    throw createError({ statusCode: 500, message: error.message })
+  }
 
   return { success: true }
 })

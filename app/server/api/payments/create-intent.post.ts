@@ -19,14 +19,14 @@ export default defineEventHandler(async (event) => {
 })
 
 async function calculateRoutePrice(originId: string, destinationId: string): Promise<number> {
-  const sql = useSql()
-  const prices = await sql`
-    SELECT base_price FROM route_prices
-    WHERE origin_station_id = ${originId}
-      AND (destination_station_id = ${destinationId} OR destination_station_id IS NULL)
-    LIMIT 1
-  `
-  if (prices.length > 0) {
+  const db = useDb()
+  const { data: prices } = await db
+    .rpc('get_route_price', {
+      p_origin_id: originId,
+      p_destination_id: destinationId,
+    })
+
+  if (prices && prices.length > 0 && prices[0].base_price !== null) {
     return Number(prices[0].base_price)
   }
   return 25

@@ -1,13 +1,23 @@
 export default defineEventHandler(async (event) => {
   requireRole(event, 'admin')
   const body = await readBody(event)
-  const sql = useSql()
+  const db = useDb()
 
-  const [station] = await sql`
-    INSERT INTO stations (name, city, address, lat, lng)
-    VALUES (${body.name}, ${body.city}, ${body.address || null}, ${body.lat || null}, ${body.lng || null})
-    RETURNING *
-  `
+  const { data: station, error } = await db
+    .from('stations')
+    .insert({
+      name: body.name,
+      city: body.city,
+      address: body.address || null,
+      lat: body.lat || null,
+      lng: body.lng || null,
+    })
+    .select()
+    .single()
+
+  if (error) {
+    throw createError({ statusCode: 500, message: error.message })
+  }
 
   return station
 })

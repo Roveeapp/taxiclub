@@ -113,14 +113,12 @@ export async function sendSMS(to: string, message: string) {
 }
 
 export async function notifyDriver(driverId: string, booking: any) {
-  const sql = useSql()
-  const driver = await sql`
-    SELECT d.*, u.email, u.full_name, u.phone
-    FROM drivers d JOIN users u ON u.id = d.id
-    WHERE d.id = ${driverId}
-  `
+  const db = useDb()
+  const { data: driver } = await db.rpc('notify_driver_data', {
+    p_driver_id: driverId,
+  })
 
-  if (driver.length === 0) return
+  if (!driver || driver.length === 0) return
   const d = driver[0] as any
 
   const config = useRuntimeConfig()
@@ -139,16 +137,12 @@ export async function notifyDriver(driverId: string, booking: any) {
 }
 
 export async function notifyClientConfirmed(bookingId: string) {
-  const sql = useSql()
-  const data = await sql`
-    SELECT b.*, u.email, ba.confirmed_plate, ba.confirmed_phone
-    FROM bookings b
-    JOIN users u ON u.id = b.client_id
-    JOIN booking_assignments ba ON ba.booking_id = b.id
-    WHERE b.id = ${bookingId}
-  `
+  const db = useDb()
+  const { data } = await db.rpc('notify_client_confirmed_data', {
+    p_booking_id: bookingId,
+  })
 
-  if (data.length === 0) return
+  if (!data || data.length === 0) return
   const row = data[0] as any
 
   const config = useRuntimeConfig()
@@ -162,14 +156,12 @@ export async function notifyClientConfirmed(bookingId: string) {
 }
 
 export async function notifyClientCancelled(bookingId: string, reason: string) {
-  const sql = useSql()
-  const data = await sql`
-    SELECT u.email FROM bookings b
-    JOIN users u ON u.id = b.client_id
-    WHERE b.id = ${bookingId}
-  `
+  const db = useDb()
+  const { data } = await db.rpc('notify_client_cancelled_data', {
+    p_booking_id: bookingId,
+  })
 
-  if (data.length === 0) return
+  if (!data || data.length === 0) return
   const row = data[0] as any
 
   await sendEmail(row.email, 'Reserva cancelada', 'booking-cancelled', { reason })

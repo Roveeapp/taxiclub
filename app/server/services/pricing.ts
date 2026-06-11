@@ -1,8 +1,8 @@
 export async function getSystemConfig(): Promise<Record<string, any>> {
-  const sql = useSql()
-  const rows = await sql`SELECT key, value FROM system_config`
+  const db = useDb()
+  const { data: rows } = await db.from('system_config').select('key, value')
   const config: Record<string, any> = {}
-  for (const row of rows) {
+  for (const row of rows || []) {
     config[row.key as string] = row.value
   }
   return config

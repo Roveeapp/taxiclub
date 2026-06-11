@@ -2,22 +2,34 @@ export default defineEventHandler(async (event) => {
   requireRole(event, 'admin')
   const id = getRouterParam(event, 'id')
   const body = await readBody(event)
-  const sql = useSql()
+  const db = useDb()
 
   const user = requireAuth(event)
 
-  await sql`
-    UPDATE bookings SET status = 'cancelled', cancelled_at = NOW(), cancelled_by = ${user.id},
-    cancellation_reason = ${body.reason || 'Cancelled by admin'}, updated_at = NOW()
-    WHERE id = ${id}
-  `
+  const { error: updateError } = await db
+    .from('bookings')
+    .update({
+      status: 'cancelled',
+      cancelled_at: new Date().toISOString(),
+      cancelled_by: user.id,
+      cancellation_reason: body.reason || 'Cancelled by admin',
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', id)
 
-  const booking = await sql`SELECT stripe_payment_intent_id FROM bookings WHERE id = ${id}`
-  const b = booking[0] as any
+  if (updateError) {
+    throw createError({ statusCode: 500, message: updateError.message })
+  }
 
-  if (b?.stripe_payment_intent_id) {
+  const { data: booking } = await db
+    .from('bookings')
+    .select('stripe_payment_intent_id')
+    .eq('id', id)
+    .single()
+
+  if (booking?.stripe_payment_intent_id) {
     const stripe = useStripe()
-    await stripe.paymentIntents.cancel(b.stripe_payment_intent_id)
+    await stripe.paymentIntents.cancel(booking.stripe_payment_intent_id)
   }
 
   return { success: true }

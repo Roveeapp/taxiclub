@@ -1,14 +1,14 @@
 export default defineEventHandler(async (event) => {
   const user = requireAuth(event)
-  const sql = useSql()
+  const db = useDb()
 
-  const stations = await sql`
-    SELECT s.*, ds.joined_at, ds.is_active
-    FROM driver_stations ds
-    JOIN stations s ON s.id = ds.station_id
-    WHERE ds.driver_id = ${user.id}
-    ORDER BY s.name
-  `
+  const { data: stations, error } = await db.rpc('get_driver_stations', {
+    p_driver_id: user.id,
+  })
 
-  return stations
+  if (error) {
+    throw createError({ statusCode: 500, message: error.message })
+  }
+
+  return stations || []
 })

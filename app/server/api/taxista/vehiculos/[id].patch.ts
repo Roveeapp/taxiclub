@@ -2,34 +2,53 @@ export default defineEventHandler(async (event) => {
   const user = requireAuth(event)
   const id = getRouterParam(event, 'id')
   const body = await readBody(event)
-  const sql = useSql()
+  const db = useDb()
 
-  await sql`
-    UPDATE vehicles SET
-      plate = COALESCE(${body.plate}, plate),
-      brand = COALESCE(${body.brand}, brand),
-      model = COALESCE(${body.model}, model),
-      year = COALESCE(${body.year}, year),
-      color = COALESCE(${body.color}, color),
-      max_passengers = COALESCE(${body.maxPassengers}, max_passengers),
-      max_luggage_big = COALESCE(${body.maxLuggageBig}, max_luggage_big),
-      max_luggage_hand = COALESCE(${body.maxLuggageHand}, max_luggage_hand),
-      has_child_seat = COALESCE(${body.hasChildSeat}, has_child_seat),
-      has_pet_friendly = COALESCE(${body.hasPetFriendly}, has_pet_friendly),
-      is_accessible = COALESCE(${body.isAccessible}, is_accessible),
-      is_large_vehicle = COALESCE(${body.isLargeVehicle}, is_large_vehicle)
-    WHERE id = ${id} AND driver_id = ${user.id}
-  `
+  const updateData: Record<string, any> = {}
+  if (body.plate !== undefined) updateData.plate = body.plate
+  if (body.brand !== undefined) updateData.brand = body.brand
+  if (body.model !== undefined) updateData.model = body.model
+  if (body.year !== undefined) updateData.year = body.year
+  if (body.color !== undefined) updateData.color = body.color
+  if (body.maxPassengers !== undefined) updateData.max_passengers = body.maxPassengers
+  if (body.maxLuggageBig !== undefined) updateData.max_luggage_big = body.maxLuggageBig
+  if (body.maxLuggageHand !== undefined) updateData.max_luggage_hand = body.maxLuggageHand
+  if (body.hasChildSeat !== undefined) updateData.has_child_seat = body.hasChildSeat
+  if (body.hasPetFriendly !== undefined) updateData.has_pet_friendly = body.hasPetFriendly
+  if (body.isAccessible !== undefined) updateData.is_accessible = body.isAccessible
+  if (body.isLargeVehicle !== undefined) updateData.is_large_vehicle = body.isLargeVehicle
+
+  const { error: updateError } = await db
+    .from('vehicles')
+    .update(updateData)
+    .eq('id', id)
+    .eq('driver_id', user.id)
+
+  if (updateError) {
+    throw createError({ statusCode: 500, message: updateError.message })
+  }
 
   if (body.accessoryIds !== undefined) {
-    await sql`DELETE FROM vehicle_accessories WHERE vehicle_id = ${id}`
+    const { error: deleteError } = await db
+      .from('vehicle_accessories')
+      .delete()
+      .eq('vehicle_id', id)
+
+    if (deleteError) {
+      throw createError({ statusCode: 500, message: deleteError.message })
+    }
+
     if (Array.isArray(body.accessoryIds) && body.accessoryIds.length > 0) {
-      for (const aid of body.accessoryIds) {
-        await sql`
-          INSERT INTO vehicle_accessories (vehicle_id, accessory_id)
-          VALUES (${id}, ${aid})
-          ON CONFLICT DO NOTHING
-        `
+      const inserts = body.accessoryIds.map((aid: string) => ({
+        vehicle_id: id,
+        accessory_id: aid,
+      }))
+      const { error: insertError } = await db
+        .from('vehicle_accessories')
+        .insert(inserts)
+
+      if (insertError) {
+        throw createError({ statusCode: 500, message: insertError.message })
       }
     }
   }

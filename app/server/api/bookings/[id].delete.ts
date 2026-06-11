@@ -1,38 +1,49 @@
 export default defineEventHandler(async (event) => {
   const user = requireAuth(event)
   const id = getRouterParam(event, 'id')
-  const sql = useSql()
+  const db = useDb()
 
-  const booking = await sql`
-    SELECT * FROM bookings WHERE id = ${id} AND client_id = ${user.id}
-  `
+  const { data: booking, error: findError } = await db
+    .from('bookings')
+    .select('*')
+    .eq('id', id)
+    .eq('client_id', user.id)
+    .single()
 
-  if (booking.length === 0) {
+  if (findError || !booking) {
     throw createError({ statusCode: 404, message: 'Booking not found' })
   }
 
-  const b = booking[0] as any
-  if (b.status === 'cancelled') {
+  if (booking.status === 'cancelled') {
     throw createError({ statusCode: 400, message: 'Booking already cancelled' })
   }
 
   const config = await getSystemConfig()
   const maxCancelHours = Number(config.max_cancel_hours_before || 24)
-  const pickupAt = new Date(b.pickup_at)
+  const pickupAt = new Date(booking.pickup_at)
   const hoursUntilPickup = (pickupAt.getTime() - Date.now()) / (1000 * 60 * 60)
 
   if (hoursUntilPickup < maxCancelHours) {
     throw createError({ statusCode: 400, message: 'Cannot cancel within ' + maxCancelHours + ' hours of pickup' })
   }
 
-  await sql`
-    UPDATE bookings SET status = 'cancelled', cancelled_at = NOW(), cancelled_by = ${user.id}, updated_at = NOW()
-    WHERE id = ${id}
-  `
+  const { error: updateError } = await db
+    .from('bookings')
+    .update({
+      status: 'cancelled',
+      cancelled_at: new Date().toISOString(),
+      cancelled_by: user.id,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', id)
 
-  if (b.stripe_payment_intent_id) {
+  if (updateError) {
+    throw createError({ statusCode: 500, message: updateError.message })
+  }
+
+  if (booking.stripe_payment_intent_id) {
     const stripe = useStripe()
-    await stripe.paymentIntents.cancel(b.stripe_payment_intent_id)
+    await stripe.paymentIntents.cancel(booking.stripe_payment_intent_id)
   }
 
   return { success: true }

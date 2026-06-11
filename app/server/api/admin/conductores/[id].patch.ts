@@ -2,22 +2,22 @@ export default defineEventHandler(async (event) => {
   requireRole(event, 'admin')
   const id = getRouterParam(event, 'id')
   const body = await readBody(event)
-  const sql = useSql()
+  const db = useDb()
 
-  if (body.isMember !== undefined) {
-    await sql`
-      UPDATE drivers SET is_member = ${body.isMember}, updated_at = NOW() WHERE id = ${id}
-    `
-  }
-  if (body.isExempt !== undefined) {
-    await sql`
-      UPDATE drivers SET is_exempt = ${body.isExempt} WHERE id = ${id}
-    `
-  }
-  if (body.isActive !== undefined) {
-    await sql`
-      UPDATE drivers SET is_active = ${body.isActive} WHERE id = ${id}
-    `
+  const updateData: Record<string, any> = {}
+  if (body.isMember !== undefined) updateData.is_member = body.isMember
+  if (body.isExempt !== undefined) updateData.is_exempt = body.isExempt
+  if (body.isActive !== undefined) updateData.is_active = body.isActive
+
+  if (Object.keys(updateData).length > 0) {
+    const { error } = await db
+      .from('drivers')
+      .update(updateData)
+      .eq('id', id)
+
+    if (error) {
+      throw createError({ statusCode: 500, message: error.message })
+    }
   }
 
   return { success: true }

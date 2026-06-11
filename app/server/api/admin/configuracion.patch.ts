@@ -1,14 +1,20 @@
 export default defineEventHandler(async (event) => {
   requireRole(event, 'admin')
   const body = await readBody(event)
-  const sql = useSql()
+  const db = useDb()
 
-  for (const [key, value] of Object.entries(body)) {
-    await sql`
-      INSERT INTO system_config (key, value, updated_at)
-      VALUES (${key}, ${JSON.stringify(value)}, NOW())
-      ON CONFLICT (key) DO UPDATE SET value = ${JSON.stringify(value)}, updated_at = NOW()
-    `
+  const upserts = Object.entries(body).map(([key, value]) => ({
+    key,
+    value: JSON.stringify(value),
+    updated_at: new Date().toISOString(),
+  }))
+
+  const { error } = await db.from('system_config').upsert(upserts, {
+    onConflict: 'key',
+  })
+
+  if (error) {
+    throw createError({ statusCode: 500, message: error.message })
   }
 
   return { success: true }

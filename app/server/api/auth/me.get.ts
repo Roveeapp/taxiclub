@@ -1,24 +1,25 @@
 export default defineEventHandler(async (event) => {
   const user = requireAuth(event)
-  const sql = useSql()
+  const db = useDb()
 
-  const users = await sql`
-    SELECT id, email, phone, full_name, role, created_at
-    FROM users WHERE id = ${user.id}
-  `
+  const { data: userData, error } = await db
+    .from('users')
+    .select('id, email, phone, full_name, role, created_at')
+    .eq('id', user.id)
+    .single()
 
-  if (users.length === 0) {
+  if (error || !userData) {
     throw createError({ statusCode: 404, message: 'User not found' })
   }
 
-  const userData = users[0] as any
-
   let driverData = null
   if (userData.role === 'driver') {
-    const drivers = await sql`
-      SELECT * FROM drivers WHERE id = ${user.id}
-    `
-    driverData = drivers[0] || null
+    const { data: driver } = await db
+      .from('drivers')
+      .select('*')
+      .eq('id', user.id)
+      .single()
+    driverData = driver || null
   }
 
   return { ...userData, driver: driverData }

@@ -6,7 +6,7 @@ export default defineEventHandler(async (event) => {
   if (!token) return
 
   try {
-    const supabase = useSupabaseAdmin()
+    const supabase = useDb()
     const {
       data: { user },
     } = await supabase.auth.getUser(token)

@@ -1,12 +1,16 @@
 export default defineEventHandler(async (event) => {
   const user = requireAuth(event)
   const body = await readBody(event)
-  const sql = useSql()
+  const db = useDb()
 
-  await sql`
-    UPDATE users SET push_subscription = ${JSON.stringify(body.subscription)}
-    WHERE id = ${user.id}
-  `
+  const { error } = await db
+    .from('users')
+    .update({ push_subscription: body.subscription })
+    .eq('id', user.id)
+
+  if (error) {
+    throw createError({ statusCode: 500, message: error.message })
+  }
 
   return { success: true }
 })

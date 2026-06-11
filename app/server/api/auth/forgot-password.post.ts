@@ -5,7 +5,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, message: 'Email and password required' })
   }
 
-  const supabase = useSupabaseAdmin()
+  const supabase = useDb()
   const { data, error } = await supabase.auth.admin.generateLink({
     type: 'magiclink',
     email: body.email,

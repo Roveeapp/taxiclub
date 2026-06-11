@@ -1,22 +1,20 @@
 export default defineTask({
   meta: { name: 'tasks/charge-memberships', description: 'Charge monthly membership fees' },
   async run() {
-    const sql = useSql()
+    const db = useDb()
     const config = await getSystemConfig()
 
-    const members = await sql`
-      SELECT d.id, d.stripe_account_id, u.email
-      FROM drivers d
-      JOIN users u ON u.id = d.id
-      WHERE d.is_member = TRUE
-        AND d.is_exempt = FALSE
-        AND d.is_active = TRUE
-    `
+    const { data: members, error } = await db.rpc('get_active_members')
+
+    if (error) {
+      console.error('Error fetching members:', error)
+      return { charged: 0 }
+    }
 
     const fee = Number(config.membership_monthly_fee || 20)
     let charged = 0
 
-    for (const member of members) {
+    for (const member of members || []) {
       if (member.stripe_account_id) {
         console.log(`Charging ${fee}€ to driver ${member.id}`)
         charged++

@@ -1,29 +1,27 @@
-import { drizzle } from 'drizzle-orm/postgres-js'
-import postgres from 'postgres'
-import * as schema from '../../../drizzle/schema'
+import { createClient } from '@supabase/supabase-js'
 
-let client: ReturnType<typeof postgres> | null = null
-let db: ReturnType<typeof drizzle> | null = null
+let adminClient: ReturnType<typeof createClient> | null = null
 
 export function useDb() {
-  if (!db) {
-    const connectionString = process.env.DATABASE_URL
-    if (!connectionString) {
-      throw new Error('DATABASE_URL environment variable is not set')
+  if (!adminClient) {
+    const config = useRuntimeConfig()
+    const url = config.public.supabaseUrl
+    const key = config.supabaseServiceRoleKey
+    if (!url || !key) {
+      throw new Error('Supabase URL or service role key is not configured')
     }
-
-    client = postgres(connectionString, {
-      prepare: false,
-      max: 1,
+    adminClient = createClient(url, key, {
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false,
+      },
     })
-    db = drizzle(client, { schema })
   }
-  return db
+  return adminClient
 }
 
-export function useSql() {
-  if (!client) {
-    useDb()
-  }
-  return client!
+// Deprecated: kept only for compatibility during migration.
+// It now returns the Supabase client, not a SQL executor.
+export function useSql(): ReturnType<typeof createClient> {
+  return useDb()
 }

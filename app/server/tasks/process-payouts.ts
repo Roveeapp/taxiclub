@@ -1,16 +1,19 @@
 export default defineTask({
   meta: { name: 'tasks/process-payouts', description: 'Process monthly driver payouts' },
   async run() {
-    const sql = useSql()
-    const drivers = await sql`
-      SELECT id FROM drivers WHERE is_active = TRUE
-    `
+    const db = useDb()
+    const { data: drivers, error } = await db.rpc('get_active_drivers')
+
+    if (error) {
+      console.error('Error fetching drivers:', error)
+      return { processed: 0 }
+    }
 
     const results = []
     const now = new Date()
     const month = new Date(now.getFullYear(), now.getMonth() - 1, 1)
 
-    for (const driver of drivers) {
+    for (const driver of drivers || []) {
       try {
         const payout = await calculateMonthlyPayout(driver.id as string, month)
         results.push(payout)

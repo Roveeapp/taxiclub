@@ -1,10 +1,10 @@
 export default defineEventHandler(async () => {
-  const sql = useSql()
-  const accessories = await sql`
-    SELECT id, name, icon, description
-    FROM accessories
-    WHERE is_active = TRUE
-    ORDER BY name
-  `
-  return accessories
+  const db = useDb()
+  const { data: accessories } = await db
+    .from('accessories')
+    .select('id, name, icon, description')
+    .eq('is_active', true)
+    .order('name')
+
+  return accessories || []
 })

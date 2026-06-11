@@ -2,14 +2,21 @@ export default defineEventHandler(async (event) => {
   const user = requireAuth(event)
   const id = getRouterParam(event, 'id')
   const body = await readBody(event)
-  const sql = useSql()
+  const db = useDb()
 
-  await sql`
-    UPDATE saved_addresses SET
-      label = COALESCE(${body.label}, label),
-      is_favorite = COALESCE(${body.is_favorite}, is_favorite)
-    WHERE id = ${id} AND user_id = ${user.id}
-  `
+  const updateData: Record<string, any> = {}
+  if (body.label !== undefined) updateData.label = body.label
+  if (body.is_favorite !== undefined) updateData.is_favorite = body.is_favorite
+
+  const { error } = await db
+    .from('saved_addresses')
+    .update(updateData)
+    .eq('id', id)
+    .eq('user_id', user.id)
+
+  if (error) {
+    throw createError({ statusCode: 500, message: error.message })
+  }
 
   return { success: true }
 })

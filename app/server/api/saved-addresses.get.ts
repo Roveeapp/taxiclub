@@ -1,12 +1,13 @@
 export default defineEventHandler(async (event) => {
   const user = requireAuth(event)
-  const sql = useSql()
+  const db = useDb()
 
-  const addresses = await sql`
-    SELECT id, label, address, lat, lng, is_favorite
-    FROM saved_addresses
-    WHERE user_id = ${user.id}
-    ORDER BY is_favorite DESC, created_at DESC
-  `
-  return addresses
+  const { data: addresses } = await db
+    .from('saved_addresses')
+    .select('id, label, address, lat, lng, is_favorite')
+    .eq('user_id', user.id)
+    .order('is_favorite', { ascending: false })
+    .order('created_at', { ascending: false })
+
+  return addresses || []
 })

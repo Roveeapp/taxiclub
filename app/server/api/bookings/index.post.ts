@@ -2,35 +2,47 @@ export default defineEventHandler(async (event) => {
   const body = await readBody(event)
   const user = requireAuth(event)
 
-  const sql = useSql()
+  const db = useDb()
 
-  const [booking] = await sql`
-    INSERT INTO bookings (
-      client_id, origin_station_id, destination_address,
-      destination_lat, destination_lng, destination_station_id,
-      pickup_at, passengers, luggage_big, luggage_hand,
-      needs_child_seat, needs_pet_friendly, needs_accessible, needs_large_vehicle,
-      base_price, total_price, status, stripe_payment_intent_id
-    ) VALUES (
-      ${user.id}, ${body.originStationId}, ${body.destinationAddress},
-      ${body.destinationLat || null}, ${body.destinationLng || null}, ${body.destinationStationId || null},
-      ${body.pickupAt}, ${body.passengers}, ${body.luggageBig}, ${body.luggageHand},
-      ${body.needsChildSeat || false}, ${body.needsPetFriendly || false},
-      ${body.needsAccessible || false}, ${body.needsLargeVehicle || false},
-      ${body.basePrice}, ${body.totalPrice}, 'pending', ${body.stripePaymentIntentId}
-    )
-    RETURNING *
-  `
+  const { data: booking, error: insertError } = await db
+    .from('bookings')
+    .insert({
+      client_id: user.id,
+      origin_station_id: body.originStationId,
+      destination_address: body.destinationAddress,
+      destination_lat: body.destinationLat || null,
+      destination_lng: body.destinationLng || null,
+      destination_station_id: body.destinationStationId || null,
+      pickup_at: body.pickupAt,
+      passengers: body.passengers,
+      luggage_big: body.luggageBig,
+      luggage_hand: body.luggageHand,
+      needs_child_seat: body.needsChildSeat || false,
+      needs_pet_friendly: body.needsPetFriendly || false,
+      needs_accessible: body.needsAccessible || false,
+      needs_large_vehicle: body.needsLargeVehicle || false,
+      base_price: body.basePrice,
+      total_price: body.totalPrice,
+      status: 'pending',
+      stripe_payment_intent_id: body.stripePaymentIntentId,
+    })
+    .select()
+    .single()
+
+  if (insertError || !booking) {
+    throw createError({ statusCode: 500, message: insertError?.message || 'Failed to create booking' })
+  }
 
   try {
     const driver = await assignDriver(body)
-    await sql`
-      INSERT INTO booking_assignments (booking_id, driver_id)
-      VALUES (${booking.id}, ${driver.id})
-    `
-    await sql`
-      UPDATE drivers SET last_assigned_at = NOW() WHERE id = ${driver.id}
-    `
+    await db.from('booking_assignments').insert({
+      booking_id: booking.id,
+      driver_id: driver.id,
+    })
+    await db
+      .from('drivers')
+      .update({ last_assigned_at: new Date().toISOString() })
+      .eq('id', driver.id)
     await notifyDriver(driver.id as string, booking)
   } catch {
     await notifyAdminNoDrivers(booking.id as string)

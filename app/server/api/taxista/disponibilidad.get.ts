@@ -1,12 +1,12 @@
 export default defineEventHandler(async (event) => {
   const user = requireAuth(event)
-  const sql = useSql()
+  const db = useDb()
 
-  const availability = await sql`
-    SELECT * FROM driver_availability
-    WHERE driver_id = ${user.id}
-    ORDER BY date
-  `
+  const { data: availability } = await db
+    .from('driver_availability')
+    .select('*')
+    .eq('driver_id', user.id)
+    .order('date')
 
-  return availability
+  return availability || []
 })

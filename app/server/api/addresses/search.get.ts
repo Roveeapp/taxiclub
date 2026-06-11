@@ -14,17 +14,17 @@ export default defineEventHandler(async (event) => {
   }> = []
 
   if (user) {
-    const sql = useSql()
+    const db = useDb()
 
-    const saved = await sql`
-      SELECT id, label, address, lat, lng
-      FROM saved_addresses
-      WHERE user_id = ${user.id}
-        AND address ILIKE ${'%' + q + '%'}
-      ORDER BY is_favorite DESC
-      LIMIT 3
-    `
-    for (const addr of saved) {
+    const { data: saved } = await db
+      .from('saved_addresses')
+      .select('id, label, address, lat, lng')
+      .eq('user_id', user.id)
+      .ilike('address', `%${q}%`)
+      .order('is_favorite', { ascending: false })
+      .limit(3)
+
+    for (const addr of saved || []) {
       results.push({
         id: addr.id as string,
         label: addr.label as string,
