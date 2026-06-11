@@ -33,7 +33,7 @@
 
     <!-- DESTINO Autocomplete -->
     <div class="space-y-xs dest-dropdown">
-      <div class="flex items-center gap-md p-sm bg-surface-input rounded-lg border-2 border-transparent">
+      <div class="flex items-center gap-md p-sm bg-surface-input rounded-lg">
         <Icon :name="destination ? 'tabler:map-pin-filled' : 'tabler:map-pin'" size="20" :class="destination ? 'text-secondary' : 'text-slate-400'" />
         <div class="flex flex-col flex-1">
           <label class="font-label-caps text-label-caps text-slate-500">{{ destination ? 'DESTINO FINAL' : 'Destino' }}</label>
@@ -41,7 +41,7 @@
             v-model="destQuery"
             type="text"
             placeholder="Escribe una dirección..."
-            class="w-full bg-transparent border-none focus:ring-0 text-slate-900 placeholder:text-slate-400 font-body-md"
+              class="w-full bg-transparent border-none focus:ring-0 focus:outline-none outline-none text-slate-900 placeholder:text-slate-400 font-body-md"
             @focus="destFocused = true"
             @input="onDestInput"
           />
