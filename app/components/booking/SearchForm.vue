@@ -4,8 +4,8 @@
     <div class="space-y-xs origin-dropdown">
       <label class="font-label-caps text-label-caps text-slate-500 uppercase">Origen (Parada)</label>
       <button
-        class="w-full flex items-center justify-between bg-surface-input px-md py-sm rounded-lg border-2 transition-all duration-200"
-        :class="originOpen ? 'border-gold-accent' : 'border-transparent'"
+          class="w-full flex items-center justify-between bg-surface-input px-md py-sm rounded-lg transition-all duration-200"
+          :class="originOpen ? 'border-2 border-gold-accent' : ''"
         @click="originOpen = !originOpen"
       >
         <div class="flex items-center gap-sm">
@@ -79,16 +79,16 @@
     <div class="grid grid-cols-2 gap-sm">
       <div class="space-y-xs">
         <label class="font-label-caps text-label-caps text-slate-500 uppercase">Fecha</label>
-        <div class="flex items-center bg-surface-input px-md py-sm rounded-lg border border-slate-200">
+        <div class="flex items-center bg-surface-input px-md py-sm rounded-lg">
           <Icon name="tabler:calendar" size="18" class="text-slate-400 mr-xs" />
-          <input v-model="date" type="date" :min="minDate" class="w-full bg-transparent border-none focus:ring-0 text-slate-900 text-xs" />
+          <input v-model="date" type="date" :min="minDate" class="w-full bg-transparent border-none focus:ring-0 focus:outline-none outline-none text-slate-900 text-xs" />
         </div>
       </div>
       <div class="space-y-xs">
         <label class="font-label-caps text-label-caps text-slate-500 uppercase">Hora</label>
-        <div class="flex items-center bg-surface-input px-md py-sm rounded-lg border border-slate-200">
+        <div class="flex items-center bg-surface-input px-md py-sm rounded-lg">
           <Icon name="tabler:clock" size="18" class="text-slate-400 mr-xs" />
-          <input v-model="time" type="time" class="w-full bg-transparent border-none focus:ring-0 text-slate-900 text-xs" />
+          <input v-model="time" type="time" class="w-full bg-transparent border-none focus:ring-0 focus:outline-none outline-none text-slate-900 text-xs" />
         </div>
       </div>
     </div>
@@ -97,18 +97,18 @@
     <div class="grid grid-cols-2 gap-sm">
       <div class="space-y-xs">
         <label class="font-label-caps text-label-caps text-slate-500 uppercase">Pasajeros</label>
-        <div class="flex items-center bg-surface-input px-md py-sm rounded-lg border border-slate-200">
+        <div class="flex items-center bg-surface-input px-md py-sm rounded-lg">
           <Icon name="tabler:users" size="18" class="text-slate-400 mr-xs" />
-          <select v-model.number="passengers" class="w-full bg-transparent border-none focus:ring-0 text-slate-900 text-xs appearance-none">
+          <select v-model.number="passengers" class="w-full bg-transparent border-none focus:ring-0 focus:outline-none outline-none text-slate-900 text-xs appearance-none">
             <option v-for="n in 8" :key="n" :value="n">{{ n }} {{ n === 1 ? 'persona' : 'personas' }}</option>
           </select>
         </div>
       </div>
       <div class="space-y-xs">
         <label class="font-label-caps text-label-caps text-slate-500 uppercase">Equipaje</label>
-        <div class="flex items-center bg-surface-input px-md py-sm rounded-lg border border-slate-200">
+        <div class="flex items-center bg-surface-input px-md py-sm rounded-lg">
           <Icon name="tabler:luggage" size="18" class="text-slate-400 mr-xs" />
-          <select v-model.number="luggageBig" class="w-full bg-transparent border-none focus:ring-0 text-slate-900 text-xs appearance-none">
+          <select v-model.number="luggageBig" class="w-full bg-transparent border-none focus:ring-0 focus:outline-none outline-none text-slate-900 text-xs appearance-none">
             <option v-for="n in 6" :key="n" :value="n">{{ n }} {{ n === 1 ? 'maleta' : 'maletas' }}</option>
           </select>
         </div>
