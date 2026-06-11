@@ -7,10 +7,10 @@ let db: ReturnType<typeof drizzle> | null = null
 
 export function useDb() {
   if (!db) {
-    const config = useRuntimeConfig()
-    const connectionString = process.env.SUPABASE_URL
-      ? `${process.env.SUPABASE_URL.replace('.supabase.co', '')}.supabase.co`
-      : ''
+    const connectionString = process.env.DATABASE_URL
+    if (!connectionString) {
+      throw new Error('DATABASE_URL environment variable is not set')
+    }
 
     client = postgres(connectionString, {
       prepare: false,

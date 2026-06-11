@@ -9,8 +9,8 @@ INSERT INTO stations (name, city, address, lat, lng) VALUES
 
 -- Initial system config
 INSERT INTO system_config (key, value) VALUES
-  ('min_advance_hours', '2'),
-  ('commission_member_pct', '10'),
-  ('commission_non_member_pct', '12'),
-  ('membership_monthly_fee', '20.00'),
-  ('max_cancel_hours_before', '24');
+  ('min_advance_hours', '2'::jsonb),
+  ('commission_member_pct', '10'::jsonb),
+  ('commission_non_member_pct', '12'::jsonb),
+  ('membership_monthly_fee', '20.00'::jsonb),
+  ('max_cancel_hours_before', '24'::jsonb);
