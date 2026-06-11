@@ -1,7 +1,7 @@
 <template>
   <div class="bg-white rounded-xl shadow-2xl p-md space-y-md">
     <!-- ORIGEN Selector (In-flow expansion) -->
-    <div class="space-y-xs">
+    <div class="space-y-xs origin-dropdown">
       <label class="font-label-caps text-label-caps text-slate-500 uppercase">Origen (Parada)</label>
       <button
         class="w-full flex items-center justify-between bg-surface-input px-md py-sm rounded-lg border-2 transition-all duration-200"
@@ -180,7 +180,8 @@ function handleSearch() {
 function handleClickOutside(e: MouseEvent) {
   if (!originOpen.value) return
   const target = e.target as HTMLElement
-  if (!target.closest('.space-y-xs') || !target.closest('[class*="relative"]')) {
+  const dropdown = target.closest('.origin-dropdown')
+  if (!dropdown) {
     originOpen.value = false
   }
 }
