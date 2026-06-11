@@ -144,27 +144,22 @@
       </div>
       <div class="space-y-1">
         <label class="text-xs font-medium text-slate-500 uppercase tracking-wide block">Equipaje</label>
-        <Select
-          v-model="luggageBig"
-          :options="luggageOptions"
-          option-label="label"
-          option-value="value"
-          placeholder="0 maletas"
-          class="w-full"
-          variant="filled"
-          append-to="self"
+        <div
+          class="flex items-center gap-3 bg-white border-2 border-secondary rounded-xl px-4 min-h-[3rem] cursor-pointer"
+          @click="luggageDialogVisible = true"
         >
-          <template #value="slotProps">
-            <div class="flex items-center gap-3">
-              <Icon name="tabler:luggage" size="18" class="text-secondary flex-shrink-0" />
-              <span class="text-sm font-medium text-slate-900">{{ slotProps.value?.label || slotProps.placeholder }}</span>
-            </div>
-          </template>
-          <template #dropdownicon>
-            <Icon name="tabler:chevron-down" size="18" class="text-slate-400" />
-          </template>
-        </Select>
+          <Icon name="tabler:luggage" size="18" class="text-secondary flex-shrink-0" />
+          <span class="text-sm font-medium text-slate-900 flex-1">{{ luggageSummary }}</span>
+          <Icon name="tabler:chevron-down" size="18" class="text-slate-400" />
+        </div>
       </div>
+
+      <LuggageSelector
+        v-model:visible="luggageDialogVisible"
+        :initial-big="luggageBig"
+        :initial-hand="luggageHand"
+        @confirm="(b, h) => { luggageBig = b; luggageHand = h }"
+      />
     </div>
 
     <!-- Accesorios -->
@@ -216,6 +211,8 @@ const date = ref<Date>(now)
 const time = ref('')
 const passengers = ref(1)
 const luggageBig = ref(0)
+const luggageHand = ref(0)
+const luggageDialogVisible = ref(false)
 const accessories = ref<Accessory[]>([])
 const selectedAccessories = ref(new Set<string>())
 
@@ -225,7 +222,13 @@ const stationOptions = computed(() =>
   props.stations.map(s => ({ name: s.name, id: s.id })),
 )
 
-const luggageOptions = Array.from({ length: 7 }, (_, i) => ({ value: i, label: i === 0 ? 'Sin equipaje' : `${i} ${i === 1 ? 'maleta' : 'maletas'}` }))
+const luggageSummary = computed(() => {
+  const parts: string[] = []
+  if (luggageBig.value > 0) parts.push(`${luggageBig.value} ${luggageBig.value === 1 ? 'maleta grande' : 'maletas grandes'}`)
+  if (luggageHand.value > 0) parts.push(`${luggageHand.value} ${luggageHand.value === 1 ? 'equipaje de mano' : 'equipajes de mano'}`)
+  if (parts.length === 0) return 'Sin equipaje'
+  return parts.join(' + ')
+})
 
 const isFormValid = computed(() => !!originStationId.value && !!destQuery.value && !!time.value)
 
@@ -236,6 +239,7 @@ interface SearchFormData {
   time: string
   passengers: number
   luggageBig: number
+  luggageHand: number
   accessoryIds: string[]
 }
 
@@ -295,6 +299,7 @@ function handleSearch() {
     time: time.value,
     passengers: passengers.value,
     luggageBig: luggageBig.value,
+    luggageHand: luggageHand.value,
     accessoryIds: Array.from(selectedAccessories.value),
   })
 }
