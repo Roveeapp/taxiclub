@@ -5,11 +5,11 @@
       <label class="font-label-caps text-label-caps text-slate-500 uppercase">Origen (Parada)</label>
       <button
         class="w-full flex items-center justify-between bg-surface-input px-md py-sm rounded-lg border-2 transition-all duration-200"
-        :class="originOpen ? 'border-secondary' : 'border-transparent'"
+        :class="originOpen ? 'border-gold-accent' : 'border-transparent'"
         @click="originOpen = !originOpen"
       >
         <div class="flex items-center gap-sm">
-          <Icon :name="originStationId ? 'tabler:map-pin-filled' : 'tabler:map-pin'" size="18" :class="originStationId ? 'text-secondary' : 'text-slate-400'" />
+          <Icon :name="originStationId ? 'tabler:map-pin-filled' : 'tabler:map-pin'" size="18" :class="originStationId ? 'text-gold-accent' : 'text-slate-400'" />
           <span :class="originStationId ? 'text-slate-900 font-medium' : 'text-slate-400'">
             {{ selectedStationName || 'Seleccionar parada' }}
           </span>
@@ -21,12 +21,12 @@
           v-for="station in stations"
           :key="station.id"
           class="px-md py-sm flex items-center gap-sm cursor-pointer transition-colors"
-          :class="station.id === originStationId ? 'bg-secondary/10' : 'hover:bg-slate-100'"
+          :class="station.id === originStationId ? 'bg-gold-accent/10' : 'hover:bg-slate-100'"
           @click="selectStation(station)"
         >
-          <Icon :name="station.id === originStationId ? 'tabler:map-pin-filled' : 'tabler:map-pin'" size="18" :class="station.id === originStationId ? 'text-secondary' : 'text-slate-400'" />
+          <Icon :name="station.id === originStationId ? 'tabler:map-pin-filled' : 'tabler:map-pin'" size="18" :class="station.id === originStationId ? 'text-gold-accent' : 'text-slate-400'" />
           <span :class="station.id === originStationId ? 'text-slate-900 font-semibold' : 'text-slate-700'">{{ station.name }}</span>
-          <Icon v-if="station.id === originStationId" name="tabler:check" size="16" class="text-secondary ml-auto" />
+          <Icon v-if="station.id === originStationId" name="tabler:check" size="16" class="text-gold-accent ml-auto" />
         </div>
       </div>
     </div>
