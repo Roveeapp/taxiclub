@@ -79,16 +79,16 @@
     <div class="grid grid-cols-2 gap-sm">
       <div class="space-y-xs">
         <label class="font-label-caps text-label-caps text-slate-500 uppercase">Fecha</label>
-        <div class="flex items-center bg-surface-input px-md py-sm rounded-lg">
+        <div class="flex items-center bg-surface-input px-md py-sm rounded-lg cursor-pointer" @click="openPicker(dateRef)">
           <Icon name="tabler:calendar" size="18" class="text-slate-400 mr-xs" />
-          <input v-model="date" type="date" :min="minDate" class="w-full bg-transparent border-none focus:ring-0 focus:outline-none outline-none text-slate-900 text-xs" />
+          <input ref="dateRef" v-model="date" type="date" :min="minDate" class="w-full bg-transparent border-none focus:ring-0 focus:outline-none outline-none text-slate-900 text-xs pointer-events-none" />
         </div>
       </div>
       <div class="space-y-xs">
         <label class="font-label-caps text-label-caps text-slate-500 uppercase">Hora</label>
-        <div class="flex items-center bg-surface-input px-md py-sm rounded-lg">
+        <div class="flex items-center bg-surface-input px-md py-sm rounded-lg cursor-pointer" @click="openPicker(timeRef)">
           <Icon name="tabler:clock" size="18" class="text-slate-400 mr-xs" />
-          <input v-model="time" type="time" :min="minTime" class="w-full bg-transparent border-none focus:ring-0 focus:outline-none outline-none text-slate-900 text-xs" />
+          <input ref="timeRef" v-model="time" type="time" :min="minTime" class="w-full bg-transparent border-none focus:ring-0 focus:outline-none outline-none text-slate-900 text-xs pointer-events-none" />
         </div>
       </div>
     </div>
@@ -156,6 +156,9 @@ const destination = ref('')
 const destFocused = ref(false)
 const destSuggestions = ref<Array<{ id: string; label: string; description: string; source: string; icon: string; lat?: number; lng?: number }>>([])
 let destDebounce: ReturnType<typeof setTimeout> | null = null
+const dateRef = ref<HTMLInputElement>()
+const timeRef = ref<HTMLInputElement>()
+
 const today = new Date()
 const date = ref(today.toISOString().split('T')[0])
 const time = ref('')
@@ -165,13 +168,24 @@ const originOpen = ref(false)
 const accessories = ref<Accessory[]>([])
 const selectedAccessories = ref(new Set<string>())
 
-const minDate = computed(() => today.toISOString().split('T')[0])
+const minDate = computed(() => new Date().toISOString().split('T')[0])
 
 const minTime = computed(() => {
   if (date.value !== minDate.value) return ''
-  const min = new Date(today.getTime() + 2 * 60 * 60 * 1000)
+  const now = new Date()
+  const min = new Date(now.getTime() + 2 * 60 * 60 * 1000)
   return min.toTimeString().slice(0, 5)
 })
+
+function openPicker(el?: HTMLInputElement) {
+  if (el) {
+    if (typeof (el as any).showPicker === 'function') {
+      (el as any).showPicker()
+    } else {
+      el.focus()
+    }
+  }
+}
 
 const selectedStationName = computed(() =>
   props.stations.find(s => s.id === originStationId.value)?.name,
