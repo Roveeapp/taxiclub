@@ -33,12 +33,10 @@
 
     <!-- DESTINO Autocomplete -->
     <div class="space-y-xs dest-dropdown">
-      <div class="flex items-center gap-md p-sm bg-surface-input rounded-lg border-2 transition-all"
-        :class="destFocused ? 'border-secondary' : 'border-transparent'"
-      >
-        <Icon :name="destFocused || destination ? 'tabler:map-pin-filled' : 'tabler:map-pin'" size="20" :class="destFocused || destination ? 'text-secondary' : 'text-slate-400'" />
+      <div class="flex items-center gap-md p-sm bg-surface-input rounded-lg border-2 border-transparent">
+        <Icon :name="destination ? 'tabler:map-pin-filled' : 'tabler:map-pin'" size="20" :class="destination ? 'text-secondary' : 'text-slate-400'" />
         <div class="flex flex-col flex-1">
-          <label class="font-label-caps text-label-caps" :class="destFocused ? 'text-secondary font-bold' : 'text-slate-500'">{{ destFocused ? 'DESTINO FINAL' : 'Destino' }}</label>
+          <label class="font-label-caps text-label-caps text-slate-500">{{ destination ? 'DESTINO FINAL' : 'Destino' }}</label>
           <input
             v-model="destQuery"
             type="text"
