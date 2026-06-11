@@ -32,20 +32,19 @@
     </div>
 
     <!-- DESTINO Autocomplete -->
-    <div class="space-y-xs">
+    <div class="space-y-xs dest-dropdown">
       <div class="flex items-center gap-md p-sm bg-surface-input rounded-lg border-2 transition-all"
-        :class="destFocused ? 'border-secondary ring-4 ring-secondary/10' : 'border-transparent'"
+        :class="destFocused ? 'border-secondary' : 'border-transparent'"
       >
         <Icon :name="destFocused || destination ? 'tabler:map-pin-filled' : 'tabler:map-pin'" size="20" :class="destFocused || destination ? 'text-secondary' : 'text-slate-400'" />
         <div class="flex flex-col flex-1">
-          <label class="font-label-caps text-label-caps" :class="destFocused ? 'text-secondary font-bold' : 'text-slate-500'">DESTINO FINAL</label>
+          <label class="font-label-caps text-label-caps" :class="destFocused ? 'text-secondary font-bold' : 'text-slate-500'">{{ destFocused ? 'DESTINO FINAL' : 'Destino' }}</label>
           <input
             v-model="destQuery"
             type="text"
             placeholder="Escribe una dirección..."
             class="w-full bg-transparent border-none focus:ring-0 text-slate-900 placeholder:text-slate-400 font-body-md"
-            @focus="onDestFocus"
-            @blur="onDestBlur"
+            @focus="destFocused = true"
             @input="onDestInput"
           />
         </div>
@@ -192,14 +191,6 @@ function selectStation(station: Station) {
   originOpen.value = false
 }
 
-function onDestFocus() {
-  destFocused.value = true
-}
-
-function onDestBlur() {
-  setTimeout(() => { destFocused.value = false }, 200)
-}
-
 function onDestInput() {
   if (destDebounce) clearTimeout(destDebounce)
   destDebounce = setTimeout(async () => {
@@ -252,11 +243,15 @@ function handleSearch() {
 }
 
 function handleClickOutside(e: MouseEvent) {
-  if (!originOpen.value) return
   const target = e.target as HTMLElement
-  const dropdown = target.closest('.origin-dropdown')
-  if (!dropdown) {
+
+  if (originOpen.value && !target.closest('.origin-dropdown')) {
     originOpen.value = false
+  }
+
+  if (destFocused.value && !target.closest('.dest-dropdown')) {
+    destFocused.value = false
+    destSuggestions.value = []
   }
 }
 
