@@ -1,9 +1,9 @@
 <template>
   <div class="bg-white rounded-xl shadow-2xl p-lg space-y-md relative overflow-hidden active-scale">
     <div class="space-y-xs">
-      <label class="font-label-caps text-label-caps text-primary-container block">ORIGEN (PARADA)</label>
+      <label class="font-label-caps text-label-caps text-on-primary-container block">ORIGEN (PARADA)</label>
       <div class="flex items-center bg-surface-input rounded-lg px-md py-sm border-2 border-transparent focus-within:border-secondary transition-all">
-        <Icon name="tabler:map-pin-filled" size="18" class="text-primary-container mr-sm" />
+        <Icon name="tabler:map-pin-filled" size="18" class="text-on-primary-container mr-sm" />
         <select
           :value="originStationId"
           class="w-full bg-transparent border-none focus:ring-0 text-primary-container font-body-md appearance-none"
@@ -18,9 +18,9 @@
     </div>
 
     <div class="space-y-xs">
-      <label class="font-label-caps text-label-caps text-primary-container block">DESTINO FINAL</label>
+      <label class="font-label-caps text-label-caps text-on-primary-container block">DESTINO FINAL</label>
       <div class="flex items-center bg-surface-input rounded-lg px-md py-sm border-2 border-transparent focus-within:border-secondary transition-all">
-        <Icon name="tabler:search" size="18" class="text-primary-container mr-sm" />
+        <Icon name="tabler:search" size="18" class="text-on-primary-container mr-sm" />
         <input
           :value="destination"
           type="text"
@@ -33,9 +33,9 @@
 
     <div class="grid grid-cols-2 gap-sm">
       <div class="space-y-xs">
-        <label class="font-label-caps text-label-caps text-primary-container block">FECHA</label>
+        <label class="font-label-caps text-label-caps text-on-primary-container block">FECHA</label>
         <div class="flex items-center bg-surface-input rounded-lg px-md py-sm">
-          <Icon name="tabler:calendar" size="18" class="text-primary-container mr-xs" />
+          <Icon name="tabler:calendar" size="18" class="text-on-primary-container mr-xs" />
           <input
             :value="date"
             type="date"
@@ -46,9 +46,9 @@
         </div>
       </div>
       <div class="space-y-xs">
-        <label class="font-label-caps text-label-caps text-primary-container block">HORA</label>
+        <label class="font-label-caps text-label-caps text-on-primary-container block">HORA</label>
         <div class="flex items-center bg-surface-input rounded-lg px-md py-sm">
-          <Icon name="tabler:clock" size="18" class="text-primary-container mr-xs" />
+          <Icon name="tabler:clock" size="18" class="text-on-primary-container mr-xs" />
           <input
             :value="time"
             type="time"
@@ -61,9 +61,9 @@
 
     <div class="grid grid-cols-2 gap-sm">
       <div class="space-y-xs">
-        <label class="font-label-caps text-label-caps text-primary-container block">PASAJEROS</label>
+        <label class="font-label-caps text-label-caps text-on-primary-container block">PASAJEROS</label>
         <div class="flex items-center bg-surface-input rounded-lg px-md py-sm">
-          <Icon name="tabler:users" size="18" class="text-primary-container mr-xs" />
+          <Icon name="tabler:users" size="18" class="text-on-primary-container mr-xs" />
           <select
             :value="passengers"
             class="w-full bg-transparent border-none focus:ring-0 text-primary-container font-body-md text-xs appearance-none"
@@ -74,9 +74,9 @@
         </div>
       </div>
       <div class="space-y-xs">
-        <label class="font-label-caps text-label-caps text-primary-container block">MALETAS</label>
+        <label class="font-label-caps text-label-caps text-on-primary-container block">MALETAS</label>
         <div class="flex items-center bg-surface-input rounded-lg px-md py-sm">
-          <Icon name="tabler:luggage" size="18" class="text-primary-container mr-xs" />
+          <Icon name="tabler:luggage" size="18" class="text-on-primary-container mr-xs" />
           <select
             :value="luggageBig"
             class="w-full bg-transparent border-none focus:ring-0 text-primary-container font-body-md text-xs appearance-none"
