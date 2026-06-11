@@ -5,21 +5,68 @@
 @layer base {
   :root {
     --color-brand-dark: #0c0c13;
-    --color-brand-gold: #f0b429;
+    --color-brand-gold: #fabd32;
     --color-brand-white: #ffffff;
-    --color-surface-dark: #14141e;
-    --color-surface-card: rgba(255, 255, 255, 0.05);
-    --color-surface-card-border: rgba(255, 255, 255, 0.09);
-    --color-surface-input: #f4f4f8;
-    --color-surface-divider: #ebebf0;
-    --color-text-on-dark: #ffffff;
-    --color-text-muted-dark: rgba(255, 255, 255, 0.45);
-    --color-text-on-light: #0c0c13;
-    --color-text-muted-light: #999999;
-    --color-success: #1a9e6a;
-    --color-warning: #e5990a;
-    --color-error: #d93025;
-    --color-info: #2563eb;
+
+    --surface: #12121c;
+    --surface-dim: #12121c;
+    --surface-bright: #393843;
+    --surface-container-lowest: #0d0d17;
+    --surface-container-low: #1b1b25;
+    --surface-container: #1f1f29;
+    --surface-container-high: #292934;
+    --surface-container-highest: #34343f;
+    --surface-dark: #14141e;
+    --surface-variant: #34343f;
+    --surface-card: rgba(255, 255, 255, 0.05);
+    --surface-card-border: rgba(255, 255, 255, 0.09);
+    --surface-input: #f4f4f8;
+    --surface-divider: #ebebf0;
+
+    --on-surface: #e4e1ef;
+    --on-surface-variant: #c8c5cb;
+    --on-primary: #303038;
+    --on-primary-container: #7b7983;
+    --on-secondary: #412d00;
+    --on-secondary-container: #4c3500;
+    --on-background: #e4e1ef;
+    --on-error: #690005;
+    --on-error-container: #ffdad6;
+
+    --primary: #c8c5cf;
+    --primary-container: #0c0c13;
+    --primary-fixed: #e4e1ec;
+    --primary-fixed-dim: #c8c5cf;
+    --inverse-primary: #5e5d66;
+
+    --secondary: #fabd32;
+    --secondary-container: #d29a00;
+    --secondary-fixed: #ffdea4;
+    --secondary-fixed-dim: #fabd32;
+
+    --tertiary: #c6c6c7;
+    --tertiary-container: #0b0d0d;
+
+    --error: #ffb4ab;
+    --error-container: #93000a;
+
+    --outline: #929095;
+    --outline-variant: #47464b;
+    --inverse-surface: #e4e1ef;
+    --inverse-on-surface: #302f3a;
+    --surface-tint: #c8c5cf;
+
+    --status-success: #1a9e6a;
+    --status-warning: #e5990a;
+    --status-error: #d93025;
+    --status-info: #2563eb;
+
+    --gold-50: #fffbeb;
+    --gold-100: #fef3c7;
+    --gold-200: #fde68a;
+    --gold-400: #fabd32;
+    --gold-600: #d97706;
+    --gold-800: #92400e;
   }
 
   * {
@@ -36,8 +83,8 @@
 
   body {
     min-height: 100vh;
-    background-color: var(--color-brand-dark);
-    color: var(--color-text-on-dark);
+    background-color: var(--surface);
+    color: var(--on-surface);
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -53,7 +100,9 @@
 
 @layer components {
   .btn-primary {
-    @apply bg-brand-dark text-white border-none rounded-btn py-4 px-5 text-[15px] font-medium w-full transition-opacity;
+    @apply border-none rounded-btn py-4 px-5 text-[15px] font-medium w-full transition-all;
+    background: var(--primary-container);
+    color: #ffffff;
   }
 
   .btn-primary:disabled {
@@ -64,64 +113,83 @@
     @apply scale-[0.97];
   }
 
+  .btn-gold {
+    background: var(--secondary);
+    color: var(--on-secondary);
+  }
+
   .badge-discount {
     @apply text-[11px] font-semibold rounded-[5px] py-[3px] px-2;
-    background: rgba(240, 180, 41, 0.18);
-    color: #f0b429;
+    background: rgba(250, 189, 50, 0.18);
+    color: var(--secondary);
   }
 
   .badge-pending {
-    @apply text-[11px] font-semibold uppercase rounded-[5px] py-[3px] px-2;
+    @apply text-status-badge uppercase rounded-pill py-[3px] px-2;
     background: #fff8e1;
     color: #b45309;
   }
 
   .badge-confirmed {
-    @apply text-[11px] font-semibold uppercase rounded-[5px] py-[3px] px-2;
+    @apply text-status-badge uppercase rounded-pill py-[3px] px-2;
     background: #ecfdf5;
     color: #065f46;
   }
 
   .badge-cancelled {
-    @apply text-[11px] font-semibold uppercase rounded-[5px] py-[3px] px-2;
+    @apply text-status-badge uppercase rounded-pill py-[3px] px-2;
     background: #fef2f2;
     color: #991b1b;
   }
 
   .badge-completed {
-    @apply text-[11px] font-semibold uppercase rounded-[5px] py-[3px] px-2;
+    @apply text-status-badge uppercase rounded-pill py-[3px] px-2;
     background: #eff6ff;
     color: #1e40af;
   }
 
   .brand-dot {
     @apply w-[7px] h-[7px] rounded-full;
-    background: #f0b429;
+    background: var(--secondary);
     animation: pulse 2s ease-in-out infinite;
   }
 
   .icon-wrap-dark {
     @apply w-7 h-7 rounded-full flex items-center justify-center;
-    background: #0c0c13;
+    background: var(--primary-container);
   }
 
   .icon-wrap-gold {
     @apply w-7 h-7 rounded-full flex items-center justify-center;
-    background: #f0b429;
+    background: var(--secondary);
   }
 
   .icon-wrap-subtle {
     @apply w-[42px] h-[42px] rounded-[11px] flex items-center justify-center;
-    background: rgba(240, 180, 41, 0.12);
+    background: rgba(250, 189, 50, 0.12);
   }
 
   .field-label {
-    @apply text-[11px] font-medium uppercase tracking-[0.08em];
-    color: var(--color-text-muted-light);
+    @apply text-label-caps uppercase;
+    color: var(--on-surface-variant);
   }
 
   .field-value {
-    @apply text-sm font-normal;
-    color: var(--color-text-on-light);
+    @apply text-body-md font-normal;
+    color: var(--primary-container);
+  }
+
+  .card-surface {
+    background: var(--surface-container-lowest);
+    border: 1px solid var(--outline-variant);
+  }
+
+  .card-white {
+    background: #ffffff;
+  }
+
+  .card-glass {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(8px);
   }
 }

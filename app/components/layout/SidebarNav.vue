@@ -1,6 +1,6 @@
 <template>
-  <aside class="fixed left-0 top-0 bottom-0 w-64 bg-brand-dark text-white flex flex-col">
-    <div class="p-6 border-b border-white/10">
+  <aside class="fixed left-0 top-0 bottom-0 w-64 text-white flex flex-col" style="background: var(--primary-container)">
+    <div class="p-6 border-b" style="border-color: var(--outline-variant)">
       <NuxtLink :to="dashboardLink" class="flex items-center gap-2">
         <BrandDot />
         <span class="font-semibold text-base">Club Taxis</span>
@@ -11,16 +11,18 @@
         v-for="item in navItems"
         :key="item.to"
         :to="item.to"
-        class="flex items-center gap-3 px-6 py-3 text-sm text-white/60 hover:text-white hover:bg-white/5 transition-colors"
-        active-class="!text-brand-gold bg-white/5"
+        class="flex items-center gap-3 px-6 py-3 text-sm transition-colors"
+        style="color: var(--on-surface-variant)"
+        active-class="!text-secondary"
       >
         <Icon :name="item.icon" size="18" />
         <span>{{ item.label }}</span>
       </NuxtLink>
     </nav>
-    <div class="p-4 border-t border-white/10">
+    <div class="p-4 border-t" style="border-color: var(--outline-variant)">
       <button
-        class="flex items-center gap-3 w-full px-2 py-2 text-sm text-white/60 hover:text-white transition-colors"
+        class="flex items-center gap-3 w-full px-2 py-2 text-sm transition-colors"
+        style="color: var(--on-surface-variant)"
         @click="handleLogout"
       >
         <Icon name="tabler:logout" size="18" />

@@ -1,7 +1,7 @@
 <template>
-  <div class="min-h-screen bg-brand-dark">
+  <div class="min-h-screen" style="background: var(--surface)">
     <AppHeader />
-    <main class="mx-auto max-w-[480px] px-4 pb-24">
+    <main class="mx-auto max-w-mobile px-md pb-24">
       <slot />
     </main>
     <BottomNav />
