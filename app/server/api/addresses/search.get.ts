@@ -38,14 +38,14 @@ export default defineEventHandler(async (event) => {
   }
 
   if (q.length >= 3 && results.length < 5) {
-    const config = useRuntimeConfig()
-    const nominatimUrl = config.nominatimUrl || 'https://nominatim.openstreetmap.org'
+    const nominatimUrl = process.env.NOMINATIM_URL || 'https://nominatim.openstreetmap.org'
 
     try {
       const osmResults = await $fetch<Array<{ lat: string; lon: string; display_name: string; address: any }>>(
         `${nominatimUrl}/search`,
         {
           params: { q, format: 'json', limit: 5, countrycodes: 'es', addressdetails: 1 },
+          headers: { 'User-Agent': 'ClubTaxisAsturias/1.0' },
         },
       )
 
@@ -61,8 +61,8 @@ export default defineEventHandler(async (event) => {
           lng: parseFloat(r.lon),
         })
       }
-    } catch {
-      // Nominatim no disponible
+    } catch (e) {
+      console.error('[Nominatim] Error:', e)
     }
   }
 
