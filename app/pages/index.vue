@@ -2,19 +2,12 @@
   <div class="min-h-screen bg-background text-on-background font-body-md overflow-x-hidden">
     <AppHeader />
     <main class="w-full max-w-mobile mx-auto px-md pb-32">
-      <section class="py-lg">
-        <p class="font-label-caps text-label-caps text-secondary mb-base">BIENVENIDO AL CLUB</p>
-        <h2 class="font-display-lg text-display-lg text-on-surface mb-md">¿A dónde vamos hoy?</h2>
+      <section class="space-y-xs">
+        <p class="font-label-caps text-label-caps text-secondary uppercase tracking-widest">Reserva tu viaje</p>
+        <h2 class="font-display-lg text-display-lg text-on-surface">¿A dónde vamos hoy?</h2>
       </section>
 
       <SearchForm :stations="stations" @search="handleSearch" />
-
-      <div class="flex gap-sm overflow-x-auto py-lg no-scrollbar">
-        <AppChip v-model:active="needsChildSeat" icon="tabler:armchair">Silla Bebé</AppChip>
-        <AppChip v-model:active="needsPetFriendly" icon="tabler:paw">Mascotas</AppChip>
-        <AppChip v-model:active="needsAccessible" icon="tabler:wheelchair">Accesible</AppChip>
-        <AppChip v-model:active="needsLargeVehicle" icon="tabler:car">Vehículo Grande</AppChip>
-      </div>
 
       <section class="mt-md space-y-md">
         <div class="flex justify-between items-end">
@@ -58,11 +51,6 @@ const router = useRouter()
 const stations = ref<Array<{ id: string; name: string }>>([])
 const offers = ref<any[]>([])
 const loadingOffers = ref(true)
-
-const needsChildSeat = ref(false)
-const needsPetFriendly = ref(false)
-const needsAccessible = ref(false)
-const needsLargeVehicle = ref(false)
 
 onMounted(async () => {
   try {

@@ -12,6 +12,7 @@ export default <Config>{
     extend: {
       colors: {
         brand: { dark: '#0c0c13', gold: '#fabd32', white: '#ffffff' },
+        'gold-accent': '#f0b429',
         surface: {
           DEFAULT: '#12121c',
           dim: '#12121c',
