@@ -121,7 +121,7 @@
     <div class="grid grid-cols-2 gap-3">
       <div class="space-y-1">
         <label class="text-xs font-medium text-slate-500 uppercase tracking-wide block">Pasajeros</label>
-        <div class="flex items-center gap-3 bg-white border-2 border-secondary rounded-xl px-4 min-h-[3rem]">
+        <div class="flex items-center gap-3 bg-white border-2 border-secondary rounded-xl px-4 h-12">
           <Icon name="tabler:users" size="18" class="text-secondary flex-shrink-0" />
           <button
             type="button"
@@ -145,12 +145,12 @@
       <div class="space-y-1">
         <label class="text-xs font-medium text-slate-500 uppercase tracking-wide block">Equipaje</label>
         <div
-          class="flex items-center gap-3 bg-white border-2 border-secondary rounded-xl px-4 min-h-[3rem] cursor-pointer"
+          class="flex items-center gap-3 bg-white border-2 border-secondary rounded-xl px-4 h-12 cursor-pointer overflow-hidden"
           @click="luggageDialogVisible = true"
         >
           <Icon name="tabler:luggage" size="18" class="text-secondary flex-shrink-0" />
-          <span class="text-sm font-medium text-slate-900 flex-1">{{ luggageSummary }}</span>
-          <Icon name="tabler:chevron-down" size="18" class="text-slate-400" />
+          <span class="text-sm font-medium text-slate-900 flex-1 truncate whitespace-nowrap">{{ luggageSummary }}</span>
+          <Icon name="tabler:chevron-down" size="18" class="text-slate-400 flex-shrink-0" />
         </div>
       </div>
 
@@ -224,8 +224,8 @@ const stationOptions = computed(() =>
 
 const luggageSummary = computed(() => {
   const parts: string[] = []
-  if (luggageBig.value > 0) parts.push(`${luggageBig.value} ${luggageBig.value === 1 ? 'maleta grande' : 'maletas grandes'}`)
-  if (luggageHand.value > 0) parts.push(`${luggageHand.value} ${luggageHand.value === 1 ? 'equipaje de mano' : 'equipajes de mano'}`)
+  if (luggageBig.value > 0) parts.push(`${luggageBig.value} ${luggageBig.value === 1 ? 'maleta G' : 'maletas G'}`)
+  if (luggageHand.value > 0) parts.push(`${luggageHand.value} ${luggageHand.value === 1 ? 'equipaje M' : 'equipajes M'}`)
   if (parts.length === 0) return 'Sin equipaje'
   return parts.join(' + ')
 })
