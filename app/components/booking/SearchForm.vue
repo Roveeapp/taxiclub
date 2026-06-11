@@ -88,7 +88,7 @@
         <label class="font-label-caps text-label-caps text-slate-500 uppercase">Hora</label>
         <div class="flex items-center bg-surface-input px-md py-sm rounded-lg">
           <Icon name="tabler:clock" size="18" class="text-slate-400 mr-xs" />
-          <input v-model="time" type="time" class="w-full bg-transparent border-none focus:ring-0 focus:outline-none outline-none text-slate-900 text-xs" />
+          <input v-model="time" type="time" :min="minTime" class="w-full bg-transparent border-none focus:ring-0 focus:outline-none outline-none text-slate-900 text-xs" />
         </div>
       </div>
     </div>
@@ -156,7 +156,8 @@ const destination = ref('')
 const destFocused = ref(false)
 const destSuggestions = ref<Array<{ id: string; label: string; description: string; source: string; icon: string; lat?: number; lng?: number }>>([])
 let destDebounce: ReturnType<typeof setTimeout> | null = null
-const date = ref('')
+const today = new Date()
+const date = ref(today.toISOString().split('T')[0])
 const time = ref('')
 const passengers = ref(1)
 const luggageBig = ref(0)
@@ -164,14 +165,21 @@ const originOpen = ref(false)
 const accessories = ref<Accessory[]>([])
 const selectedAccessories = ref(new Set<string>())
 
-const minDate = computed(() => new Date().toISOString().split('T')[0])
+const minDate = computed(() => today.toISOString().split('T')[0])
+
+const minTime = computed(() => {
+  if (date.value !== minDate.value) return ''
+  const min = new Date(today.getTime() + 2 * 60 * 60 * 1000)
+  return min.toTimeString().slice(0, 5)
+})
 
 const selectedStationName = computed(() =>
   props.stations.find(s => s.id === originStationId.value)?.name,
 )
 
 const isFormValid = computed(() =>
-  originStationId.value && destination.value && date.value && time.value,
+  originStationId.value && destination.value && date.value && time.value
+    && (!minTime.value || time.value >= minTime.value),
 )
 
 interface SearchFormData {
