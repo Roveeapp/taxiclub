@@ -1,10 +1,10 @@
 export default defineTask({
   meta: { name: 'tasks/remind-unconfirmed', description: 'Remind drivers of unconfirmed bookings' },
   async run() {
-    const db = useDb()
+    const sql = useSql()
     const threshold = new Date(Date.now() - 30 * 60 * 1000)
 
-    const unconfirmed = await db.execute`
+    const unconfirmed = await sql`
       SELECT ba.id, ba.driver_id, b.id as booking_id
       FROM booking_assignments ba
       JOIN bookings b ON b.id = ba.booking_id

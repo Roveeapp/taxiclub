@@ -1,10 +1,10 @@
 export default defineTask({
   meta: { name: 'tasks/charge-memberships', description: 'Charge monthly membership fees' },
   async run() {
-    const db = useDb()
+    const sql = useSql()
     const config = await getSystemConfig()
 
-    const members = await db.execute`
+    const members = await sql`
       SELECT d.id, d.stripe_account_id, u.email
       FROM drivers d
       JOIN users u ON u.id = d.id

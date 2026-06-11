@@ -1,8 +1,8 @@
 export default defineTask({
   meta: { name: 'tasks/expire-offers', description: 'Expire old return offers' },
   async run() {
-    const db = useDb()
-    const offers = await db.execute`
+    const sql = useSql()
+    const offers = await sql`
       UPDATE return_offers
       SET status = 'expired'
       WHERE status = 'active'

@@ -1,8 +1,8 @@
 export default defineTask({
   meta: { name: 'tasks/process-payouts', description: 'Process monthly driver payouts' },
   async run() {
-    const db = useDb()
-    const drivers = await db.execute`
+    const sql = useSql()
+    const drivers = await sql`
       SELECT id FROM drivers WHERE is_active = TRUE
     `
 
