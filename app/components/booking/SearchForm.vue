@@ -79,17 +79,20 @@
     <div class="grid grid-cols-2 gap-sm">
       <div class="space-y-xs">
         <label class="font-label-caps text-label-caps text-slate-500 uppercase">Fecha</label>
-        <div class="flex items-center bg-surface-input px-md py-sm rounded-lg">
+        <label class="flex items-center bg-surface-input px-md py-sm rounded-lg cursor-pointer">
           <Icon name="tabler:calendar" size="18" class="text-slate-400 mr-xs" />
           <input v-model="date" type="date" :min="minDate" class="w-full bg-transparent border-none focus:ring-0 focus:outline-none outline-none text-slate-900 text-xs" />
-        </div>
+        </label>
       </div>
       <div class="space-y-xs">
         <label class="font-label-caps text-label-caps text-slate-500 uppercase">Hora</label>
-        <div class="flex items-center bg-surface-input px-md py-sm rounded-lg">
+        <label class="flex items-center bg-surface-input px-md py-sm rounded-lg cursor-pointer">
           <Icon name="tabler:clock" size="18" class="text-slate-400 mr-xs" />
           <input v-model="time" type="time" :min="minTime" class="w-full bg-transparent border-none focus:ring-0 focus:outline-none outline-none text-slate-900 text-xs" />
-        </div>
+        </label>
+        <p v-if="date === minDate && time && time < minTime" class="text-status-error text-[10px] mt-xs">
+          Mínimo {{ minTime }}h
+        </p>
       </div>
     </div>
 
