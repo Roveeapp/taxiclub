@@ -1,15 +1,13 @@
 <template>
-  <header class="sticky top-0 z-50 border-b" style="background: var(--primary-container); border-color: var(--outline-variant)">
-    <div class="mx-auto max-w-mobile px-md h-14 flex items-center justify-between">
-      <NuxtLink to="/" class="flex items-center gap-2">
+  <header class="bg-background w-full top-0 sticky z-50">
+    <div class="flex justify-between items-center px-md py-sm w-full max-w-mobile mx-auto">
+      <button class="text-secondary hover:opacity-80 active:scale-95 transition-transform duration-200">
+        <Icon name="tabler:menu-2" size="22" />
+      </button>
+      <h1 class="font-headline-md text-headline-md font-bold tracking-tight text-on-surface">CLUB TAXIS</h1>
+      <button class="text-secondary hover:opacity-80 active:scale-95 transition-transform duration-200">
         <BrandDot />
-        <span class="text-white font-semibold text-base">Club Taxis</span>
-      </NuxtLink>
-      <div class="flex items-center gap-3">
-        <NuxtLink to="/cuenta" class="hover:text-white transition-colors" style="color: var(--on-surface-variant)">
-          <Icon name="tabler:user" size="20" />
-        </NuxtLink>
-      </div>
+      </button>
     </div>
   </header>
 </template>

@@ -100,9 +100,10 @@
 
 @layer components {
   .btn-primary {
-    @apply border-none rounded-btn py-4 px-5 text-[15px] font-medium w-full transition-all;
+    @apply border-none rounded-btn px-5 text-[15px] font-medium w-full transition-all;
     background: var(--primary-container);
     color: #ffffff;
+    padding: 15px;
   }
 
   .btn-primary:disabled {
@@ -118,8 +119,19 @@
     color: var(--on-secondary);
   }
 
+  .active-scale:active {
+    transform: scale(0.97);
+    transition: transform 0.1s ease;
+  }
+
+  .glass-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
   .badge-discount {
-    @apply text-[11px] font-semibold rounded-[5px] py-[3px] px-2;
+    @apply text-[11px] font-semibold rounded-full py-[3px] px-2;
     background: rgba(250, 189, 50, 0.18);
     color: var(--secondary);
   }

@@ -1,65 +1,45 @@
 <template>
-  <div class="bg-surface-card border border-surface-card-border rounded-card p-4">
-    <div class="flex items-start justify-between mb-3">
-      <div class="flex items-center gap-2">
-        <div class="icon-wrap-subtle">
-          <Icon name="tabler:bolt" size="20" class="text-brand-gold" />
-        </div>
-        <div>
-          <p class="text-sm font-medium text-white">{{ offer.originAddress }}</p>
-          <p class="text-xs text-white/45">→ {{ offer.destinationStationName }}</p>
-        </div>
-      </div>
-      <span v-if="offer.discountPct > 0" class="badge-discount">
-        -{{ offer.discountPct }}%
-      </span>
+  <div class="glass-card rounded-xl p-md border border-white/10 relative active-scale">
+    <div v-if="offer.discount_pct > 0 || offer.discountPct > 0" class="absolute top-md right-md bg-secondary/20 text-secondary px-sm py-base rounded-full">
+      <span class="font-status-badge text-status-badge">-{{ offer.discount_pct || offer.discountPct }}% OFF</span>
     </div>
-
-    <div class="flex items-center gap-4 text-xs text-white/45 mb-3">
-      <span class="flex items-center gap-1">
-        <Icon name="tabler:clock" size="14" />
-        {{ timeWindow }}
-      </span>
-      <span class="flex items-center gap-1">
-        <Icon name="tabler:users" size="14" />
-        {{ offer.maxPassengers }} plazas
-      </span>
-    </div>
-
-    <div class="flex items-center justify-between">
-      <div>
-        <span v-if="offer.discountPct > 0" class="text-xs text-white/30 line-through mr-2">
-          {{ formattedBasePrice }}
-        </span>
-        <span class="text-lg font-semibold text-brand-gold">{{ formattedFinalPrice }}</span>
+    <div class="flex gap-md items-center">
+      <div class="w-16 h-16 rounded-lg bg-surface-container-highest flex items-center justify-center overflow-hidden">
+        <Icon name="tabler:plane-arrival" size="28" class="text-secondary opacity-80" />
       </div>
-      <OfferTimer v-if="showTimer" :until="offer.availableUntil" />
+      <div class="flex-1">
+        <div class="flex items-center gap-xs mb-base">
+          <Icon name="tabler:plane-arrival" size="14" class="text-on-surface-variant" />
+          <span class="text-on-surface-variant font-label-caps text-[10px]">RETORNO AEROPUERTO</span>
+        </div>
+        <h4 class="font-title-sm text-title-sm text-on-surface">
+          {{ offer.origin_address || offer.originAddress }} → {{ offer.destination_station_name || offer.destinationStationName }}
+        </h4>
+        <p class="text-on-surface-variant text-[12px] mt-base">
+          {{ formatTime(offer.available_from || offer.availableFrom) }} · {{ offer.max_passengers || offer.maxPassengers }} plaza{{ (offer.max_passengers || offer.maxPassengers) !== 1 ? 's' : '' }} libre{{ (offer.max_passengers || offer.maxPassengers) !== 1 ? 's' : '' }}
+        </p>
+      </div>
+      <div class="text-right">
+        <p class="text-on-surface-variant line-through text-[10px]">{{ formatPrice(offer.base_price || offer.basePrice) }}</p>
+        <p class="font-price-display text-price-display text-secondary">{{ formatPrice(offer.final_price || offer.finalPrice) }}</p>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-const props = withDefaults(defineProps<{
+defineProps<{
   offer: any
-  showTimer?: boolean
-}>(), {
-  showTimer: true,
-})
+}>()
 
-const timeWindow = computed(() => {
-  const from = new Date(props.offer.availableFrom || props.offer.available_from)
-  const until = new Date(props.offer.availableUntil || props.offer.available_until)
-  const fmt = (d: Date) => d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
-  return `${fmt(from)} – ${fmt(until)}`
-})
+function formatTime(dateStr: string) {
+  if (!dateStr) return ''
+  const date = new Date(dateStr)
+  return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' }) + ', ' +
+    date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
+}
 
-const formattedBasePrice = computed(() => {
-  const price = props.offer.basePrice || props.offer.base_price
-  return `${Number(price).toFixed(2)} €`
-})
-
-const formattedFinalPrice = computed(() => {
-  const price = props.offer.finalPrice || props.offer.final_price
-  return `${Number(price).toFixed(2)} €`
-})
+function formatPrice(price: any) {
+  return `${Number(price || 0).toFixed(2).replace('.', ',')}€`
+}
 </script>

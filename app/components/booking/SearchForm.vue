@@ -1,14 +1,12 @@
 <template>
-  <div class="bg-white rounded-card p-6">
-    <div class="flex items-center gap-3 mb-4">
-      <div class="icon-wrap-dark">
-        <Icon name="tabler:map-pin-2" size="16" class="text-brand-gold" />
-      </div>
-      <div class="flex-1">
-        <span class="field-label block">DESDE · PARADA</span>
+  <div class="bg-white rounded-xl shadow-2xl p-lg space-y-md relative overflow-hidden active-scale">
+    <div class="space-y-xs">
+      <label class="font-label-caps text-label-caps text-primary-container block">ORIGEN (PARADA)</label>
+      <div class="flex items-center bg-surface-input rounded-lg px-md py-sm border-2 border-transparent focus-within:border-secondary transition-all">
+        <Icon name="tabler:map-pin-filled" size="18" class="text-primary-container mr-sm" />
         <select
           :value="originStationId"
-          class="w-full text-sm font-medium text-text-on-light bg-transparent border-none focus:outline-none cursor-pointer"
+          class="w-full bg-transparent border-none focus:ring-0 text-primary-container font-body-md appearance-none"
           @change="$emit('update:originStationId', ($event.target as HTMLSelectElement).value)"
         >
           <option value="" disabled>Seleccionar parada</option>
@@ -19,101 +17,122 @@
       </div>
     </div>
 
-    <div class="flex items-center gap-3 mb-4">
-      <div class="icon-wrap-gold">
-        <Icon name="tabler:map-pin" size="16" class="text-brand-dark" />
-      </div>
-      <div class="flex-1">
-        <span class="field-label block">HASTA</span>
+    <div class="space-y-xs">
+      <label class="font-label-caps text-label-caps text-primary-container block">DESTINO FINAL</label>
+      <div class="flex items-center bg-surface-input rounded-lg px-md py-sm border-2 border-transparent focus-within:border-secondary transition-all">
+        <Icon name="tabler:search" size="18" class="text-primary-container mr-sm" />
         <input
           :value="destination"
           type="text"
-          placeholder="Dirección o parada de destino"
-          class="w-full text-sm text-text-on-light bg-transparent border-none focus:outline-none placeholder:text-text-muted-light"
+          placeholder="Calle, ciudad o lugar..."
+          class="w-full bg-transparent border-none focus:ring-0 text-primary-container font-body-md"
           @input="$emit('update:destination', ($event.target as HTMLInputElement).value)"
         />
       </div>
     </div>
 
-    <div class="grid grid-cols-2 gap-4 mb-4">
-      <div>
-        <span class="field-label block mb-1">FECHA</span>
-        <input
-          :value="date"
-          type="date"
-          :min="minDate"
-          class="w-full bg-surface-input rounded-input px-3 py-2 text-sm text-text-on-light border border-transparent focus:border-brand-gold focus:outline-none"
-          @input="$emit('update:date', ($event.target as HTMLInputElement).value)"
-        />
+    <div class="grid grid-cols-2 gap-sm">
+      <div class="space-y-xs">
+        <label class="font-label-caps text-label-caps text-primary-container block">FECHA</label>
+        <div class="flex items-center bg-surface-input rounded-lg px-md py-sm">
+          <Icon name="tabler:calendar" size="18" class="text-primary-container mr-xs" />
+          <input
+            :value="date"
+            type="date"
+            :min="minDate"
+            class="w-full bg-transparent border-none focus:ring-0 text-primary-container font-body-md text-xs"
+            @input="$emit('update:date', ($event.target as HTMLInputElement).value)"
+          />
+        </div>
       </div>
-      <div>
-        <span class="field-label block mb-1">HORA</span>
-        <input
-          :value="time"
-          type="time"
-          class="w-full bg-surface-input rounded-input px-3 py-2 text-sm text-text-on-light border border-transparent focus:border-brand-gold focus:outline-none"
-          @input="$emit('update:time', ($event.target as HTMLInputElement).value)"
-        />
-      </div>
-    </div>
-
-    <div class="grid grid-cols-3 gap-4 mb-4">
-      <div>
-        <span class="field-label block mb-2">PASAJEROS</span>
-        <AppStepper v-model="passengers" :min="1" :max="8" />
-      </div>
-      <div>
-        <span class="field-label block mb-2">MALETAS</span>
-        <AppStepper v-model="luggageBig" :min="0" :max="5" />
-      </div>
-      <div>
-        <span class="field-label block mb-2">MANO</span>
-        <AppStepper v-model="luggageHand" :min="0" :max="10" />
+      <div class="space-y-xs">
+        <label class="font-label-caps text-label-caps text-primary-container block">HORA</label>
+        <div class="flex items-center bg-surface-input rounded-lg px-md py-sm">
+          <Icon name="tabler:clock" size="18" class="text-primary-container mr-xs" />
+          <input
+            :value="time"
+            type="time"
+            class="w-full bg-transparent border-none focus:ring-0 text-primary-container font-body-md text-xs"
+            @input="$emit('update:time', ($event.target as HTMLInputElement).value)"
+          />
+        </div>
       </div>
     </div>
 
-    <div class="flex flex-wrap gap-2 mb-6">
-      <AppChip v-model:active="needsChildSeat" icon="tabler:armchair">Silla bebé</AppChip>
-      <AppChip v-model:active="needsPetFriendly" icon="tabler:paw">Mascota</AppChip>
-      <AppChip v-model:active="needsAccessible" icon="tabler:wheelchair">PMR</AppChip>
-      <AppChip v-model:active="needsLargeVehicle" icon="tabler:car">Vehículo grande</AppChip>
+    <div class="grid grid-cols-2 gap-sm">
+      <div class="space-y-xs">
+        <label class="font-label-caps text-label-caps text-primary-container block">PASAJEROS</label>
+        <div class="flex items-center bg-surface-input rounded-lg px-md py-sm">
+          <Icon name="tabler:users" size="18" class="text-primary-container mr-xs" />
+          <select
+            :value="passengers"
+            class="w-full bg-transparent border-none focus:ring-0 text-primary-container font-body-md text-xs appearance-none"
+            @change="$emit('update:passengers', parseInt(($event.target as HTMLSelectElement).value))"
+          >
+            <option v-for="n in 8" :key="n" :value="n">{{ n }} {{ n === 1 ? 'persona' : 'personas' }}</option>
+          </select>
+        </div>
+      </div>
+      <div class="space-y-xs">
+        <label class="font-label-caps text-label-caps text-primary-container block">MALETAS</label>
+        <div class="flex items-center bg-surface-input rounded-lg px-md py-sm">
+          <Icon name="tabler:luggage" size="18" class="text-primary-container mr-xs" />
+          <select
+            :value="luggageBig"
+            class="w-full bg-transparent border-none focus:ring-0 text-primary-container font-body-md text-xs appearance-none"
+            @change="$emit('update:luggageBig', parseInt(($event.target as HTMLSelectElement).value))"
+          >
+            <option v-for="n in 6" :key="n" :value="n">{{ n }} {{ n === 1 ? 'maleta' : 'maletas' }}</option>
+          </select>
+        </div>
+      </div>
     </div>
 
-    <AppButton :disabled="!isFormValid" @click="handleSearch">
-      Buscar viaje
+    <AppButton
+      variant="gold"
+      :disabled="!isFormValid"
+      @click="handleSearch"
+    >
+      RESERVAR AHORA
+      <Icon name="tabler:arrow-right" size="18" class="ml-2" />
     </AppButton>
   </div>
 </template>
 
 <script setup lang="ts">
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   stations?: Array<{ id: string; name: string }>
-}>()
+  originStationId?: string
+  destination?: string
+  date?: string
+  time?: string
+  passengers?: number
+  luggageBig?: number
+}>(), {
+  stations: () => [],
+  originStationId: '',
+  destination: '',
+  date: '',
+  time: '',
+  passengers: 1,
+  luggageBig: 0,
+})
 
 const emit = defineEmits<{
   search: [data: SearchFormData]
+  'update:originStationId': [value: string]
+  'update:destination': [value: string]
+  'update:date': [value: string]
+  'update:time': [value: string]
+  'update:passengers': [value: number]
+  'update:luggageBig': [value: number]
 }>()
 
-const originStationId = ref('')
-const destination = ref('')
-const date = ref('')
-const time = ref('')
-const passengers = ref(1)
-const luggageBig = ref(0)
-const luggageHand = ref(0)
-const needsChildSeat = ref(false)
-const needsPetFriendly = ref(false)
-const needsAccessible = ref(false)
-const needsLargeVehicle = ref(false)
+const minDate = computed(() => new Date().toISOString().split('T')[0])
 
-const minDate = computed(() => {
-  const today = new Date()
-  return today.toISOString().split('T')[0]
-})
-
-const isFormValid = computed(() => {
-  return originStationId.value && destination.value && date.value && time.value
-})
+const isFormValid = computed(() =>
+  props.originStationId && props.destination && props.date && props.time,
+)
 
 interface SearchFormData {
   originStationId: string
@@ -131,25 +150,18 @@ interface SearchFormData {
 
 function handleSearch() {
   if (!isFormValid.value) return
-  
   emit('search', {
-    originStationId: originStationId.value,
-    destination: destination.value,
-    date: date.value,
-    time: time.value,
-    passengers: passengers.value,
-    luggageBig: luggageBig.value,
-    luggageHand: luggageHand.value,
-    needsChildSeat: needsChildSeat.value,
-    needsPetFriendly: needsPetFriendly.value,
-    needsAccessible: needsAccessible.value,
-    needsLargeVehicle: needsLargeVehicle.value,
+    originStationId: props.originStationId,
+    destination: props.destination,
+    date: props.date,
+    time: props.time,
+    passengers: props.passengers,
+    luggageBig: props.luggageBig,
+    luggageHand: 0,
+    needsChildSeat: false,
+    needsPetFriendly: false,
+    needsAccessible: false,
+    needsLargeVehicle: false,
   })
 }
-
-onMounted(() => {
-  if (!props.stations || props.stations.length === 0) {
-    // TODO: Fetch stations from API
-  }
-})
 </script>

@@ -1,47 +1,56 @@
 <template>
-  <div class="pt-6">
-    <h1 class="text-[28px] font-semibold leading-tight mb-6">
-      ¿A dónde te<br />llevamos?
-    </h1>
-    <SearchForm
-      :stations="stations"
-      @search="handleSearch"
-    />
+  <div class="min-h-screen bg-background text-on-background font-body-md overflow-x-hidden">
+    <AppHeader />
+    <main class="w-full max-w-mobile mx-auto px-md pb-32">
+      <section class="py-lg">
+        <p class="font-label-caps text-label-caps text-secondary mb-base">BIENVENIDO AL CLUB</p>
+        <h2 class="font-display-lg text-display-lg text-on-surface mb-md">¿A dónde vamos hoy?</h2>
+      </section>
 
-    <div class="mt-8">
-      <div class="flex items-center justify-between mb-4">
-        <div class="flex items-center gap-2">
-          <span class="brand-dot" />
-          <h2 class="text-lg font-medium text-white">Última Hora</h2>
+      <SearchForm :stations="stations" @search="handleSearch" />
+
+      <div class="flex gap-sm overflow-x-auto py-lg no-scrollbar">
+        <AppChip v-model:active="needsChildSeat" icon="tabler:armchair">Silla Bebé</AppChip>
+        <AppChip v-model:active="needsPetFriendly" icon="tabler:paw">Mascotas</AppChip>
+        <AppChip v-model:active="needsAccessible" icon="tabler:wheelchair">Accesible</AppChip>
+        <AppChip v-model:active="needsLargeVehicle" icon="tabler:car">Vehículo Grande</AppChip>
+      </div>
+
+      <section class="mt-md space-y-md">
+        <div class="flex justify-between items-end">
+          <h3 class="font-headline-md text-headline-md text-on-surface flex items-center gap-xs">
+            Última Hora
+            <div class="brand-dot" />
+          </h3>
+          <NuxtLink to="/ultima-hora" class="text-secondary font-label-caps text-label-caps">VER TODO</NuxtLink>
         </div>
-        <NuxtLink to="/ultima-hora" class="text-sm text-brand-gold hover:text-gold-600 transition-colors">
-          Ver todas
-        </NuxtLink>
-      </div>
 
-      <div v-if="loadingOffers" class="space-y-3">
-        <AppSkeleton v-for="i in 2" :key="i" />
-      </div>
+        <div v-if="loadingOffers" class="space-y-sm">
+          <AppSkeleton v-for="i in 2" :key="i" />
+        </div>
 
-      <div v-else-if="offers.length > 0" class="space-y-3">
-        <NuxtLink
-          v-for="offer in offers.slice(0, 3)"
-          :key="offer.id"
-          :to="`/ultima-hora/${offer.id}`"
-        >
-          <OfferCard :offer="offer" />
-        </NuxtLink>
-      </div>
+        <div v-else-if="offers.length > 0" class="space-y-sm">
+          <NuxtLink
+            v-for="offer in offers.slice(0, 2)"
+            :key="offer.id"
+            :to="`/ultima-hora/${offer.id}`"
+            class="block"
+          >
+            <OfferCard :offer="offer" />
+          </NuxtLink>
+        </div>
 
-      <div v-else class="text-sm text-white/45">
-        No hay ofertas disponibles en este momento
-      </div>
-    </div>
+        <div v-else class="text-on-surface-variant text-sm text-center py-lg">
+          No hay ofertas disponibles en este momento
+        </div>
+      </section>
+    </main>
+    <BottomNav />
   </div>
 </template>
 
 <script setup lang="ts">
-definePageMeta({ layout: 'default' })
+definePageMeta({ layout: false })
 
 const bookingStore = useBookingStore()
 const router = useRouter()
@@ -49,6 +58,11 @@ const router = useRouter()
 const stations = ref<Array<{ id: string; name: string }>>([])
 const offers = ref<any[]>([])
 const loadingOffers = ref(true)
+
+const needsChildSeat = ref(false)
+const needsPetFriendly = ref(false)
+const needsAccessible = ref(false)
+const needsLargeVehicle = ref(false)
 
 onMounted(async () => {
   try {
@@ -80,3 +94,13 @@ async function handleSearch(data: any) {
   }
 }
 </script>
+
+<style scoped>
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+</style>
