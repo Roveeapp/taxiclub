@@ -94,7 +94,9 @@ export default defineNuxtConfig({
     client: {
       installPrompt: true,
     },
-    disable: process.env.NODE_ENV === 'development',
+    devOptions: {
+      enabled: false,
+    },
   },
 
   nitro: {
