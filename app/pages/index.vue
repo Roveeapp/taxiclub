@@ -73,7 +73,17 @@ async function handleSearch(data: any) {
   try {
     const price = await $fetch('/api/payments/create-intent', {
       method: 'POST',
-      body: data,
+      body: {
+        originStationId: data.originStationId,
+        destination: data.destination,
+        passengers: data.passengers,
+        luggageBig: data.luggageBig,
+        luggageHand: 0,
+        needsChildSeat: data.accessoryIds?.length > 0,
+        needsPetFriendly: false,
+        needsAccessible: false,
+        needsLargeVehicle: false,
+      },
     })
     bookingStore.setCurrentBooking({ ...data, ...price })
     router.push('/pagar')
