@@ -1,10 +1,10 @@
 <template>
   <div class="min-h-screen bg-background text-on-background font-body-md overflow-x-hidden">
     <AppHeader />
-    <main class="w-full max-w-mobile mx-auto px-md pb-32">
+    <main class="w-full max-w-mobile mx-auto px-md pb-32 space-y-lg">
       <section class="space-y-xs">
         <p class="font-label-caps text-label-caps text-secondary uppercase tracking-widest">Reserva tu viaje</p>
-        <h2 class="font-display-lg text-display-lg text-on-surface">¿A dónde vamos hoy?</h2>
+        <h2 class="font-display-lg text-display-lg text-on-surface">¿A dónde vamos?</h2>
       </section>
 
       <SearchForm :stations="stations" @search="handleSearch" />
