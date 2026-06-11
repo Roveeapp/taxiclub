@@ -1,124 +1,127 @@
 <template>
   <div class="bg-white rounded-xl shadow-2xl p-md space-y-md">
-    <!-- ORIGEN Selector (In-flow expansion) -->
-    <div class="space-y-xs origin-dropdown">
-      <label class="font-label-caps text-label-caps text-slate-500 uppercase">Origen (Parada)</label>
-      <button
-          class="w-full flex items-center justify-between bg-surface-input px-md py-sm rounded-lg transition-all duration-200"
-          :class="originOpen ? 'border-2 border-gold-accent' : ''"
-        @click="originOpen = !originOpen"
+    <!-- ORIGEN -->
+    <div class="space-y-xs">
+      <label class="font-label-caps text-label-caps text-slate-500 uppercase block">Origen (Parada)</label>
+      <Select
+        v-model="originStationId"
+        :options="stationOptions"
+        option-label="name"
+        option-value="id"
+        placeholder="Seleccionar parada"
+        class="w-full"
+        :pt="selectPt"
+        @change="onOriginChange"
       >
-        <div class="flex items-center gap-sm">
-          <Icon :name="originStationId ? 'tabler:map-pin-filled' : 'tabler:map-pin'" size="18" :class="originStationId ? 'text-gold-accent' : 'text-slate-400'" />
-          <span :class="originStationId ? 'text-slate-900 font-medium' : 'text-slate-400'">
-            {{ selectedStationName || 'Seleccionar parada' }}
-          </span>
-        </div>
-        <Icon name="tabler:chevron-down" size="18" class="text-slate-400 transition-transform" :class="{ 'rotate-180': originOpen }" />
-      </button>
-      <div v-if="originOpen" class="mt-xs bg-slate-50 rounded-lg border border-slate-200 overflow-hidden divide-y divide-slate-100">
-        <div
-          v-for="station in stations"
-          :key="station.id"
-          class="px-md py-sm flex items-center gap-sm cursor-pointer transition-colors"
-          :class="station.id === originStationId ? 'bg-gold-accent/10' : 'hover:bg-slate-100'"
-          @click="selectStation(station)"
-        >
-          <Icon :name="station.id === originStationId ? 'tabler:map-pin-filled' : 'tabler:map-pin'" size="18" :class="station.id === originStationId ? 'text-gold-accent' : 'text-slate-400'" />
-          <span :class="station.id === originStationId ? 'text-slate-900 font-semibold' : 'text-slate-700'">{{ station.name }}</span>
-          <Icon v-if="station.id === originStationId" name="tabler:check" size="16" class="text-gold-accent ml-auto" />
-        </div>
-      </div>
+        <template #dropdownicon>
+          <Icon name="tabler:chevron-down" size="18" class="text-slate-400" />
+        </template>
+      </Select>
     </div>
 
     <!-- DESTINO Autocomplete -->
     <div class="space-y-xs dest-dropdown">
-      <div class="flex items-center gap-md p-sm bg-surface-input rounded-lg">
-        <Icon :name="destination ? 'tabler:map-pin-filled' : 'tabler:map-pin'" size="20" :class="destination ? 'text-secondary' : 'text-slate-400'" />
-        <div class="flex flex-col flex-1">
-          <label class="font-label-caps text-label-caps text-slate-500">{{ destination ? 'DESTINO FINAL' : 'Destino' }}</label>
-          <input
-            v-model="destQuery"
-            type="text"
-            placeholder="Escribe una dirección..."
-              class="w-full bg-transparent border-none focus:ring-0 focus:outline-none outline-none text-slate-900 placeholder:text-slate-400 font-body-md"
-            @focus="destFocused = true"
-            @input="onDestInput"
-          />
-        </div>
-        <button v-if="destQuery" class="text-slate-400 hover:text-slate-600" @click="clearDest">
-          <Icon name="tabler:x" size="18" />
-        </button>
-      </div>
-
-      <!-- Autocomplete Results -->
-      <div v-if="destSuggestions.length > 0 && destFocused" class="border-t border-surface-divider mt-xs bg-white rounded-lg border border-slate-200 overflow-hidden shadow-lg">
-        <ul class="divide-y divide-surface-divider">
-          <li
-            v-for="(result, i) in destSuggestions"
-            :key="result.id"
-            class="p-md hover:bg-gold-50 cursor-pointer transition-colors flex items-center gap-md group animate-fade-in"
-            :style="{ animationDuration: `${0.4 + i * 0.05}s` }"
-            @mousedown.prevent="selectDest(result)"
-          >
+      <label class="font-label-caps text-label-caps text-slate-500 uppercase block">Destino</label>
+      <AutoComplete
+        v-model="destQuery"
+        :suggestions="destSuggestions"
+        option-label="description"
+        placeholder="Escribe una dirección..."
+        class="w-full"
+        :pt="autocompletePt"
+        @complete="onDestSearch"
+        @item-select="selectDest"
+        @focus="destFocused = true"
+        @blur="destFocused = false"
+      >
+        <template #option="{ option }">
+          <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center text-secondary flex-shrink-0">
-              <Icon :name="result.icon" size="18" />
+              <Icon :name="option.icon" size="18" />
             </div>
             <div class="flex-1 min-w-0">
-              <p class="font-body-md text-slate-900 font-semibold truncate">{{ result.label }}</p>
-              <p class="font-label-caps text-on-primary-container truncate">{{ result.description }}</p>
+              <p class="font-body-md text-slate-900 font-semibold truncate">{{ option.label }}</p>
+              <p class="font-label-caps text-on-primary-container truncate">{{ option.description }}</p>
             </div>
-            <span v-if="result.source === 'saved'" class="text-[10px] bg-secondary/10 text-secondary px-xs py-0.5 rounded-full font-medium">Guardado</span>
-            <Icon name="tabler:chevron-right" size="18" class="text-outline group-hover:text-secondary transition-colors" />
-          </li>
-        </ul>
-      </div>
+            <span v-if="option.source === 'saved'" class="text-[10px] bg-secondary/10 text-secondary px-xs py-0.5 rounded-full font-medium">Guardado</span>
+          </div>
+        </template>
+      </AutoComplete>
     </div>
 
     <!-- FECHA y HORA -->
     <div class="grid grid-cols-2 gap-sm">
       <div class="space-y-xs">
-        <label class="font-label-caps text-label-caps text-slate-500 uppercase">Fecha</label>
-        <label class="flex items-center bg-surface-input px-md py-sm rounded-lg cursor-pointer">
-          <Icon name="tabler:calendar" size="18" class="text-slate-400 mr-xs" />
-          <input v-model="date" type="date" :min="minDate" class="w-full bg-transparent border-none focus:ring-0 focus:outline-none outline-none text-slate-900 text-xs" />
-        </label>
+        <label class="font-label-caps text-label-caps text-slate-500 uppercase block">Fecha</label>
+        <DatePicker
+          v-model="date"
+          :min-date="minDateObj"
+          date-format="dd/mm/yy"
+          placeholder="Seleccionar"
+          class="w-full"
+          :pt="selectPt"
+          show-icon
+        >
+          <template #dropdownicon>
+            <Icon name="tabler:calendar" size="18" class="text-slate-400" />
+          </template>
+        </DatePicker>
       </div>
       <div class="space-y-xs">
-        <label class="font-label-caps text-label-caps text-slate-500 uppercase">Hora</label>
-        <div class="flex items-center bg-surface-input px-md py-sm rounded-lg">
-          <Icon name="tabler:clock" size="18" class="text-slate-400 mr-xs" />
-          <select v-model="time" class="w-full bg-transparent border-none focus:ring-0 focus:outline-none outline-none text-slate-900 text-xs appearance-none">
-            <option value="" disabled>Seleccionar hora</option>
-            <option v-for="t in timeSlots" :key="t.value" :value="t.value">{{ t.label }}</option>
-          </select>
-        </div>
+        <label class="font-label-caps text-label-caps text-slate-500 uppercase block">Hora</label>
+        <Select
+          v-model="time"
+          :options="timeSlots"
+          option-label="label"
+          option-value="value"
+          placeholder="Seleccionar"
+          class="w-full"
+          :pt="selectPt"
+        >
+          <template #dropdownicon>
+            <Icon name="tabler:clock" size="18" class="text-slate-400" />
+          </template>
+        </Select>
       </div>
     </div>
 
     <!-- PASAJEROS y EQUIPAJE -->
     <div class="grid grid-cols-2 gap-sm">
       <div class="space-y-xs">
-        <label class="font-label-caps text-label-caps text-slate-500 uppercase">Pasajeros</label>
-        <div class="flex items-center bg-surface-input px-md py-sm rounded-lg">
-          <Icon name="tabler:users" size="18" class="text-slate-400 mr-xs" />
-          <select v-model.number="passengers" class="w-full bg-transparent border-none focus:ring-0 focus:outline-none outline-none text-slate-900 text-xs appearance-none">
-            <option v-for="n in 8" :key="n" :value="n">{{ n }} {{ n === 1 ? 'persona' : 'personas' }}</option>
-          </select>
-        </div>
+        <label class="font-label-caps text-label-caps text-slate-500 uppercase block">Pasajeros</label>
+        <Select
+          v-model="passengers"
+          :options="passengerOptions"
+          option-label="label"
+          option-value="value"
+          placeholder="1 persona"
+          class="w-full"
+          :pt="selectPt"
+        >
+          <template #dropdownicon>
+            <Icon name="tabler:users" size="18" class="text-slate-400" />
+          </template>
+        </Select>
       </div>
       <div class="space-y-xs">
-        <label class="font-label-caps text-label-caps text-slate-500 uppercase">Equipaje</label>
-        <div class="flex items-center bg-surface-input px-md py-sm rounded-lg">
-          <Icon name="tabler:luggage" size="18" class="text-slate-400 mr-xs" />
-          <select v-model.number="luggageBig" class="w-full bg-transparent border-none focus:ring-0 focus:outline-none outline-none text-slate-900 text-xs appearance-none">
-            <option v-for="n in 6" :key="n" :value="n">{{ n }} {{ n === 1 ? 'maleta' : 'maletas' }}</option>
-          </select>
-        </div>
+        <label class="font-label-caps text-label-caps text-slate-500 uppercase block">Equipaje</label>
+        <Select
+          v-model="luggageBig"
+          :options="luggageOptions"
+          option-label="label"
+          option-value="value"
+          placeholder="0 maletas"
+          class="w-full"
+          :pt="selectPt"
+        >
+          <template #dropdownicon>
+            <Icon name="tabler:luggage" size="18" class="text-slate-400" />
+          </template>
+        </Select>
       </div>
     </div>
 
-    <!-- Accesorios dinámicos (desde API) -->
+    <!-- Accesorios -->
     <div class="flex flex-wrap gap-xs pt-xs">
       <button
         v-for="acc in accessories"
@@ -133,80 +136,54 @@
     </div>
 
     <!-- CTA -->
-    <AppButton variant="gold" :disabled="!isFormValid" @click="handleSearch">
-      Buscar Disponibilidad
-    </AppButton>
+    <Button
+      :label="'Buscar Disponibilidad'"
+      :disabled="!isFormValid"
+      class="w-full"
+      :pt="buttonPt"
+      @click="handleSearch"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
+import Select from 'primevue/select'
+import AutoComplete from 'primevue/autocomplete'
+import DatePicker from 'primevue/datepicker'
+import Button from 'primevue/button'
+
 interface Accessory { id: string; name: string; icon: string }
 interface Station { id: string; name: string }
 
-const props = withDefaults(defineProps<{
-  stations?: Station[]
-}>(), {
-  stations: () => [],
-})
+const props = withDefaults(defineProps<{ stations?: Station[] }>(), { stations: () => [] })
 
-const emit = defineEmits<{
-  search: [data: SearchFormData]
-}>()
+const emit = defineEmits<{ search: [data: SearchFormData] }>()
 
 const originStationId = ref('')
 const destQuery = ref('')
 const destination = ref('')
 const destFocused = ref(false)
-const destSuggestions = ref<Array<{ id: string; label: string; description: string; source: string; icon: string; lat?: number; lng?: number }>>([])
+const destSuggestions = ref<Array<{ id: string; label: string; description: string; source: string; icon: string }>>([])
 let destDebounce: ReturnType<typeof setTimeout> | null = null
-const today = new Date()
-const date = ref(today.toISOString().split('T')[0])
+
+const now = new Date()
+const date = ref<Date>(now)
 const time = ref('')
 const passengers = ref(1)
 const luggageBig = ref(0)
-const originOpen = ref(false)
 const accessories = ref<Accessory[]>([])
 const selectedAccessories = ref(new Set<string>())
 
-const minDate = computed(() => new Date().toISOString().split('T')[0])
+const minDateObj = computed(() => new Date())
 
-const timeSlots = computed(() => {
-  const slots: Array<{ value: string; label: string }> = []
-  const isToday = date.value === minDate.value
-  const now = new Date()
-  const startMin = isToday
-    ? new Date(now.getTime() + 2 * 60 * 60 * 1000)
-    : new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0)
-
-  const startH = startMin.getHours()
-  const startM = Math.ceil(startMin.getMinutes() / 15) * 15
-
-  const begin = new Date(startMin)
-  begin.setHours(startH, startM === 60 ? 0 : startM, 0, 0)
-  if (startM === 60) begin.setHours(startH + 1, 0, 0, 0)
-
-  const end = new Date(begin)
-  end.setHours(23, 59, 0, 0)
-
-  while (begin <= end) {
-    const h = begin.getHours().toString().padStart(2, '0')
-    const m = begin.getMinutes().toString().padStart(2, '0')
-    const val = `${h}:${m}`
-    slots.push({ value: val, label: `${h}:${m}h` })
-    begin.setMinutes(begin.getMinutes() + 15)
-  }
-  return slots
-})
-
-const minTimeLabel = computed(() => timeSlots.value[0]?.label || '')
-
-const selectedStationName = computed(() =>
-  props.stations.find(s => s.id === originStationId.value)?.name,
+const stationOptions = computed(() =>
+  props.stations.map(s => ({ name: s.name, value: s.id })),
 )
 
-const isFormValid = computed(() =>
-  originStationId.value && destination.value && date.value && time.value,
-)
+const passengerOptions = Array.from({ length: 8 }, (_, i) => ({ value: i + 1, label: `${i + 1} ${i === 0 ? 'persona' : 'personas'}` }))
+const luggageOptions = Array.from({ length: 7 }, (_, i) => ({ value: i, label: i === 0 ? 'Sin equipaje' : `${i} ${i === 1 ? 'maleta' : 'maletas'}` }))
+
+const isFormValid = computed(() => !!originStationId.value && !!destQuery.value && !!time.value)
 
 interface SearchFormData {
   originStationId: string
@@ -218,47 +195,75 @@ interface SearchFormData {
   accessoryIds: string[]
 }
 
-function selectStation(station: Station) {
-  originStationId.value = station.id
-  originOpen.value = false
+// PrimeVue passthrough styles matching Stitch design
+const selectPt = {
+  root: { class: '!bg-surface-input !rounded-lg !border-none' },
+  input: { class: '!text-slate-900 !text-xs !p-0' },
+  trigger: { class: '!text-slate-400' },
+  overlay: { class: '!bg-white !border !border-slate-200 !rounded-lg !shadow-lg !mt-1' },
+  option: { class: '!text-slate-700 !text-sm hover:!bg-slate-100' },
+  optionCheckIcon: { class: '!text-secondary' },
+  blank: { class: '!text-slate-400 !text-sm' },
 }
 
-function onDestInput() {
+const autocompletePt = {
+  root: { class: '!bg-surface-input !rounded-lg !border-none' },
+  input: { class: '!text-slate-900 !text-sm !p-0' },
+  overlay: { class: '!bg-white !border !border-slate-200 !rounded-lg !shadow-lg !mt-1' },
+  option: { class: '!p-0' },
+}
+
+const buttonPt = {
+  root: { class: '!bg-secondary !text-on-secondary !font-bold !py-md !rounded-xl !border-none !text-sm' },
+}
+
+const timeSlots = computed(() => {
+  const slots: Array<{ value: string; label: string }> = []
+  const isToday = date.value.toDateString() === new Date().toDateString()
+  const startMin = isToday
+    ? new Date(Date.now() + 2 * 60 * 60 * 1000)
+    : new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0)
+
+  const startH = startMin.getHours()
+  const startM = Math.ceil(startMin.getMinutes() / 15) * 15
+  const begin = new Date(startMin)
+  begin.setHours(startH, startM === 60 ? 0 : startM, 0, 0)
+  if (startM === 60) begin.setHours(startH + 1, 0, 0, 0)
+
+  const end = new Date(begin)
+  end.setHours(23, 59, 0, 0)
+  while (begin <= end) {
+    const h = begin.getHours().toString().padStart(2, '0')
+    const m = begin.getMinutes().toString().padStart(2, '0')
+    slots.push({ value: `${h}:${m}`, label: `${h}:${m}h` })
+    begin.setMinutes(begin.getMinutes() + 15)
+  }
+  return slots
+})
+
+function onOriginChange() { /* handled by v-model */ }
+
+function onDestSearch(event: { query: string }) {
   if (destDebounce) clearTimeout(destDebounce)
   destDebounce = setTimeout(async () => {
-    if (destQuery.value.length < 2) {
-      destSuggestions.value = []
-      return
-    }
+    if (event.query.length < 2) { destSuggestions.value = []; return }
     try {
-      const data = await $fetch(`/api/addresses/search?q=${encodeURIComponent(destQuery.value)}`)
+      const data = await $fetch(`/api/addresses/search?q=${encodeURIComponent(event.query)}`)
       destSuggestions.value = data as any[]
-    } catch {
-      destSuggestions.value = []
-    }
+    } catch { destSuggestions.value = [] }
   }, 300)
 }
 
-function selectDest(result: { id: string; label: string; description: string; lat?: number; lng?: number }) {
-  destQuery.value = result.description || result.label
-  destination.value = result.description || result.label
-  destSuggestions.value = []
-  destFocused.value = false
-}
-
-function clearDest() {
-  destQuery.value = ''
-  destination.value = ''
+function selectDest(event: { value: { id: string; label: string; description: string } }) {
+  destination.value = event.value.description
+  destQuery.value = event.value.description
   destSuggestions.value = []
 }
 
 function toggleAccessory(id: string) {
-  if (selectedAccessories.value.has(id)) {
-    selectedAccessories.value.delete(id)
-  } else {
-    selectedAccessories.value.add(id)
-  }
-  selectedAccessories.value = new Set(selectedAccessories.value)
+  const next = new Set(selectedAccessories.value)
+  next.has(id) ? next.delete(id) : next.add(id)
+  selectedAccessories.value = next
 }
 
 function handleSearch() {
@@ -266,7 +271,7 @@ function handleSearch() {
   emit('search', {
     originStationId: originStationId.value,
     destination: destination.value,
-    date: date.value,
+    date: date.value.toISOString().split('T')[0],
     time: time.value,
     passengers: passengers.value,
     luggageBig: luggageBig.value,
@@ -274,37 +279,16 @@ function handleSearch() {
   })
 }
 
-function handleClickOutside(e: MouseEvent) {
-  const target = e.target as HTMLElement
-
-  if (originOpen.value && !target.closest('.origin-dropdown')) {
-    originOpen.value = false
-  }
-
-  if (destFocused.value && !target.closest('.dest-dropdown')) {
-    destFocused.value = false
-    destSuggestions.value = []
-  }
-}
-
 onMounted(async () => {
-  document.addEventListener('click', handleClickOutside)
-
-  if (timeSlots.value.length > 0) {
-    time.value = timeSlots.value[0].value
-  }
+  if (timeSlots.value.length > 0) time.value = timeSlots.value[0].value
 
   try {
     const data = await $fetch('/api/accessories')
     accessories.value = (data as Accessory[]).slice(0, 6)
-  } catch { /* fallback */ }
+  } catch { /* ok */ }
 })
 
 watch(date, () => {
-  if (timeSlots.value.length > 0) {
-    time.value = timeSlots.value[0].value
-  }
+  if (timeSlots.value.length > 0) time.value = timeSlots.value[0].value
 })
-
-onUnmounted(() => document.removeEventListener('click', handleClickOutside))
 </script>

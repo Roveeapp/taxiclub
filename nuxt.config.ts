@@ -4,13 +4,26 @@ export default defineNuxtConfig({
   srcDir: 'app/',
 
   modules: [
-    '@nuxt/ui',
+    '@primevue/nuxt-module',
+    '@nuxtjs/tailwindcss',
+    '@nuxt/icon',
     '@nuxtjs/supabase',
     '@pinia/nuxt',
     '@vueuse/nuxt',
     '@vite-pwa/nuxt',
     '@nuxt/eslint',
   ],
+
+  primevue: {
+    options: {
+      theme: {
+        preset: 'Aura',
+        options: {
+          darkModeSelector: '.dark',
+        },
+      },
+    },
+  },
 
   icon: {
     serverBundle: {
