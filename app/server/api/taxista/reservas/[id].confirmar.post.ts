@@ -1,6 +1,7 @@
 export default defineEventHandler(async (event) => {
   const user = requireAuth(event)
   const id = getRouterParam(event, 'id')
+  if (!id) throw createError({ statusCode: 400, message: 'Missing id' })
   const body = await readBody(event)
   const db = useDb()
 
@@ -15,8 +16,8 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, message: 'Assignment not found' })
   }
 
-  const { error: updateError } = await db
-    .from('booking_assignments')
+  const { error: updateError } = await (db
+    .from('booking_assignments') as any)
     .update({
       confirmed_at: new Date().toISOString(),
       confirmed_plate: body.plate,
@@ -31,8 +32,8 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 500, message: updateError.message })
   }
 
-  const { error: bookingError } = await db
-    .from('bookings')
+  const { error: bookingError } = await (db
+    .from('bookings') as any)
     .update({ status: 'confirmed', updated_at: new Date().toISOString() })
     .eq('id', id)
 

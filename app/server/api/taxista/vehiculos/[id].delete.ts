@@ -1,10 +1,11 @@
 export default defineEventHandler(async (event) => {
   const user = requireAuth(event)
   const id = getRouterParam(event, 'id')
+  if (!id) throw createError({ statusCode: 400, message: 'Missing id' })
   const db = useDb()
 
-  const { error } = await db
-    .from('vehicles')
+  const { error } = await (db
+    .from('vehicles') as any)
     .update({ is_active: false })
     .eq('id', id)
     .eq('driver_id', user.id)

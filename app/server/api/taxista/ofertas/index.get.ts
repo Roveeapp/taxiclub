@@ -2,7 +2,7 @@ export default defineEventHandler(async (event) => {
   const user = requireAuth(event)
   const db = useDb()
 
-  const { data: offers, error } = await db.rpc('get_driver_offers', {
+  const { data: offers, error } = await (db.rpc as any)('get_driver_offers', {
     p_driver_id: user.id,
   })
 

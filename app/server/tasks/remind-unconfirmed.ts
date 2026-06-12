@@ -4,7 +4,7 @@ export default defineTask({
     const db = useDb()
     const threshold = new Date(Date.now() - 30 * 60 * 1000).toISOString()
 
-    const { data: unconfirmed, error } = await db.rpc('get_unconfirmed_assignments', {
+    const { data: unconfirmed, error } = await (db.rpc as any)('get_unconfirmed_assignments', {
       p_threshold: threshold,
     })
 
@@ -13,10 +13,10 @@ export default defineTask({
       return { result: { reminders: 0 } }
     }
 
-    for (const assignment of unconfirmed || []) {
+    for (const assignment of (unconfirmed || []) as any[]) {
       console.log(`Reminder needed for booking ${assignment.booking_id}`)
     }
 
-    return { result: { reminders: unconfirmed?.length || 0 } }
+    return { result: { reminders: (unconfirmed as any[])?.length || 0 } }
   },
 })

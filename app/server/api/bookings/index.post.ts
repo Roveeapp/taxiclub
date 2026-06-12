@@ -4,8 +4,8 @@ export default defineEventHandler(async (event) => {
 
   const db = useDb()
 
-  const { data: booking, error: insertError } = await db
-    .from('bookings')
+  const { data: booking, error: insertError } = await (db
+    .from('bookings') as any)
     .insert({
       client_id: user.id,
       origin_station_id: body.originStationId,
@@ -25,7 +25,7 @@ export default defineEventHandler(async (event) => {
       total_price: body.totalPrice,
       status: 'pending',
       stripe_payment_intent_id: body.stripePaymentIntentId,
-    } as any)
+    })
     .select()
     .single()
 
@@ -35,13 +35,13 @@ export default defineEventHandler(async (event) => {
 
   try {
     const driver = await assignDriver(body)
-    await db.from('booking_assignments').insert({
+    await (db.from('booking_assignments') as any).insert({
       booking_id: (booking as any).id,
       driver_id: driver.id,
-    } as any)
-    await db
-      .from('drivers')
-      .update({ last_assigned_at: new Date().toISOString() } as any)
+    })
+    await (db
+      .from('drivers') as any)
+      .update({ last_assigned_at: new Date().toISOString() })
       .eq('id', driver.id)
     await notifyDriver(driver.id as string, booking)
   } catch {

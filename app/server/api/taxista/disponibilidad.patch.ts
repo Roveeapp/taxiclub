@@ -19,7 +19,7 @@ export default defineEventHandler(async (event) => {
       hour_to: body.hourTo || null,
     }))
 
-    const { error } = await db.from('driver_availability').upsert(upserts, {
+    const { error } = await (db.from('driver_availability') as any).upsert(upserts, {
       onConflict: 'driver_id,date',
     })
 
@@ -27,7 +27,7 @@ export default defineEventHandler(async (event) => {
       throw createError({ statusCode: 500, message: error.message })
     }
   } else if (body.date) {
-    const { error } = await db.from('driver_availability').upsert(
+    const { error } = await (db.from('driver_availability') as any).upsert(
       {
         driver_id: user.id,
         date: body.date,

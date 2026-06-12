@@ -7,15 +7,15 @@ export default defineEventHandler(async (event) => {
 
   const user = requireAuth(event)
 
-  const { error: updateError } = await db
-    .from('bookings')
+  const { error: updateError } = await (db
+    .from('bookings') as any)
     .update({
       status: 'cancelled',
       cancelled_at: new Date().toISOString(),
       cancelled_by: user.id,
       cancellation_reason: body.reason || 'Cancelled by admin',
       updated_at: new Date().toISOString(),
-    } as any)
+    })
     .eq('id', id)
 
   if (updateError) {

@@ -114,11 +114,11 @@ export async function sendSMS(to: string, message: string) {
 
 export async function notifyDriver(driverId: string, booking: any) {
   const db = useDb()
-  const { data: driver } = await db.rpc('notify_driver_data', {
+  const { data: driver } = await (db.rpc as any)('notify_driver_data', {
     p_driver_id: driverId,
   })
 
-  if (!driver || driver.length === 0) return
+  if (!driver || (driver as any[]).length === 0) return
   const d = driver[0] as any
 
   const config = useRuntimeConfig()
@@ -138,11 +138,11 @@ export async function notifyDriver(driverId: string, booking: any) {
 
 export async function notifyClientConfirmed(bookingId: string) {
   const db = useDb()
-  const { data } = await db.rpc('notify_client_confirmed_data', {
+  const { data } = await (db.rpc as any)('notify_client_confirmed_data', {
     p_booking_id: bookingId,
   })
 
-  if (!data || data.length === 0) return
+  if (!data || (data as any[]).length === 0) return
   const row = data[0] as any
 
   const config = useRuntimeConfig()
@@ -157,11 +157,11 @@ export async function notifyClientConfirmed(bookingId: string) {
 
 export async function notifyClientCancelled(bookingId: string, reason: string) {
   const db = useDb()
-  const { data } = await db.rpc('notify_client_cancelled_data', {
+  const { data } = await (db.rpc as any)('notify_client_cancelled_data', {
     p_booking_id: bookingId,
   })
 
-  if (!data || data.length === 0) return
+  if (!data || (data as any[]).length === 0) return
   const row = data[0] as any
 
   await sendEmail(row.email, 'Reserva cancelada', 'booking-cancelled', { reason })

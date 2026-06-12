@@ -2,7 +2,7 @@ export default defineTask({
   meta: { name: 'tasks/process-payouts', description: 'Process monthly driver payouts' },
   async run() {
     const db = useDb()
-    const { data: drivers, error } = await db.rpc('get_active_drivers')
+    const { data: drivers, error } = await (db.rpc as any)('get_active_drivers')
 
     if (error) {
       console.error('Error fetching drivers:', error)
@@ -13,7 +13,7 @@ export default defineTask({
     const now = new Date()
     const month = new Date(now.getFullYear(), now.getMonth() - 1, 1)
 
-    for (const driver of drivers || []) {
+    for (const driver of (drivers || []) as any[]) {
       try {
         const payout = await calculateMonthlyPayout(driver.id as string, month)
         results.push(payout)

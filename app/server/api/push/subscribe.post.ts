@@ -3,9 +3,9 @@ export default defineEventHandler(async (event) => {
   const body = await readBody(event)
   const db = useDb()
 
-  const { error } = await db
-    .from('users')
-    .update({ push_subscription: body.subscription } as any)
+  const { error } = await (db
+    .from('users') as any)
+    .update({ push_subscription: body.subscription })
     .eq('id', user.id)
 
   if (error) {

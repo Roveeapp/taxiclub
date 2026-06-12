@@ -1,6 +1,7 @@
 export default defineEventHandler(async (event) => {
   const user = requireAuth(event)
   const id = getRouterParam(event, 'id')
+  if (!id) throw createError({ statusCode: 400, message: 'Missing id' })
   const db = useDb()
 
   const { data: assignment, error: findError } = await db
@@ -14,8 +15,8 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, message: 'Assignment not found' })
   }
 
-  const { error: updateError } = await db
-    .from('bookings')
+  const { error: updateError } = await (db
+    .from('bookings') as any)
     .update({ status: 'completed', updated_at: new Date().toISOString() })
     .eq('id', id)
 
@@ -29,9 +30,9 @@ export default defineEventHandler(async (event) => {
     .eq('id', id)
     .single()
 
-  if (booking?.stripe_payment_intent_id) {
+  if ((booking as any)?.stripe_payment_intent_id) {
     const stripe = useStripe()
-    await stripe.paymentIntents.capture(booking.stripe_payment_intent_id)
+    await stripe.paymentIntents.capture((booking as any).stripe_payment_intent_id)
   }
 
   return { success: true }

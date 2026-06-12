@@ -30,11 +30,11 @@ export async function sendWebPush(
 
 export async function notifyDriverPush(driverId: string, booking: any) {
   const db = useDb()
-  const { data: subs } = await db.rpc('get_driver_push_sub', {
+  const { data: subs } = await (db.rpc as any)('get_driver_push_sub', {
     p_driver_id: driverId,
   })
 
-  if (!subs || subs.length === 0 || !(subs[0] as any).push_subscription) return
+  if (!subs || (subs as any[]).length === 0 || !(subs[0] as any).push_subscription) return
 
   const appUrl = useRuntimeConfig().public.appUrl || 'https://clubtaxisasturias.es'
 

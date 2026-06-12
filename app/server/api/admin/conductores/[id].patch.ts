@@ -11,9 +11,9 @@ export default defineEventHandler(async (event) => {
   if (body.isActive !== undefined) updateData.is_active = body.isActive
 
   if (Object.keys(updateData).length > 0) {
-    const { error } = await db
-      .from('drivers')
-      .update(updateData as any)
+    const { error } = await (db
+      .from('drivers') as any)
+      .update(updateData)
       .eq('id', id)
 
     if (error) {

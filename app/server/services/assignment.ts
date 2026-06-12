@@ -1,7 +1,7 @@
 export async function assignDriver(bookingInput: any) {
   const db = useDb()
 
-  const { data: result, error } = await db.rpc('get_driver_for_assignment', {
+  const { data: result, error } = await (db.rpc as any)('get_driver_for_assignment', {
     p_origin_station_id: bookingInput.originStationId,
     p_destination_station_id: bookingInput.destinationStationId || null,
     p_passengers: bookingInput.passengers,
@@ -14,7 +14,7 @@ export async function assignDriver(bookingInput: any) {
     p_pickup_at: bookingInput.pickupAt,
   })
 
-  if (error || !result || result.length === 0) {
+  if (error || !result || (result as any[]).length === 0) {
     throw new Error('No drivers available')
   }
 

@@ -3,8 +3,8 @@ export default defineEventHandler(async (event) => {
   const body = await readBody(event)
   const db = useDb()
 
-  const { data: vehicle, error: insertError } = await db
-    .from('vehicles')
+  const { data: vehicle, error: insertError } = await (db
+    .from('vehicles') as any)
     .insert({
       driver_id: user.id,
       plate: body.plate,

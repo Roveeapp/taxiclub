@@ -13,9 +13,9 @@ export default defineEventHandler(async (event) => {
   if (body.lng !== undefined) updateData.lng = body.lng
   if (body.isActive !== undefined) updateData.is_active = body.isActive
 
-  const { error } = await db
-    .from('stations')
-    .update(updateData as any)
+  const { error } = await (db
+    .from('stations') as any)
+    .update(updateData)
     .eq('id', id)
 
   if (error) {

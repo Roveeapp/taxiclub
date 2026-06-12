@@ -6,8 +6,8 @@ export default defineEventHandler(async (event) => {
   const basePrice = 25
   const finalPrice = basePrice * (1 - (body.discountPct || 0) / 100)
 
-  const { data: offer, error } = await db
-    .from('return_offers')
+  const { data: offer, error } = await (db
+    .from('return_offers') as any)
     .insert({
       driver_id: user.id,
       origin_booking_id: body.originBookingId || null,

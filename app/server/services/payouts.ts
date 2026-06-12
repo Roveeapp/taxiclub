@@ -2,11 +2,11 @@ export async function calculateMonthlyPayout(driverId: string, month: Date) {
   const db = useDb()
   const config = await getSystemConfig()
 
-  const { data: driver, error } = await db.rpc('get_driver_payout_data', {
+  const { data: driver, error } = await (db.rpc as any)('get_driver_payout_data', {
     p_driver_id: driverId,
   })
 
-  if (error || !driver || driver.length === 0) {
+  if (error || !driver || (driver as any[]).length === 0) {
     throw new Error('Driver not found')
   }
 
@@ -15,7 +15,7 @@ export async function calculateMonthlyPayout(driverId: string, month: Date) {
   const monthStart = new Date(month.getFullYear(), month.getMonth(), 1)
   const monthEnd = new Date(month.getFullYear(), month.getMonth() + 1, 0, 23, 59, 59)
 
-  const { data: trips } = await db.rpc('get_trips_for_payout', {
+  const { data: trips } = await (db.rpc as any)('get_trips_for_payout', {
     p_driver_id: driverId,
     p_month_start: monthStart.toISOString(),
     p_month_end: monthEnd.toISOString(),

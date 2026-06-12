@@ -9,9 +9,9 @@ export default defineEventHandler(async (event) => {
   if (body.label !== undefined) updateData.label = body.label
   if (body.is_favorite !== undefined) updateData.is_favorite = body.is_favorite
 
-  const { error } = await db
-    .from('saved_addresses')
-    .update(updateData as any)
+  const { error } = await (db
+    .from('saved_addresses') as any)
+    .update(updateData)
     .eq('id', id)
     .eq('user_id', user.id)
 
