@@ -1,3 +1,4 @@
+// @ts-ignore -- no type declarations available for web-push
 import webpush from 'web-push'
 
 export async function sendWebPush(

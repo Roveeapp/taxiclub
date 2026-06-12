@@ -3,8 +3,7 @@ export default defineEventHandler(async (event) => {
   const id = getRouterParam(event, 'id')
   const db = useDb()
 
-  const { data: bookings, error } = await db
-    .rpc('get_booking_by_id', { p_id: id, p_user_id: user.id })
+  const { data: bookings, error } = await (db.rpc as any)('get_booking_by_id', { p_id: id, p_user_id: user.id })
 
   if (error || !bookings || bookings.length === 0) {
     throw createError({ statusCode: 404, message: 'Booking not found' })

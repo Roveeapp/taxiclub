@@ -10,13 +10,13 @@ export default defineTask({
 
     if (error) {
       console.error('Error fetching unconfirmed assignments:', error)
-      return { reminders: 0 }
+      return { result: { reminders: 0 } }
     }
 
     for (const assignment of unconfirmed || []) {
       console.log(`Reminder needed for booking ${assignment.booking_id}`)
     }
 
-    return { reminders: unconfirmed?.length || 0 }
+    return { result: { reminders: unconfirmed?.length || 0 } }
   },
 })

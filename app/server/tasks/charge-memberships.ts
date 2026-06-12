@@ -8,7 +8,7 @@ export default defineTask({
 
     if (error) {
       console.error('Error fetching members:', error)
-      return { charged: 0 }
+      return { result: { charged: 0 } }
     }
 
     const fee = Number(config.membership_monthly_fee || 20)
@@ -21,6 +21,6 @@ export default defineTask({
       }
     }
 
-    return { charged }
+    return { result: { charged } }
   },
 })

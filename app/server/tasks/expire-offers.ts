@@ -11,9 +11,9 @@ export default defineTask({
 
     if (error) {
       console.error('Error expiring offers:', error)
-      return { expired: 0 }
+      return { result: { expired: 0 } }
     }
 
-    return { expired: offers?.length || 0 }
+    return { result: { expired: offers?.length || 0 } }
   },
 })

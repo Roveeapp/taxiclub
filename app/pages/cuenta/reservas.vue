@@ -38,7 +38,7 @@ onMounted(async () => {
     const { data } = await useSupabaseClient()
       .from('bookings')
       .select('*, booking_assignments(*), stations(name)')
-      .eq('client_id', user.value?.id)
+      .eq('client_id', user.value?.id ?? '')
       .order('created_at', { ascending: false })
 
     bookings.value = (data || []).map((b: any) => ({

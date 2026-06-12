@@ -1,8 +1,9 @@
-import { createClient } from '@supabase/supabase-js'
+import { createClient, type SupabaseClient } from '@supabase/supabase-js'
+import type { Database } from '../../types/database'
 
-let adminClient: ReturnType<typeof createClient> | null = null
+let adminClient: SupabaseClient<Database> | null = null
 
-export function useDb() {
+export function useDb(): SupabaseClient<Database> {
   if (!adminClient) {
     const config = useRuntimeConfig()
     const url = config.public.supabaseUrl
@@ -10,7 +11,7 @@ export function useDb() {
     if (!url || !key) {
       throw new Error('Supabase URL or service role key is not configured')
     }
-    adminClient = createClient(url, key, {
+    adminClient = createClient<Database>(url, key, {
       auth: {
         persistSession: false,
         autoRefreshToken: false,
@@ -22,6 +23,6 @@ export function useDb() {
 
 // Deprecated: kept only for compatibility during migration.
 // It now returns the Supabase client, not a SQL executor.
-export function useSql(): ReturnType<typeof createClient> {
+export function useSql(): SupabaseClient<Database> {
   return useDb()
 }

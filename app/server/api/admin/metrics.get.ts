@@ -4,8 +4,7 @@ export default defineEventHandler(async (event) => {
 
   const today = new Date().toISOString().split('T')[0]
 
-  const { data: metrics, error } = await db
-    .rpc('get_metrics', { p_today: today })
+  const { data: metrics, error } = await (db.rpc as any)('get_metrics', { p_today: today })
 
   if (error || !metrics || metrics.length === 0) {
     return {

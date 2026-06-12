@@ -25,7 +25,7 @@ export default defineEventHandler(async (event) => {
       total_price: body.totalPrice,
       status: 'pending',
       stripe_payment_intent_id: body.stripePaymentIntentId,
-    })
+    } as any)
     .select()
     .single()
 
@@ -36,16 +36,16 @@ export default defineEventHandler(async (event) => {
   try {
     const driver = await assignDriver(body)
     await db.from('booking_assignments').insert({
-      booking_id: booking.id,
+      booking_id: (booking as any).id,
       driver_id: driver.id,
-    })
+    } as any)
     await db
       .from('drivers')
-      .update({ last_assigned_at: new Date().toISOString() })
+      .update({ last_assigned_at: new Date().toISOString() } as any)
       .eq('id', driver.id)
     await notifyDriver(driver.id as string, booking)
   } catch {
-    await notifyAdminNoDrivers(booking.id as string)
+    await notifyAdminNoDrivers((booking as any).id as string)
   }
 
   return booking

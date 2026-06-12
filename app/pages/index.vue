@@ -85,7 +85,7 @@ async function handleSearch(data: any) {
         needsLargeVehicle: false,
       },
     })
-    bookingStore.setCurrentBooking({ ...data, ...price })
+    bookingStore.setCurrentBooking({ ...data, ...(price as Record<string, unknown>) })
     router.push('/pagar')
   } catch (e) {
     console.error('Error calculating price:', e)

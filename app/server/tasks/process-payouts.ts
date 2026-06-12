@@ -6,7 +6,7 @@ export default defineTask({
 
     if (error) {
       console.error('Error fetching drivers:', error)
-      return { processed: 0 }
+      return { result: { processed: 0 } }
     }
 
     const results = []
@@ -22,6 +22,6 @@ export default defineTask({
       }
     }
 
-    return { processed: results.length }
+    return { result: { processed: results.length } }
   },
 })

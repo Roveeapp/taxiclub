@@ -114,7 +114,7 @@ const calendarDays = computed((): CalendarDay[] => {
 })
 
 function makeDay(date: Date, isCurrentMonth: boolean): CalendarDay {
-  const dateStr = date.toISOString().split('T')[0]
+  const dateStr = date.toISOString().split('T')[0] ?? ''
   const avail = props.availability?.find(a => a.date === dateStr)
   const today = new Date()
   today.setHours(0, 0, 0, 0)

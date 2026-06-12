@@ -6,7 +6,7 @@ export default defineEventHandler(async (event) => {
   const status = query.status as string | undefined
   const date = query.date as string | undefined
 
-  const { data: bookings, error } = await db.rpc('get_admin_bookings', {
+  const { data: bookings, error } = await (db.rpc as any)('get_admin_bookings', {
     p_status: status || null,
     p_date: date || null,
   })

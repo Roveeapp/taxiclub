@@ -22,10 +22,11 @@ export async function geocodeAddress(address: string): Promise<{ lat: number; ln
       },
     })
 
-    if (response && response.length > 0) {
+    const first = response?.[0]
+    if (first) {
       return {
-        lat: parseFloat(response[0].lat),
-        lng: parseFloat(response[0].lon),
+        lat: parseFloat(first.lat),
+        lng: parseFloat(first.lon),
       }
     }
     return null

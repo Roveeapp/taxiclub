@@ -11,7 +11,7 @@ export default defineEventHandler(async (event) => {
       address: body.address || null,
       lat: body.lat || null,
       lng: body.lng || null,
-    })
+    } as any)
     .select()
     .single()
 

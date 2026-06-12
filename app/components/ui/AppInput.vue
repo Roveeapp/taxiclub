@@ -3,13 +3,13 @@
     <label v-if="label" class="field-label block mb-1">{{ label }}</label>
     <InputText
       v-if="type !== 'number'"
-      :model-value="modelValue"
+      :model-value="modelValue != null ? String(modelValue) : undefined"
       :type="type"
       :placeholder="placeholder"
       :disabled="disabled"
       :pt="inputPt"
       class="w-full"
-      @update:model-value="$emit('update:modelValue', $event)"
+      @update:model-value="$emit('update:modelValue', $event ?? '')"
     />
     <InputNumber
       v-else

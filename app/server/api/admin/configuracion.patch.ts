@@ -9,7 +9,7 @@ export default defineEventHandler(async (event) => {
     updated_at: new Date().toISOString(),
   }))
 
-  const { error } = await db.from('system_config').upsert(upserts, {
+  const { error } = await db.from('system_config').upsert(upserts as any, {
     onConflict: 'key',
   })
 

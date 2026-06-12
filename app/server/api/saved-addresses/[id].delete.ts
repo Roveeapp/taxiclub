@@ -1,6 +1,7 @@
 export default defineEventHandler(async (event) => {
   const user = requireAuth(event)
   const id = getRouterParam(event, 'id')
+  if (!id) throw createError({ statusCode: 400, message: 'Missing id' })
   const db = useDb()
 
   const { error } = await db

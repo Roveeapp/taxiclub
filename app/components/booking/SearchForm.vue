@@ -295,7 +295,7 @@ function handleSearch() {
   emit('search', {
     originStationId: originStationId.value,
     destination: destination.value,
-    date: date.value.toISOString().split('T')[0],
+    date: date.value.toISOString().split('T')[0] ?? '',
     time: time.value,
     passengers: passengers.value,
     luggageBig: luggageBig.value,
@@ -305,7 +305,7 @@ function handleSearch() {
 }
 
 onMounted(async () => {
-  if (timeSlots.value.length > 0) time.value = timeSlots.value[0].value
+  if (timeSlots.value.length > 0 && timeSlots.value[0]) time.value = timeSlots.value[0].value
 
   try {
     const data = await $fetch('/api/accessories')
@@ -314,7 +314,7 @@ onMounted(async () => {
 })
 
 watch(date, () => {
-  if (timeSlots.value.length > 0) time.value = timeSlots.value[0].value
+  if (timeSlots.value.length > 0 && timeSlots.value[0]) time.value = timeSlots.value[0].value
 })
 </script>
 

@@ -27,7 +27,7 @@ export default defineEventHandler(async (event) => {
     email: body.email,
     full_name: body.fullName || null,
     role: body.role || 'client',
-  })
+  } as any)
 
   if (userError) {
     throw createError({ statusCode: 500, message: userError.message })
@@ -38,7 +38,7 @@ export default defineEventHandler(async (event) => {
       id: data.user.id,
       license_number: body.licenseNumber || 'PENDING',
       license_city: body.licenseCity || 'PENDING',
-    })
+    } as any)
 
     if (driverError) {
       throw createError({ statusCode: 500, message: driverError.message })

@@ -2,7 +2,7 @@ export default defineEventHandler(async (event) => {
   const id = getRouterParam(event, 'id')
   const db = useDb()
 
-  const { data: offers, error } = await db.rpc('get_offer_by_id', {
+  const { data: offers, error } = await (db.rpc as any)('get_offer_by_id', {
     p_id: id,
   })
 

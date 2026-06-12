@@ -1,6 +1,7 @@
 export default defineEventHandler(async (event) => {
   const user = requireAuth(event)
   const id = getRouterParam(event, 'id')
+  if (!id) throw createError({ statusCode: 400, message: 'Missing id' })
   const body = await readBody(event)
   const db = useDb()
 
@@ -10,7 +11,7 @@ export default defineEventHandler(async (event) => {
 
   const { error } = await db
     .from('saved_addresses')
-    .update(updateData)
+    .update(updateData as any)
     .eq('id', id)
     .eq('user_id', user.id)
 

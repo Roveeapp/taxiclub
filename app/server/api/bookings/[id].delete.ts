@@ -1,6 +1,7 @@
 export default defineEventHandler(async (event) => {
   const user = requireAuth(event)
   const id = getRouterParam(event, 'id')
+  if (!id) throw createError({ statusCode: 400, message: 'Missing id' })
   const db = useDb()
 
   const { data: booking, error: findError } = await db
@@ -14,13 +15,13 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, message: 'Booking not found' })
   }
 
-  if (booking.status === 'cancelled') {
+  if ((booking as any).status === 'cancelled') {
     throw createError({ statusCode: 400, message: 'Booking already cancelled' })
   }
 
   const config = await getSystemConfig()
   const maxCancelHours = Number(config.max_cancel_hours_before || 24)
-  const pickupAt = new Date(booking.pickup_at)
+  const pickupAt = new Date((booking as any).pickup_at)
   const hoursUntilPickup = (pickupAt.getTime() - Date.now()) / (1000 * 60 * 60)
 
   if (hoursUntilPickup < maxCancelHours) {
@@ -34,16 +35,16 @@ export default defineEventHandler(async (event) => {
       cancelled_at: new Date().toISOString(),
       cancelled_by: user.id,
       updated_at: new Date().toISOString(),
-    })
+    } as any)
     .eq('id', id)
 
   if (updateError) {
     throw createError({ statusCode: 500, message: updateError.message })
   }
 
-  if (booking.stripe_payment_intent_id) {
+  if ((booking as any).stripe_payment_intent_id) {
     const stripe = useStripe()
-    await stripe.paymentIntents.cancel(booking.stripe_payment_intent_id)
+    await stripe.paymentIntents.cancel((booking as any).stripe_payment_intent_id)
   }
 
   return { success: true }

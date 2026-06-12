@@ -20,8 +20,7 @@ export default defineEventHandler(async (event) => {
 
 async function calculateRoutePrice(originId: string, destinationId: string): Promise<number> {
   const db = useDb()
-  const { data: prices } = await db
-    .rpc('get_route_price', {
+  const { data: prices } = await (db.rpc as any)('get_route_price', {
       p_origin_id: originId,
       p_destination_id: destinationId,
     })

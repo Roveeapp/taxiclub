@@ -24,7 +24,7 @@ export default defineEventHandler(async (event) => {
       .order('is_favorite', { ascending: false })
       .limit(3)
 
-    for (const addr of saved || []) {
+    for (const addr of (saved || []) as any[]) {
       results.push({
         id: addr.id as string,
         label: addr.label as string,

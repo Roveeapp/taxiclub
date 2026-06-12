@@ -109,6 +109,9 @@ export default defineNuxtConfig({
     experimental: {
       tasks: true,
     },
+    imports: {
+      dirs: ['app/server/utils', 'app/server/services'],
+    },
     scheduledTasks: {
       '*/5 * * * *':  ['expire-offers'],
       '*/15 * * * *': ['remind-unconfirmed'],

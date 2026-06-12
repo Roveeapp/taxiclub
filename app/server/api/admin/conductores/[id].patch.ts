@@ -1,6 +1,7 @@
 export default defineEventHandler(async (event) => {
   requireRole(event, 'admin')
   const id = getRouterParam(event, 'id')
+  if (!id) throw createError({ statusCode: 400, message: 'Missing id' })
   const body = await readBody(event)
   const db = useDb()
 
@@ -12,7 +13,7 @@ export default defineEventHandler(async (event) => {
   if (Object.keys(updateData).length > 0) {
     const { error } = await db
       .from('drivers')
-      .update(updateData)
+      .update(updateData as any)
       .eq('id', id)
 
     if (error) {

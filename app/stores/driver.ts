@@ -9,7 +9,7 @@ export const useDriverStore = defineStore('driver', () => {
   async function fetchVehicles() {
     loading.value = true
     try {
-      const data = await $fetch('/api/taxista/vehiculos')
+      const data = await $fetch('/api/taxista/vehiculos') as any[]
       vehicles.value = data
     } finally {
       loading.value = false
@@ -19,7 +19,7 @@ export const useDriverStore = defineStore('driver', () => {
   async function fetchStations() {
     loading.value = true
     try {
-      const data = await $fetch('/api/taxista/paradas')
+      const data = await $fetch('/api/taxista/paradas') as any[]
       stations.value = data
     } finally {
       loading.value = false
@@ -32,7 +32,7 @@ export const useDriverStore = defineStore('driver', () => {
       const data = await $fetch('/api/taxista/disponibilidad', {
         query: { year, month },
       })
-      availability.value = data
+      availability.value = data as any[]
     } finally {
       loading.value = false
     }

@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
     const end = new Date(body.dateTo)
     const dates: string[] = []
     for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-      dates.push(d.toISOString().split('T')[0])
+      dates.push(d.toISOString().split('T')[0] ?? '')
     }
 
     const upserts = dates.map((date) => ({

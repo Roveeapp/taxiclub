@@ -12,7 +12,7 @@ export const useAdminStore = defineStore('admin', () => {
   async function fetchMetrics() {
     loading.value = true
     try {
-      const data = await $fetch('/api/admin/metrics')
+      const data = await $fetch('/api/admin/metrics') as typeof metrics.value
       metrics.value = data
     } finally {
       loading.value = false
