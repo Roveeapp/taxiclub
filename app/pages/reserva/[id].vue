@@ -10,14 +10,14 @@
         <BookingStatus :status="booking.status" />
       </div>
 
-      <div class="bg-white rounded-card p-6">
+      <div class="bg-white/5 border border-white/10 rounded-card p-6">
         <div class="flex items-center gap-3 mb-4">
           <div class="icon-wrap-dark">
             <Icon name="tabler:map-pin-2" size="14" class="text-brand-gold" />
           </div>
           <div>
             <span class="field-label block">DESDE</span>
-            <span class="text-sm text-text-on-light">{{ booking.origin_station_name }}</span>
+            <span class="text-sm text-white">{{ booking.origin_station_name }}</span>
           </div>
         </div>
 
@@ -27,28 +27,28 @@
           </div>
           <div>
             <span class="field-label block">HASTA</span>
-            <span class="text-sm text-text-on-light">{{ booking.destination_address }}</span>
+            <span class="text-sm text-white">{{ booking.destination_address }}</span>
           </div>
         </div>
 
         <div class="grid grid-cols-2 gap-4 mb-4">
-          <div class="bg-surface-input rounded-input p-3">
+          <div class="bg-white/5 rounded-input p-3">
             <span class="field-label block mb-1">FECHA</span>
-            <span class="text-sm text-text-on-light">{{ formattedDate }}</span>
+            <span class="text-sm text-white">{{ formattedDate }}</span>
           </div>
-          <div class="bg-surface-input rounded-input p-3">
+          <div class="bg-white/5 rounded-input p-3">
             <span class="field-label block mb-1">HORA</span>
-            <span class="text-sm text-text-on-light">{{ formattedTime }}</span>
+            <span class="text-sm text-white">{{ formattedTime }}</span>
           </div>
         </div>
 
-        <div class="flex items-center justify-between pt-4 border-t border-surface-divider">
-          <span class="text-sm text-text-muted-light">Total</span>
-          <span class="text-lg font-semibold text-text-on-light">{{ formattedPrice }}</span>
+        <div class="flex items-center justify-between pt-4 border-t border-white/10">
+          <span class="text-sm text-white/45">Total</span>
+          <span class="text-lg font-semibold text-white">{{ formattedPrice }}</span>
         </div>
       </div>
 
-      <div v-if="booking.confirmed_plate" class="bg-white rounded-card p-6">
+      <div v-if="booking.confirmed_plate" class="bg-white/5 border border-white/10 rounded-card p-6">
         <PlateDisplay
           :plate="booking.confirmed_plate"
           :phone="booking.confirmed_phone"

@@ -205,7 +205,12 @@ RETURNS TABLE (
 ) AS $$
 BEGIN
   RETURN QUERY
-  SELECT ro.*, s.name as destination_station_name, u.full_name as driver_name
+  SELECT ro.id, ro.driver_id, ro.origin_booking_id, ro.origin_address,
+         ro.origin_lat, ro.origin_lng, ro.destination_station_id,
+         ro.available_from, ro.available_until, ro.max_passengers,
+         ro.discount_pct, ro.base_price, ro.final_price, ro.status,
+         ro.booked_by_id, ro.created_at,
+         s.name as destination_station_name, u.full_name as driver_name
   FROM return_offers ro
   JOIN stations s ON s.id = ro.destination_station_id
   JOIN drivers d ON d.id = ro.driver_id
@@ -228,7 +233,12 @@ RETURNS TABLE (
 ) AS $$
 BEGIN
   RETURN QUERY
-  SELECT ro.*, s.name as destination_station_name, u.full_name as driver_name,
+  SELECT ro.id, ro.driver_id, ro.origin_booking_id, ro.origin_address,
+         ro.origin_lat, ro.origin_lng, ro.destination_station_id,
+         ro.available_from, ro.available_until, ro.max_passengers,
+         ro.discount_pct, ro.base_price, ro.final_price, ro.status,
+         ro.booked_by_id, ro.created_at,
+         s.name as destination_station_name, u.full_name as driver_name,
          v.plate as driver_plate
   FROM return_offers ro
   JOIN stations s ON s.id = ro.destination_station_id
@@ -251,7 +261,12 @@ RETURNS TABLE (
 ) AS $$
 BEGIN
   RETURN QUERY
-  SELECT ro.*, s.name as destination_station_name
+  SELECT ro.id, ro.driver_id, ro.origin_booking_id, ro.origin_address,
+         ro.origin_lat, ro.origin_lng, ro.destination_station_id,
+         ro.available_from, ro.available_until, ro.max_passengers,
+         ro.discount_pct, ro.base_price, ro.final_price, ro.status,
+         ro.booked_by_id, ro.created_at,
+         s.name as destination_station_name
   FROM return_offers ro
   JOIN stations s ON s.id = ro.destination_station_id
   WHERE ro.driver_id = p_driver_id

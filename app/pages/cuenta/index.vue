@@ -11,14 +11,14 @@
     </div>
 
     <div v-if="user">
-      <div class="bg-white rounded-card p-6">
+      <div class="bg-white/5 border border-white/10 rounded-card p-6">
         <div class="flex items-center gap-4 mb-6">
           <div class="w-14 h-14 rounded-full bg-brand-gold/10 flex items-center justify-center">
             <Icon name="tabler:user" size="24" class="text-brand-gold" />
           </div>
           <div>
-            <p class="text-base font-medium text-text-on-light">{{ user.user_metadata?.full_name || 'Usuario' }}</p>
-            <p class="text-sm text-text-muted-light">{{ user.email }}</p>
+            <p class="text-base font-medium text-white">{{ user.user_metadata?.full_name || 'Usuario' }}</p>
+            <p class="text-sm text-white/45">{{ user.email }}</p>
             <span class="inline-block mt-1 text-[11px] font-semibold uppercase px-2 py-0.5 rounded bg-gold-50 text-gold-800">
               {{ roleLabel }}
             </span>
@@ -28,20 +28,20 @@
         <div class="space-y-3">
           <NuxtLink
             to="/cuenta/reservas"
-            class="flex items-center justify-between p-3 rounded-input hover:bg-surface-input transition-colors"
+            class="flex items-center justify-between p-3 rounded-input hover:bg-white/5 transition-colors"
           >
-            <span class="flex items-center gap-3 text-sm text-text-on-light">
-              <Icon name="tabler:calendar-event" size="18" class="text-text-muted-light" />
+            <span class="flex items-center gap-3 text-sm text-white">
+              <Icon name="tabler:calendar-event" size="18" class="text-white/45" />
               Mis reservas
             </span>
-            <Icon name="tabler:chevron-right" size="16" class="text-text-muted-light" />
+            <Icon name="tabler:chevron-right" size="16" class="text-white/45" />
           </NuxtLink>
         </div>
       </div>
 
-      <div class="bg-white rounded-card p-6 mt-4">
+      <div class="bg-white/5 border border-white/10 rounded-card p-6 mt-4">
         <div class="flex items-center justify-between mb-4">
-          <h2 class="text-base font-medium text-text-on-light">Direcciones guardadas</h2>
+          <h2 class="text-base font-medium text-white">Direcciones guardadas</h2>
           <button
             class="text-sm text-secondary font-medium hover:text-secondary/80 transition-colors"
             @click="showAddForm = !showAddForm"
@@ -51,9 +51,9 @@
           </button>
         </div>
 
-        <div v-if="showAddForm" class="mb-4 p-4 bg-surface-input rounded-lg space-y-3">
+        <div v-if="showAddForm" class="mb-4 p-4 bg-white/5 rounded-lg space-y-3">
           <div>
-            <label class="text-xs text-text-muted-light uppercase block mb-1">Etiqueta</label>
+            <label class="text-xs text-white/45 uppercase block mb-1">Etiqueta</label>
             <InputText
               v-model="newAddress.label"
               placeholder="Casa, Trabajo, Gimnasio..."
@@ -62,7 +62,7 @@
             />
           </div>
           <div class="relative">
-            <label class="text-xs text-text-muted-light uppercase block mb-1">Dirección</label>
+            <label class="text-xs text-white/45 uppercase block mb-1">Dirección</label>
             <InputText
               v-model="addressQuery"
               placeholder="Buscar dirección..."
@@ -72,62 +72,62 @@
             />
             <div
               v-if="addressSuggestions.length > 0"
-              class="absolute z-10 top-full left-0 right-0 bg-white border border-slate-200 rounded-lg shadow-lg mt-1 max-h-48 overflow-y-auto"
+              class="absolute z-10 top-full left-0 right-0 bg-surface-container border border-white/10 rounded-lg shadow-lg mt-1 max-h-48 overflow-y-auto"
             >
               <button
                 v-for="s in addressSuggestions"
                 :key="s.id"
-                class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 border-b border-slate-100 last:border-0"
+                class="w-full text-left px-3 py-2 text-sm text-white hover:bg-white/5 border-b border-white/5 last:border-0"
                 @click="selectAddress(s)"
               >
-                <span class="text-xs text-slate-500">{{ s.label }}</span>
+                <span class="text-xs text-white/45">{{ s.label }}</span>
                 <span class="block truncate">{{ s.description }}</span>
               </button>
             </div>
           </div>
-          <label class="flex items-center gap-2 text-sm text-text-on-light">
+          <label class="flex items-center gap-2 text-sm text-white">
             <Checkbox v-model="newAddress.isFavorite" :binary="true" :pt="checkboxPt" />
             Marcar como favorito
           </label>
           <div class="flex gap-2">
             <AppButton :disabled="!canSave" @click="handleAddAddress">Guardar</AppButton>
-            <button class="text-sm text-text-muted-light hover:text-text-on-light" @click="showAddForm = false">Cancelar</button>
+            <button class="text-sm text-white/45 hover:text-white" @click="showAddForm = false">Cancelar</button>
           </div>
         </div>
 
         <div v-if="savedAddresses.length === 0 && !showAddForm" class="text-center py-4">
-          <p class="text-sm text-text-muted-light">No tienes direcciones guardadas</p>
+          <p class="text-sm text-white/45">No tienes direcciones guardadas</p>
         </div>
 
         <div class="space-y-2">
           <div
             v-for="addr in savedAddresses"
             :key="addr.id"
-            class="flex items-center justify-between p-3 rounded-input hover:bg-surface-input transition-colors"
+            class="flex items-center justify-between p-3 rounded-input hover:bg-white/5 transition-colors"
           >
             <div class="flex items-center gap-3 min-w-0">
               <div class="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
-                :class="addr.is_favorite ? 'bg-gold-50 text-gold-700' : 'bg-slate-100 text-slate-400'">
+                :class="addr.is_favorite ? 'bg-gold-50 text-gold-700' : 'bg-white/10 text-white/40'">
                 <Icon :name="addr.is_favorite ? 'tabler:star-filled' : 'tabler:map-pin'" size="16" />
               </div>
               <div class="min-w-0">
-                <p class="text-xs font-medium text-text-on-light">{{ addr.label }}</p>
-                <p class="text-xs text-text-muted-light truncate">{{ addr.address }}</p>
+                <p class="text-xs font-medium text-white">{{ addr.label }}</p>
+                <p class="text-xs text-white/45 truncate">{{ addr.address }}</p>
               </div>
             </div>
             <div class="flex items-center gap-1 flex-shrink-0">
               <button
-                class="w-7 h-7 flex items-center justify-center rounded-full hover:bg-slate-100 transition-colors"
+                class="w-7 h-7 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors"
                 @click="toggleFavorite(addr)"
               >
                 <Icon :name="addr.is_favorite ? 'tabler:star-filled' : 'tabler:star'" size="15"
-                  :class="addr.is_favorite ? 'text-gold-500' : 'text-slate-300'" />
+                  :class="addr.is_favorite ? 'text-gold-500' : 'text-white/30'" />
               </button>
               <button
-                class="w-7 h-7 flex items-center justify-center rounded-full hover:bg-red-50 transition-colors"
+                class="w-7 h-7 flex items-center justify-center rounded-full hover:bg-red-500/10 transition-colors"
                 @click="handleDeleteAddress(addr.id)"
               >
-                <Icon name="tabler:trash" size="15" class="text-slate-300 hover:text-red-500" />
+                <Icon name="tabler:trash" size="15" class="text-white/30 hover:text-red-500" />
               </button>
             </div>
           </div>
@@ -135,8 +135,8 @@
       </div>
     </div>
 
-    <div v-else class="bg-white rounded-card p-6 text-center">
-      <p class="text-text-muted-light mb-4">Inicia sesión para ver tu cuenta</p>
+    <div v-else class="bg-white/5 border border-white/10 rounded-card p-6 text-center">
+      <p class="text-white/45 mb-4">Inicia sesión para ver tu cuenta</p>
       <NuxtLink to="/cuenta/login">
         <AppButton>Iniciar sesión</AppButton>
       </NuxtLink>
@@ -155,7 +155,7 @@ const supabase = useSupabaseClient()
 const router = useRouter()
 
 const textPt = {
-  root: { class: '!w-full !h-10 !rounded-lg !border !border-slate-200 !text-sm !bg-white !shadow-none' },
+  root: { class: '!w-full !h-10 !rounded-lg !border !border-white/10 !text-sm !bg-white/5 !text-white !shadow-none' },
 }
 
 const checkboxPt = {

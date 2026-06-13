@@ -53,18 +53,19 @@ const offers = ref<any[]>([])
 const loadingOffers = ref(true)
 
 onMounted(async () => {
-  try {
-    const [stationsData, offersData] = await Promise.all([
-      $fetch('/api/stations'),
-      $fetch('/api/ofertas'),
-    ])
-    stations.value = stationsData as any[]
-    offers.value = offersData as any[]
-  } catch (e) {
-    console.error('Error loading data:', e)
-  } finally {
-    loadingOffers.value = false
+  const [stationsResult, offersResult] = await Promise.allSettled([
+    $fetch('/api/stations'),
+    $fetch('/api/ofertas'),
+  ])
+
+  if (stationsResult.status === 'fulfilled') {
+    stations.value = stationsResult.value as any[]
   }
+  if (offersResult.status === 'fulfilled') {
+    offers.value = offersResult.value as any[]
+  }
+
+  loadingOffers.value = false
 })
 
 async function handleSearch(data: any) {

@@ -5,8 +5,8 @@
         <Icon name="tabler:steering-wheel" size="20" class="text-brand-gold" />
       </div>
       <div>
-        <p class="text-lg font-semibold text-text-on-light tracking-wide">{{ plate }}</p>
-        <p v-if="substitute" class="text-xs text-text-muted-light">
+        <p class="text-lg font-semibold text-white tracking-wide">{{ plate }}</p>
+        <p v-if="substitute" class="text-xs text-white/45">
           Sustituto: {{ substitutePlate }}
         </p>
       </div>

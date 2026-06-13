@@ -1,8 +1,8 @@
 <template>
-  <div class="bg-white rounded-xl shadow-2xl p-4 space-y-4">
+  <div class="bg-white rounded-card shadow-2xl shadow-black/30 p-md space-y-md">
     <!-- ORIGEN -->
     <div class="space-y-1">
-      <label class="text-xs font-medium text-slate-500 uppercase tracking-wide block">Origen (Parada)</label>
+      <label class="text-[11px] font-medium text-slate-400 uppercase tracking-[0.08em] block">Origen (Parada)</label>
       <Select
         v-model="originStationId"
         :options="stationOptions"
@@ -35,7 +35,7 @@
 
     <!-- DESTINO -->
     <div class="space-y-1">
-      <label class="text-xs font-medium text-slate-500 uppercase tracking-wide block">Destino</label>
+      <label class="text-[11px] font-medium text-slate-400 uppercase tracking-[0.08em] block">Destino</label>
         <div class="relative flex items-center" style="height: 3rem;">
           <div class="absolute left-4 z-10 pointer-events-none" style="top: 50%; transform: translateY(-50%);">
             <Icon name="tabler:search" size="18" class="text-secondary" />
@@ -70,9 +70,9 @@
     </div>
 
     <!-- FECHA y HORA -->
-    <div class="grid grid-cols-2 gap-3">
+    <div class="grid grid-cols-2 gap-sm">
       <div class="space-y-1">
-        <label class="text-xs font-medium text-slate-500 uppercase tracking-wide block">Fecha</label>
+        <label class="text-[11px] font-medium text-slate-400 uppercase tracking-[0.08em] block">Fecha</label>
         <div class="relative flex items-center" style="height: 3rem;">
           <div class="absolute left-4 z-10 pointer-events-none" style="top: 50%; transform: translateY(-50%);">
             <Icon name="tabler:calendar" size="18" class="text-secondary" />
@@ -93,7 +93,7 @@
         </div>
       </div>
       <div class="space-y-1">
-        <label class="text-xs font-medium text-slate-500 uppercase tracking-wide block">Hora</label>
+        <label class="text-[11px] font-medium text-slate-400 uppercase tracking-[0.08em] block">Hora</label>
         <Select
           v-model="time"
           :options="timeSlots"
@@ -107,7 +107,9 @@
           <template #value="slotProps">
             <div class="flex items-center gap-3">
               <Icon name="tabler:clock" size="18" class="text-secondary flex-shrink-0" />
-              <span class="text-sm font-medium text-slate-900">{{ slotProps.value?.label || slotProps.placeholder }}</span>
+              <span class="text-sm font-medium text-slate-900">
+                {{ timeSlots.find(s => s.value === slotProps.value)?.label || slotProps.placeholder }}
+              </span>
             </div>
           </template>
           <template #dropdownicon>
@@ -118,9 +120,9 @@
     </div>
 
     <!-- PASAJEROS y EQUIPAJE -->
-    <div class="grid grid-cols-2 gap-3">
+    <div class="grid grid-cols-2 gap-sm">
       <div class="space-y-1">
-        <label class="text-xs font-medium text-slate-500 uppercase tracking-wide block">Pasajeros</label>
+        <label class="text-[11px] font-medium text-slate-400 uppercase tracking-[0.08em] block">Pasajeros</label>
         <div class="flex items-center gap-3 bg-white border-2 border-secondary rounded-xl px-4 h-12">
           <Icon name="tabler:users" size="18" class="text-secondary flex-shrink-0" />
           <button
@@ -143,7 +145,7 @@
         </div>
       </div>
       <div class="space-y-1">
-        <label class="text-xs font-medium text-slate-500 uppercase tracking-wide block">Equipaje</label>
+        <label class="text-[11px] font-medium text-slate-400 uppercase tracking-[0.08em] block">Equipaje</label>
         <div
           class="flex items-center gap-3 bg-white border-2 border-secondary rounded-xl px-4 h-12 cursor-pointer overflow-hidden"
           @click="luggageDialogVisible = true"
@@ -178,7 +180,7 @@
 
     <!-- CTA -->
     <button
-      class="w-full bg-secondary text-on-secondary font-bold py-4 rounded-xl text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+      class="w-full bg-secondary text-on-secondary font-bold py-4 rounded-btn text-sm transition-all active:scale-[0.97] disabled:opacity-40 disabled:cursor-not-allowed"
       :disabled="!isFormValid"
       @click="handleSearch"
     >

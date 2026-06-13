@@ -17,17 +17,17 @@
               <div class="icon-wrap-dark">
                 <Icon name="tabler:map-pin-2" size="14" class="text-brand-gold" />
               </div>
-              <span class="text-white font-medium">{{ offer.originAddress }}</span>
+              <span class="text-white font-medium">{{ offer.origin_address || offer.originAddress }}</span>
             </div>
             <div class="flex items-center gap-2">
               <div class="icon-wrap-gold">
                 <Icon name="tabler:map-pin" size="14" class="text-brand-dark" />
               </div>
-              <span class="text-white font-medium">{{ offer.destinationStationName }}</span>
+              <span class="text-white font-medium">{{ offer.destination_station_name || offer.destinationStationName }}</span>
             </div>
           </div>
-          <span v-if="offer.discountPct > 0" class="badge-discount text-sm">
-            -{{ offer.discountPct }}%
+          <span v-if="(offer.discount_pct ?? offer.discountPct) > 0" class="badge-discount text-sm">
+            -{{ offer.discount_pct ?? offer.discountPct }}%
           </span>
         </div>
 
@@ -44,18 +44,18 @@
 
         <div class="flex items-center justify-between pt-4 border-t border-white/10">
           <div>
-            <span v-if="offer.discountPct > 0" class="text-sm text-white/30 line-through mr-2">
+            <span v-if="(offer.discount_pct ?? offer.discountPct) > 0" class="text-sm text-white/30 line-through mr-2">
               {{ formattedBasePrice }}
             </span>
             <span class="text-2xl font-semibold text-brand-gold">{{ formattedFinalPrice }}</span>
           </div>
-          <OfferTimer :until="offer.availableUntil" />
+          <OfferTimer :until="offer.available_until || offer.availableUntil" />
         </div>
       </div>
 
-      <div class="bg-white rounded-card p-6">
-        <p class="text-sm text-text-muted-light mb-2">Conductor</p>
-        <p class="text-base font-medium text-text-on-light">{{ offer.driverName }}</p>
+      <div v-if="offer.driver_name || offer.driverName" class="bg-white/5 border border-white/10 rounded-card p-6">
+        <p class="text-sm text-white/45 mb-2">Conductor</p>
+        <p class="text-base font-medium text-white">{{ offer.driver_name || offer.driverName }}</p>
       </div>
 
       <AppButton variant="gold" @click="handleBook">

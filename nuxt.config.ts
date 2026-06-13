@@ -2,6 +2,7 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-01-01',
   devtools: { enabled: true },
   srcDir: 'app/',
+  serverDir: 'app/server',
 
   modules: [
     '@primevue/nuxt-module',
@@ -51,26 +52,27 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
-    supabaseServiceRoleKey: '',
-    stripeSecretKey: '',
-    stripeWebhookSecret: '',
-    resendApiKey: '',
-    twilioAccountSid: '',
-    twilioAuthToken: '',
-    twilioPhoneNumber: '',
-    nominatimUrl: '',
-    vapidPrivateKey: '',
+    supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY ?? '',
+    stripeSecretKey: process.env.STRIPE_SECRET_KEY ?? '',
+    stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET ?? '',
+    resendApiKey: process.env.RESEND_API_KEY ?? '',
+    twilioAccountSid: process.env.TWILIO_ACCOUNT_SID ?? '',
+    twilioAuthToken: process.env.TWILIO_AUTH_TOKEN ?? '',
+    twilioPhoneNumber: process.env.TWILIO_PHONE_NUMBER ?? '',
+    nominatimUrl: process.env.NOMINATIM_URL ?? 'https://nominatim.openstreetmap.org',
+    vapidPrivateKey: process.env.VAPID_PRIVATE_KEY ?? '',
     public: {
-      appUrl: '',
-      supabaseUrl: '',
-      supabaseAnonKey: '',
-      stripePublishableKey: '',
-      vapidPublicKey: '',
+      appUrl: process.env.NUXT_PUBLIC_APP_URL ?? '',
+      supabaseUrl: process.env.NUXT_PUBLIC_SUPABASE_URL ?? '',
+      supabaseAnonKey: process.env.NUXT_PUBLIC_SUPABASE_ANON_KEY ?? '',
+      stripePublishableKey: process.env.STRIPE_PUBLISHABLE_KEY ?? process.env.NUXT_PUBLIC_STRIPE_PK ?? '',
+      vapidPublicKey: process.env.VAPID_PUBLIC_KEY ?? '',
     },
   },
 
   supabase: {
     redirect: false,
+    serviceKey: process.env.SUPABASE_SERVICE_ROLE_KEY,
   },
 
   pwa: {
@@ -110,7 +112,7 @@ export default defineNuxtConfig({
       tasks: true,
     },
     imports: {
-      dirs: ['app/server/utils', 'app/server/services'],
+      dirs: ['app/server/services'],
     },
     scheduledTasks: {
       '*/5 * * * *':  ['expire-offers'],
