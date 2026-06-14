@@ -8,8 +8,8 @@
           :key="filter.value"
           class="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
           :class="activeFilter === filter.value
-            ? 'bg-brand-dark text-white'
-            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'"
+            ? 'bg-secondary text-on-secondary'
+            : 'bg-surface-container-high text-on-surface-variant hover:bg-surface-container-highest'"
           @click="activeFilter = filter.value"
         >
           {{ filter.label }}
@@ -17,37 +17,37 @@
       </div>
     </div>
 
-    <div v-if="loading" class="bg-white rounded-xl p-6 border border-gray-200">
+    <div v-if="loading" class="card-surface rounded-xl p-6">
       <AppSkeleton />
     </div>
 
-    <div v-else class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+    <div v-else class="card-surface rounded-xl overflow-hidden">
       <table class="w-full">
-        <thead class="bg-gray-50 border-b border-gray-200">
+        <thead class="bg-surface-container border-b border-outline-variant">
           <tr>
-            <th class="text-left text-xs font-medium text-gray-500 px-6 py-3">Cliente</th>
-            <th class="text-left text-xs font-medium text-gray-500 px-6 py-3">Ruta</th>
-            <th class="text-left text-xs font-medium text-gray-500 px-6 py-3">Fecha</th>
-            <th class="text-left text-xs font-medium text-gray-500 px-6 py-3">Estado</th>
-            <th class="text-left text-xs font-medium text-gray-500 px-6 py-3">Precio</th>
-            <th class="text-right text-xs font-medium text-gray-500 px-6 py-3">Acciones</th>
+            <th class="text-left text-xs font-medium text-on-surface-variant px-6 py-3">Cliente</th>
+            <th class="text-left text-xs font-medium text-on-surface-variant px-6 py-3">Ruta</th>
+            <th class="text-left text-xs font-medium text-on-surface-variant px-6 py-3">Fecha</th>
+            <th class="text-left text-xs font-medium text-on-surface-variant px-6 py-3">Estado</th>
+            <th class="text-left text-xs font-medium text-on-surface-variant px-6 py-3">Precio</th>
+            <th class="text-right text-xs font-medium text-on-surface-variant px-6 py-3">Acciones</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-gray-100">
-          <tr v-for="booking in filteredBookings" :key="booking.id" class="hover:bg-gray-50">
-            <td class="px-6 py-4 text-sm text-gray-900">{{ booking.client_name || 'Cliente' }}</td>
+        <tbody class="divide-y divide-outline-variant">
+          <tr v-for="booking in filteredBookings" :key="booking.id" class="hover:bg-surface-container transition-colors">
+            <td class="px-6 py-4 text-sm text-on-surface">{{ booking.client_name || 'Cliente' }}</td>
             <td class="px-6 py-4">
-              <p class="text-sm text-gray-900">{{ booking.origin_station_name }}</p>
-              <p class="text-xs text-gray-500">→ {{ booking.destination_address }}</p>
+              <p class="text-sm text-on-surface">{{ booking.origin_station_name }}</p>
+              <p class="text-xs text-on-surface-variant">→ {{ booking.destination_address }}</p>
             </td>
-            <td class="px-6 py-4 text-sm text-gray-600">{{ formatDateTime(booking.pickup_at) }}</td>
+            <td class="px-6 py-4 text-sm text-on-surface-variant">{{ formatDateTime(booking.pickup_at) }}</td>
             <td class="px-6 py-4">
               <AppBadge
                 :variant="booking.status"
                 :label="statusLabel(booking.status)"
               />
             </td>
-            <td class="px-6 py-4 text-sm font-medium text-gray-900">{{ Number(booking.total_price).toFixed(2) }} €</td>
+            <td class="px-6 py-4 text-sm font-medium text-on-surface">{{ Number(booking.total_price).toFixed(2) }} €</td>
             <td class="px-6 py-4 text-right">
               <NuxtLink
                 :to="`/admin/reservas/${booking.id}`"
@@ -57,7 +57,7 @@
               </NuxtLink>
               <button
                 v-if="booking.status !== 'cancelled' && booking.status !== 'completed'"
-                class="text-sm text-error hover:text-red-700"
+                class="text-sm text-error hover:text-red-400"
                 @click="handleCancel(booking.id)"
               >
                 Cancelar
@@ -67,7 +67,7 @@
         </tbody>
       </table>
 
-      <div v-if="filteredBookings.length === 0" class="p-6 text-center text-gray-400 text-sm">
+      <div v-if="filteredBookings.length === 0" class="p-6 text-center text-on-surface-variant text-sm">
         No hay reservas con este filtro
       </div>
     </div>

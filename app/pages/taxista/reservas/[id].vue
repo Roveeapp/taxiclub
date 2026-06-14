@@ -1,16 +1,16 @@
 <template>
   <div>
-    <NuxtLink to="/taxista/reservas" class="flex items-center gap-1 text-sm text-gray-400 hover:text-gray-600 mb-4 transition-colors">
+    <NuxtLink to="/taxista/reservas" class="flex items-center gap-1 text-sm text-on-surface-variant hover:text-gray-600 mb-4 transition-colors">
       <Icon name="tabler:chevron-left" size="16" />
       Volver a reservas
     </NuxtLink>
 
-    <div v-if="loading" class="bg-white rounded-xl p-6 border border-gray-200">
+    <div v-if="loading" class="card-surface rounded-xl p-6 border border-outline-variant">
       <AppSkeleton />
     </div>
 
     <div v-else-if="reservation" class="space-y-6">
-      <div class="bg-white rounded-xl p-6 border border-gray-200">
+      <div class="card-surface rounded-xl p-6 border border-outline-variant">
         <div class="flex items-center justify-between mb-6">
           <h1 class="text-xl font-semibold">Detalle de reserva</h1>
           <AppBadge
@@ -26,7 +26,7 @@
             </div>
             <div>
               <span class="field-label block">ORIGEN</span>
-              <span class="text-sm font-medium text-gray-900">{{ reservation.origin_station_name }}</span>
+              <span class="text-sm font-medium text-on-surface">{{ reservation.origin_station_name }}</span>
             </div>
           </div>
 
@@ -36,36 +36,36 @@
             </div>
             <div>
               <span class="field-label block">DESTINO</span>
-              <span class="text-sm font-medium text-gray-900">{{ reservation.destination_address }}</span>
+              <span class="text-sm font-medium text-on-surface">{{ reservation.destination_address }}</span>
             </div>
           </div>
 
           <div class="grid grid-cols-2 gap-4">
             <div class="bg-gray-50 rounded-xl p-4">
               <span class="field-label block mb-1">FECHA</span>
-              <span class="text-sm font-medium text-gray-900">{{ formatDate(reservation.pickup_at) }}</span>
+              <span class="text-sm font-medium text-on-surface">{{ formatDate(reservation.pickup_at) }}</span>
             </div>
             <div class="bg-gray-50 rounded-xl p-4">
               <span class="field-label block mb-1">HORA</span>
-              <span class="text-sm font-medium text-gray-900">{{ formatTime(reservation.pickup_at) }}</span>
+              <span class="text-sm font-medium text-on-surface">{{ formatTime(reservation.pickup_at) }}</span>
             </div>
           </div>
 
           <div class="grid grid-cols-3 gap-4">
             <div class="bg-gray-50 rounded-xl p-4 text-center">
-              <Icon name="tabler:users" size="18" class="mx-auto text-gray-400 mb-1" />
-              <span class="text-sm font-medium text-gray-900">{{ reservation.passengers }}</span>
-              <span class="text-xs text-gray-500 block">pasajeros</span>
+              <Icon name="tabler:users" size="18" class="mx-auto text-on-surface-variant mb-1" />
+              <span class="text-sm font-medium text-on-surface">{{ reservation.passengers }}</span>
+              <span class="text-xs text-on-surface-variant block">pasajeros</span>
             </div>
             <div class="bg-gray-50 rounded-xl p-4 text-center">
-              <Icon name="tabler:luggage" size="18" class="mx-auto text-gray-400 mb-1" />
-              <span class="text-sm font-medium text-gray-900">{{ reservation.luggage_big }}</span>
-              <span class="text-xs text-gray-500 block">maletas</span>
+              <Icon name="tabler:luggage" size="18" class="mx-auto text-on-surface-variant mb-1" />
+              <span class="text-sm font-medium text-on-surface">{{ reservation.luggage_big }}</span>
+              <span class="text-xs text-on-surface-variant block">maletas</span>
             </div>
             <div class="bg-gray-50 rounded-xl p-4 text-center">
-              <Icon name="tabler:briefcase" size="18" class="mx-auto text-gray-400 mb-1" />
-              <span class="text-sm font-medium text-gray-900">{{ reservation.luggage_hand }}</span>
-              <span class="text-xs text-gray-500 block">mano</span>
+              <Icon name="tabler:briefcase" size="18" class="mx-auto text-on-surface-variant mb-1" />
+              <span class="text-sm font-medium text-on-surface">{{ reservation.luggage_hand }}</span>
+              <span class="text-xs text-on-surface-variant block">mano</span>
             </div>
           </div>
 
@@ -76,20 +76,20 @@
             <span v-if="reservation.needs_large_vehicle" class="text-xs bg-gold-50 text-gold-800 px-3 py-1 rounded-full">Vehículo grande</span>
           </div>
 
-          <div class="flex items-center justify-between pt-4 border-t border-gray-200">
-            <span class="text-sm text-gray-500">Precio total</span>
+          <div class="flex items-center justify-between pt-4 border-t border-outline-variant">
+            <span class="text-sm text-on-surface-variant">Precio total</span>
             <span class="text-xl font-semibold text-brand-gold">{{ Number(reservation.total_price).toFixed(2) }} €</span>
           </div>
         </div>
       </div>
 
-      <div v-if="reservation.client_name" class="bg-white rounded-xl p-6 border border-gray-200">
+      <div v-if="reservation.client_name" class="card-surface rounded-xl p-6 border border-outline-variant">
         <h2 class="text-lg font-medium mb-3">Datos del cliente</h2>
-        <p class="text-sm text-gray-900">{{ reservation.client_name }}</p>
-        <p v-if="reservation.client_phone" class="text-sm text-gray-500">{{ reservation.client_phone }}</p>
+        <p class="text-sm text-on-surface">{{ reservation.client_name }}</p>
+        <p v-if="reservation.client_phone" class="text-sm text-on-surface-variant">{{ reservation.client_phone }}</p>
       </div>
 
-      <div v-if="!reservation.confirmed_at && reservation.status === 'pending'" class="bg-white rounded-xl p-6 border border-gray-200">
+      <div v-if="!reservation.confirmed_at && reservation.status === 'pending'" class="card-surface rounded-xl p-6 border border-outline-variant">
         <ConfirmBookingForm
           @confirm="handleConfirm"
         />
@@ -101,10 +101,10 @@
           <h2 class="text-lg font-medium text-success">Reserva confirmada</h2>
         </div>
         <div class="space-y-2 text-sm">
-          <p><span class="text-gray-500">Matrícula:</span> <span class="font-medium">{{ reservation.confirmed_plate }}</span></p>
-          <p><span class="text-gray-500">Teléfono:</span> <span class="font-medium">{{ reservation.confirmed_phone }}</span></p>
+          <p><span class="text-on-surface-variant">Matrícula:</span> <span class="font-medium">{{ reservation.confirmed_plate }}</span></p>
+          <p><span class="text-on-surface-variant">Teléfono:</span> <span class="font-medium">{{ reservation.confirmed_phone }}</span></p>
           <p v-if="reservation.has_substitute">
-            <span class="text-gray-500">Sustituto:</span>
+            <span class="text-on-surface-variant">Sustituto:</span>
             <span class="font-medium">{{ reservation.substitute_plate }} — {{ reservation.substitute_phone }}</span>
           </p>
         </div>
@@ -126,8 +126,8 @@
       </div>
     </div>
 
-    <div v-else class="bg-white rounded-xl p-12 border border-gray-200 text-center">
-      <p class="text-gray-400">Reserva no encontrada</p>
+    <div v-else class="card-surface rounded-xl p-12 border border-outline-variant text-center">
+      <p class="text-on-surface-variant">Reserva no encontrada</p>
     </div>
   </div>
 </template>

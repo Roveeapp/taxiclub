@@ -1,13 +1,16 @@
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
-  const user = requireAuth(event)
+  const user = event.context.user
 
   const db = useDb()
 
   const { data: booking, error: insertError } = await (db
-    .from('bookings') as any)
+    .from('bookings') as Record<string, any>)
     .insert({
-      client_id: user.id,
+      client_id: user?.id || null,
+      guest_name: user ? null : body.guestName,
+      guest_email: user ? null : body.guestEmail,
+      guest_phone: user ? null : body.guestPhone,
       origin_station_id: body.originStationId,
       destination_address: body.destinationAddress,
       destination_lat: body.destinationLat || null,
@@ -35,17 +38,17 @@ export default defineEventHandler(async (event) => {
 
   try {
     const driver = await assignDriver(body)
-    await (db.from('booking_assignments') as any).insert({
-      booking_id: (booking as any).id,
+    await (db.from('booking_assignments') as Record<string, any>).insert({
+      booking_id: (booking as Record<string, any>).id,
       driver_id: driver.id,
     })
     await (db
-      .from('drivers') as any)
+      .from('drivers') as Record<string, any>)
       .update({ last_assigned_at: new Date().toISOString() })
       .eq('id', driver.id)
     await notifyDriver(driver.id as string, booking)
   } catch {
-    await notifyAdminNoDrivers((booking as any).id as string)
+    await notifyAdminNoDrivers((booking as Record<string, any>).id as string)
   }
 
   return booking

@@ -1,43 +1,43 @@
 <template>
   <div>
     <div class="flex items-center justify-between mb-6">
-      <h1 class="text-2xl font-semibold">Dashboard</h1>
-      <span class="text-sm text-gray-500">{{ today }}</span>
+      <h1 class="text-2xl font-semibold text-on-surface">Dashboard</h1>
+      <span class="text-sm text-on-surface-variant">{{ today }}</span>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-      <div class="bg-white rounded-xl p-6 border border-gray-200">
+      <div class="card-surface rounded-xl p-6 border border-outline-variant">
         <div class="flex items-center gap-3 mb-2">
-          <div class="w-10 h-10 rounded-lg bg-gold-50 flex items-center justify-center">
+          <div class="w-10 h-10 rounded-lg bg-brand-gold/10 flex items-center justify-center">
             <Icon name="tabler:calendar-event" size="20" class="text-brand-gold" />
           </div>
-          <p class="text-sm text-gray-500">Próximas reservas</p>
+          <p class="text-sm text-on-surface-variant">Próximas reservas</p>
         </div>
-        <p class="text-3xl font-semibold text-gray-900">{{ upcomingCount }}</p>
+        <p class="text-3xl font-semibold text-on-surface">{{ upcomingCount }}</p>
       </div>
-      <div class="bg-white rounded-xl p-6 border border-gray-200">
+      <div class="card-surface rounded-xl p-6 border border-outline-variant">
         <div class="flex items-center gap-3 mb-2">
           <div class="w-10 h-10 rounded-lg bg-success/10 flex items-center justify-center">
             <Icon name="tabler:check" size="20" class="text-success" />
           </div>
-          <p class="text-sm text-gray-500">Completadas este mes</p>
+          <p class="text-sm text-on-surface-variant">Completadas este mes</p>
         </div>
-        <p class="text-3xl font-semibold text-gray-900">{{ completedCount }}</p>
+        <p class="text-3xl font-semibold text-on-surface">{{ completedCount }}</p>
       </div>
-      <div class="bg-white rounded-xl p-6 border border-gray-200">
+      <div class="card-surface rounded-xl p-6 border border-outline-variant">
         <div class="flex items-center gap-3 mb-2">
           <div class="w-10 h-10 rounded-lg bg-info/10 flex items-center justify-center">
             <Icon name="tabler:coin" size="20" class="text-info" />
           </div>
-          <p class="text-sm text-gray-500">Ingresos estimados</p>
+          <p class="text-sm text-on-surface-variant">Ingresos estimados</p>
         </div>
-        <p class="text-3xl font-semibold text-gray-900">{{ estimatedEarnings }} €</p>
+        <p class="text-3xl font-semibold text-on-surface">{{ estimatedEarnings }} €</p>
       </div>
     </div>
 
-    <div class="bg-white rounded-xl border border-gray-200">
-      <div class="flex items-center justify-between p-6 border-b border-gray-200">
-        <h2 class="text-lg font-medium">Próximas reservas</h2>
+    <div class="card-surface rounded-xl border border-outline-variant">
+      <div class="flex items-center justify-between p-6 border-b border-outline-variant">
+        <h2 class="text-lg font-medium text-on-surface">Próximas reservas</h2>
         <NuxtLink to="/taxista/reservas" class="text-sm text-brand-gold hover:text-gold-600">
           Ver todas
         </NuxtLink>
@@ -45,24 +45,24 @@
       <div v-if="loading" class="p-6">
         <AppSkeleton />
       </div>
-      <div v-else-if="upcomingBookings.length > 0" class="divide-y divide-gray-100">
+      <div v-else-if="upcomingBookings.length > 0" class="divide-y divide-outline-variant">
         <NuxtLink
           v-for="booking in upcomingBookings.slice(0, 5)"
           :key="booking.id"
           :to="`/taxista/reservas/${booking.id}`"
-          class="flex items-center justify-between p-4 hover:bg-gray-50 transition-colors"
+          class="flex items-center justify-between p-4 hover:bg-surface-container transition-colors"
         >
           <div class="flex items-center gap-3">
-            <div class="icon-wrap-dark">
+            <div class="icon-wrap-dark bg-surface-container rounded-full p-2">
               <Icon name="tabler:map-pin-2" size="14" class="text-brand-gold" />
             </div>
             <div>
-              <p class="text-sm font-medium text-gray-900">{{ booking.origin_station_name }}</p>
-              <p class="text-xs text-gray-500">→ {{ booking.destination_address }}</p>
+              <p class="text-sm font-medium text-on-surface">{{ booking.origin_station_name }}</p>
+              <p class="text-xs text-on-surface-variant">→ {{ booking.destination_address }}</p>
             </div>
           </div>
           <div class="text-right">
-            <p class="text-sm font-medium text-gray-900">{{ formatTime(booking.pickup_at) }}</p>
+            <p class="text-sm font-medium text-on-surface">{{ formatTime(booking.pickup_at) }}</p>
             <AppBadge
               :variant="booking.status"
               :label="booking.status === 'pending' ? 'Pendiente' : booking.status === 'confirmed' ? 'Confirmada' : booking.status"
@@ -71,7 +71,7 @@
         </NuxtLink>
       </div>
       <div v-else class="p-6 text-center">
-        <p class="text-gray-400 text-sm">No tienes reservas próximas</p>
+        <p class="text-on-surface-variant text-sm">No tienes reservas próximas</p>
       </div>
     </div>
   </div>

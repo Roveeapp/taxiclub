@@ -1,6 +1,6 @@
 <template>
-  <div class="bg-white rounded-card p-6">
-    <h3 class="text-lg font-medium text-text-on-light mb-4">Crear oferta de retorno</h3>
+  <div class="card-surface rounded-xl p-6 border border-outline-variant">
+    <h3 class="text-lg font-medium text-on-surface mb-4">Crear oferta de retorno</h3>
 
     <div class="space-y-4">
       <AppInput
@@ -55,9 +55,9 @@
         </div>
       </div>
 
-      <div class="flex items-center justify-between p-3 bg-surface-input rounded-input">
-        <span class="text-sm text-text-muted-light">Precio estimado</span>
-        <span class="text-lg font-semibold text-text-on-light">{{ formattedPrice }}</span>
+      <div class="flex items-center justify-between p-3 bg-surface-container rounded-lg border border-outline-variant">
+        <span class="text-sm text-on-surface-variant">Precio estimado</span>
+        <span class="text-lg font-semibold text-brand-gold">{{ formattedPrice }}</span>
       </div>
 
       <div>
@@ -109,9 +109,9 @@ const formattedPrice = computed(() => {
 })
 
 const datePt = {
-  root: { class: '!bg-surface-input !rounded-lg !border-none !shadow-none' },
-  input: { class: '!text-slate-900 !text-sm !p-0 !shadow-none' },
-  trigger: { class: '!text-slate-400' },
+  root: { class: '!bg-surface-container !rounded-lg !border !border-outline-variant !shadow-none' },
+  input: { class: '!text-on-surface !bg-transparent !text-sm !p-0 !shadow-none' },
+  trigger: { class: '!text-on-surface-variant' },
 }
 
 const sliderPt = {

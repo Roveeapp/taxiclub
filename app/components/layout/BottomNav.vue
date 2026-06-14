@@ -3,15 +3,27 @@
     <div class="flex justify-around items-center h-16 w-full max-w-mobile mx-auto px-lg">
       <NuxtLink
         to="/"
-        class="flex flex-col items-center justify-center text-secondary font-bold hover:bg-surface-container-high active:scale-90 transition-all duration-150"
-        active-class="!text-secondary font-bold"
+        class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-high active:scale-90 transition-all duration-150"
         exact-active-class="!text-secondary font-bold"
       >
         <Icon name="tabler:home-filled" size="20" v-if="$route.path === '/'" />
         <Icon name="tabler:home" size="20" v-else />
         <span class="font-label-caps text-label-caps">Inicio</span>
       </NuxtLink>
+      
       <NuxtLink
+        v-if="isDriver || isAdmin"
+        :to="isDriver ? '/taxista' : '/admin'"
+        class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-high active:scale-90 transition-all duration-150"
+        active-class="!text-secondary font-bold"
+        exact-active-class="!text-secondary font-bold"
+      >
+        <Icon name="tabler:layout-dashboard" size="20" />
+        <span class="font-label-caps text-label-caps">Panel</span>
+      </NuxtLink>
+
+      <NuxtLink
+        v-if="!isDriver && !isAdmin"
         to="/cuenta/reservas"
         class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-high active:scale-90 transition-all duration-150"
         active-class="!text-secondary font-bold"
@@ -35,4 +47,5 @@
 
 <script setup lang="ts">
 const route = useRoute()
+const { isDriver, isAdmin } = useAuth()
 </script>

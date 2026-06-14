@@ -1,9 +1,9 @@
 <template>
   <Button
     :class="[
-      'w-full',
+      fullWidth ? 'w-full' : '',
       variant === 'gold' ? '!bg-secondary !text-on-secondary !border-secondary' : '',
-      variant === 'secondary' ? '!bg-white !text-primary-container !border-outline-variant' : '',
+      variant === 'secondary' ? '!bg-surface-container-high !text-on-surface !border-outline-variant' : '',
     ]"
     :disabled="disabled || loading"
     :loading="loading"
@@ -21,8 +21,10 @@ withDefaults(defineProps<{
   variant?: 'primary' | 'secondary' | 'gold'
   disabled?: boolean
   loading?: boolean
+  fullWidth?: boolean
 }>(), {
   variant: 'primary',
+  fullWidth: true,
 })
 
 defineEmits<{

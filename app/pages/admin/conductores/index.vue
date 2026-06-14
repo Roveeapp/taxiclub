@@ -8,8 +8,8 @@
           :key="filter.value"
           class="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
           :class="activeFilter === filter.value
-            ? 'bg-brand-dark text-white'
-            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'"
+            ? 'bg-secondary text-on-secondary'
+            : 'bg-surface-container-high text-on-surface-variant hover:bg-surface-container-highest'"
           @click="activeFilter = filter.value"
         >
           {{ filter.label }}
@@ -17,39 +17,39 @@
       </div>
     </div>
 
-    <div v-if="loading" class="bg-white rounded-xl p-6 border border-gray-200">
+    <div v-if="loading" class="card-surface rounded-xl p-6">
       <AppSkeleton />
     </div>
 
-    <div v-else class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+    <div v-else class="card-surface rounded-xl overflow-hidden">
       <table class="w-full">
-        <thead class="bg-gray-50 border-b border-gray-200">
+        <thead class="bg-surface-container border-b border-outline-variant">
           <tr>
-            <th class="text-left text-xs font-medium text-gray-500 px-6 py-3">Conductor</th>
-            <th class="text-left text-xs font-medium text-gray-500 px-6 py-3">Licencia</th>
-            <th class="text-left text-xs font-medium text-gray-500 px-6 py-3">Membresía</th>
-            <th class="text-left text-xs font-medium text-gray-500 px-6 py-3">Estado</th>
-            <th class="text-right text-xs font-medium text-gray-500 px-6 py-3">Acciones</th>
+            <th class="text-left text-xs font-medium text-on-surface-variant px-6 py-3">Conductor</th>
+            <th class="text-left text-xs font-medium text-on-surface-variant px-6 py-3">Licencia</th>
+            <th class="text-left text-xs font-medium text-on-surface-variant px-6 py-3">Membresía</th>
+            <th class="text-left text-xs font-medium text-on-surface-variant px-6 py-3">Estado</th>
+            <th class="text-right text-xs font-medium text-on-surface-variant px-6 py-3">Acciones</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-gray-100">
-          <tr v-for="driver in filteredDrivers" :key="driver.id" class="hover:bg-gray-50">
+        <tbody class="divide-y divide-outline-variant">
+          <tr v-for="driver in filteredDrivers" :key="driver.id" class="hover:bg-surface-container transition-colors">
             <td class="px-6 py-4">
               <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
-                  <Icon name="tabler:user" size="16" class="text-gray-400" />
+                <div class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center">
+                  <Icon name="tabler:user" size="16" class="text-on-surface-variant" />
                 </div>
                 <div>
-                  <p class="text-sm font-medium text-gray-900">{{ driver.full_name }}</p>
-                  <p class="text-xs text-gray-500">{{ driver.email }}</p>
+                  <p class="text-sm font-medium text-on-surface">{{ driver.full_name }}</p>
+                  <p class="text-xs text-on-surface-variant">{{ driver.email }}</p>
                 </div>
               </div>
             </td>
-            <td class="px-6 py-4 text-sm text-gray-600">{{ driver.license_number }}</td>
+            <td class="px-6 py-4 text-sm text-on-surface-variant">{{ driver.license_number }}</td>
             <td class="px-6 py-4">
               <span
                 class="text-xs px-2 py-1 rounded-full"
-                :class="driver.is_member ? 'bg-success/10 text-success' : 'bg-gray-100 text-gray-500'"
+                :class="driver.is_member ? 'bg-success/10 text-success' : 'bg-surface-container-high text-on-surface-variant'"
               >
                 {{ driver.is_member ? 'Miembro' : 'No miembro' }}
               </span>
@@ -74,7 +74,7 @@
         </tbody>
       </table>
 
-      <div v-if="filteredDrivers.length === 0" class="p-6 text-center text-gray-400 text-sm">
+      <div v-if="filteredDrivers.length === 0" class="p-6 text-center text-on-surface-variant text-sm">
         No hay conductores con este filtro
       </div>
     </div>

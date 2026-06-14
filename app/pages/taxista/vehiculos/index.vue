@@ -3,7 +3,7 @@
     <div class="flex items-center justify-between mb-6">
       <h1 class="text-2xl font-semibold">Mis vehículos</h1>
       <NuxtLink to="/taxista/vehiculos/nuevo">
-        <AppButton>
+        <AppButton :full-width="false">
           <Icon name="tabler:plus" size="16" class="mr-1" />
           Añadir vehículo
         </AppButton>
@@ -11,7 +11,7 @@
     </div>
 
     <div v-if="loading" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div v-for="i in 2" :key="i" class="bg-white rounded-xl p-6 border border-gray-200">
+      <div v-for="i in 2" :key="i" class="card-surface rounded-xl p-6 border border-outline-variant">
         <AppSkeleton />
       </div>
     </div>
@@ -25,9 +25,9 @@
       />
     </div>
 
-    <div v-else class="bg-white rounded-xl p-12 border border-gray-200 text-center">
-      <Icon name="tabler:steering-wheel" size="48" class="mx-auto text-gray-200 mb-4" />
-      <p class="text-gray-400 mb-4">No tienes vehículos registrados</p>
+    <div v-else class="card-surface rounded-xl p-12 border border-outline-variant text-center">
+      <Icon name="tabler:steering-wheel" size="48" class="mx-auto text-on-surface mb-4" />
+      <p class="text-on-surface-variant mb-4">No tienes vehículos registrados</p>
       <NuxtLink to="/taxista/vehiculos/nuevo">
         <AppButton>Añadir primer vehículo</AppButton>
       </NuxtLink>

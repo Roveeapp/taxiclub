@@ -1,11 +1,11 @@
 <template>
   <div>
-    <NuxtLink to="/taxista/vehiculos" class="flex items-center gap-1 text-sm text-gray-400 hover:text-gray-600 mb-4 transition-colors">
+    <NuxtLink to="/taxista/vehiculos" class="flex items-center gap-1 text-sm text-on-surface-variant hover:text-on-surface mb-4 transition-colors">
       <Icon name="tabler:chevron-left" size="16" />
       Volver a vehículos
     </NuxtLink>
 
-    <div class="bg-white rounded-xl p-6 border border-gray-200 max-w-2xl">
+    <div class="card-surface rounded-xl p-6 border border-outline-variant max-w-2xl">
       <h1 class="text-xl font-semibold mb-6">{{ isEdit ? 'Editar vehículo' : 'Nuevo vehículo' }}</h1>
 
       <div class="space-y-4">
@@ -37,7 +37,7 @@
 
         <div>
           <span class="field-label block mb-3">Accesorios y extras</span>
-          <div v-if="allAccessories.length === 0" class="text-sm text-gray-400">Cargando...</div>
+          <div v-if="allAccessories.length === 0" class="text-sm text-on-surface-variant">Cargando...</div>
           <div class="flex flex-wrap gap-2">
             <AppChip
               v-for="acc in allAccessories"
@@ -51,7 +51,7 @@
           </div>
         </div>
 
-        <div class="pt-4 border-t border-gray-200">
+        <div class="pt-4 border-t border-outline-variant">
           <AppButton
             :loading="saving"
             @click="handleSave"

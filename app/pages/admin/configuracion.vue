@@ -2,13 +2,13 @@
   <div>
     <h1 class="text-2xl font-semibold mb-6">Configuración global</h1>
 
-    <div v-if="loading" class="bg-white rounded-xl p-6 border border-gray-200">
+    <div v-if="loading" class="card-surface rounded-xl p-6">
       <AppSkeleton />
     </div>
 
     <div v-else class="space-y-6 max-w-2xl">
-      <div class="bg-white rounded-xl p-6 border border-gray-200">
-        <h2 class="text-lg font-medium mb-4">Reservas</h2>
+      <div class="card-surface rounded-xl p-6">
+        <h2 class="text-lg font-medium text-on-surface mb-4">Reservas</h2>
         <div class="space-y-4">
           <div>
             <label class="field-label block mb-1">Horas mínimas de antelación</label>
@@ -19,7 +19,7 @@
               :pt="numberPt"
               class="w-full"
             />
-            <p class="text-xs text-gray-500 mt-1">Tiempo mínimo entre la reserva y la recogida</p>
+            <p class="text-xs text-on-surface-variant mt-1">Tiempo mínimo entre la reserva y la recogida</p>
           </div>
           <div>
             <label class="field-label block mb-1">Horas máximas para cancelar</label>
@@ -30,13 +30,13 @@
               :pt="numberPt"
               class="w-full"
             />
-            <p class="text-xs text-gray-500 mt-1">Horas antes del viaje en que se puede cancelar</p>
+            <p class="text-xs text-on-surface-variant mt-1">Horas antes del viaje en que se puede cancelar</p>
           </div>
         </div>
       </div>
 
-      <div class="bg-white rounded-xl p-6 border border-gray-200">
-        <h2 class="text-lg font-medium mb-4">Comisiones</h2>
+      <div class="card-surface rounded-xl p-6">
+        <h2 class="text-lg font-medium text-on-surface mb-4">Comisiones</h2>
         <div class="space-y-4">
           <div>
             <label class="field-label block mb-1">Comisión miembros (%)</label>
@@ -61,8 +61,8 @@
         </div>
       </div>
 
-      <div class="bg-white rounded-xl p-6 border border-gray-200">
-        <h2 class="text-lg font-medium mb-4">Membresía</h2>
+      <div class="card-surface rounded-xl p-6">
+        <h2 class="text-lg font-medium text-on-surface mb-4">Membresía</h2>
         <div>
           <label class="field-label block mb-1">Cuota mensual (€)</label>
           <InputNumber
@@ -96,7 +96,7 @@ const loading = ref(true)
 const saving = ref(false)
 
 const numberPt = {
-  input: { class: '!bg-gray-50 !rounded-lg !border !border-gray-200 !text-sm !text-gray-900 !shadow-none focus:!border-brand-gold' },
+  input: { class: '!bg-surface-container !rounded-lg !border !border-outline-variant !text-sm !text-on-surface !shadow-none focus:!border-brand-gold' },
 }
 
 onMounted(async () => {

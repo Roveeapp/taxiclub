@@ -1,23 +1,23 @@
 <template>
-  <div class="bg-white rounded-card p-5 border border-gray-100">
+  <div class="card-surface rounded-xl p-5 border border-outline-variant">
     <div class="flex items-start justify-between mb-3">
       <div class="flex items-center gap-2">
-        <div class="icon-wrap-dark">
+        <div class="icon-wrap-dark bg-surface-container rounded-full p-2">
           <Icon name="tabler:map-pin-2" size="14" class="text-brand-gold" />
         </div>
-        <span class="text-sm font-medium text-text-on-light">{{ booking.originStationName }}</span>
+        <span class="text-sm font-medium text-on-surface">{{ booking.originStationName }}</span>
       </div>
       <AppBadge :variant="statusVariant" :label="statusLabel" />
     </div>
 
     <div class="flex items-center gap-2 mb-3">
-      <div class="icon-wrap-gold">
-        <Icon name="tabler:map-pin" size="14" class="text-brand-dark" />
+      <div class="icon-wrap-gold bg-brand-gold rounded-full p-2">
+        <Icon name="tabler:map-pin" size="14" class="text-on-secondary" />
       </div>
-      <span class="text-sm text-text-on-light">{{ booking.destinationAddress }}</span>
+      <span class="text-sm text-on-surface">{{ booking.destinationAddress }}</span>
     </div>
 
-    <div class="flex items-center gap-4 text-xs text-text-muted-light mb-3">
+    <div class="flex items-center gap-4 text-xs text-on-surface-variant mb-3">
       <span class="flex items-center gap-1">
         <Icon name="tabler:calendar" size="14" />
         {{ formattedDate }}
@@ -28,10 +28,10 @@
       </span>
     </div>
 
-    <div v-if="booking.confirmedPlate" class="flex items-center justify-between pt-3 border-t border-surface-divider">
+    <div v-if="booking.confirmedPlate" class="flex items-center justify-between pt-3 border-t border-outline-variant">
       <div class="flex items-center gap-2">
-        <Icon name="tabler:steering-wheel" size="16" class="text-text-muted-light" />
-        <span class="text-sm font-medium text-text-on-light">{{ booking.confirmedPlate }}</span>
+        <Icon name="tabler:steering-wheel" size="16" class="text-on-surface-variant" />
+        <span class="text-sm font-medium text-on-surface">{{ booking.confirmedPlate }}</span>
       </div>
       <a
         v-if="booking.confirmedPhone"
@@ -44,15 +44,15 @@
       </a>
     </div>
 
-    <div v-else-if="showPending" class="pt-3 border-t border-surface-divider">
-      <div class="flex items-center gap-2 text-text-muted-light">
+    <div v-else-if="showPending" class="pt-3 border-t border-outline-variant">
+      <div class="flex items-center gap-2 text-on-surface-variant">
         <Icon name="tabler:loader" size="16" class="animate-spin" />
         <span class="text-xs">Pendiente de asignar vehículo</span>
       </div>
     </div>
 
     <div class="flex items-center justify-between mt-3">
-      <div class="flex items-center gap-3 text-xs text-text-muted-light">
+      <div class="flex items-center gap-3 text-xs text-on-surface-variant">
         <span class="flex items-center gap-1">
           <Icon name="tabler:users" size="14" />
           {{ booking.passengers }}
@@ -62,7 +62,7 @@
           {{ booking.luggageBig }}
         </span>
       </div>
-      <span class="text-sm font-semibold text-text-on-light">{{ formattedPrice }}</span>
+      <span class="text-sm font-semibold text-brand-gold">{{ formattedPrice }}</span>
     </div>
   </div>
 </template>

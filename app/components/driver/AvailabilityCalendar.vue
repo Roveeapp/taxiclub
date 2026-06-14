@@ -1,7 +1,7 @@
 <template>
-  <div class="bg-white rounded-card p-6">
+  <div class="card-surface rounded-xl p-6 border border-outline-variant">
     <div class="flex items-center justify-between mb-4">
-      <h3 class="text-lg font-medium text-text-on-light">Disponibilidad</h3>
+      <h3 class="text-lg font-medium text-on-surface">Disponibilidad</h3>
       <div class="flex items-center gap-2">
         <Button
           icon="tabler:chevron-left"
@@ -11,7 +11,7 @@
           :pt="navBtnPt"
           @click="prevMonth"
         />
-        <span class="text-sm font-medium text-text-on-light min-w-[120px] text-center">
+        <span class="text-sm font-medium text-on-surface min-w-[120px] text-center">
           {{ monthLabel }}
         </span>
         <Button
@@ -26,7 +26,7 @@
     </div>
 
     <div class="grid grid-cols-7 gap-1 mb-2">
-      <div v-for="day in weekDays" :key="day" class="text-center text-[11px] font-medium text-text-muted-light py-1">
+      <div v-for="day in weekDays" :key="day" class="text-center text-[11px] font-medium text-on-surface-variant py-1">
         {{ day }}
       </div>
     </div>
@@ -43,14 +43,14 @@
       </div>
     </div>
 
-    <div class="flex items-center gap-4 mt-4 pt-4 border-t border-surface-divider">
+    <div class="flex items-center gap-4 mt-4 pt-4 border-t border-outline-variant">
       <div class="flex items-center gap-2">
         <div class="w-3 h-3 rounded bg-success/20 border border-success" />
-        <span class="text-xs text-text-muted-light">Disponible</span>
+        <span class="text-xs text-on-surface-variant">Disponible</span>
       </div>
       <div class="flex items-center gap-2">
-        <div class="w-3 h-3 rounded bg-gray-100 border border-gray-200" />
-        <span class="text-xs text-text-muted-light">No disponible</span>
+        <div class="w-3 h-3 rounded bg-surface-container border border-outline-variant" />
+        <span class="text-xs text-on-surface-variant">No disponible</span>
       </div>
     </div>
   </div>
@@ -131,10 +131,10 @@ function makeDay(date: Date, isCurrentMonth: boolean): CalendarDay {
 }
 
 function dayClass(day: CalendarDay) {
-  if (!day.isCurrentMonth) return 'text-gray-200'
-  if (day.isPast) return 'text-gray-300 cursor-default'
+  if (!day.isCurrentMonth) return 'text-on-surface-variant/30'
+  if (day.isPast) return 'text-on-surface-variant/50 cursor-default'
   if (day.isAvailable) return 'bg-success/10 text-success hover:bg-success/20 border border-success/30'
-  return 'bg-gray-50 text-gray-400 hover:bg-gray-100 border border-gray-200'
+  return 'bg-surface-container text-on-surface-variant hover:bg-outline-variant/30 border border-outline-variant'
 }
 
 function toggleDay(day: CalendarDay) {
@@ -155,6 +155,6 @@ function nextMonth() {
 }
 
 const navBtnPt = {
-  root: { class: '!p-2 !text-slate-600 hover:!bg-slate-100 !w-9 !h-9 !rounded-lg !border-none !shadow-none' },
+  root: { class: '!p-2 !text-on-surface hover:!bg-surface-container !w-9 !h-9 !rounded-lg !border-none !shadow-none' },
 }
 </script>

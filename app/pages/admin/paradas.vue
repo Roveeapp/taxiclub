@@ -2,43 +2,43 @@
   <div>
     <div class="flex items-center justify-between mb-6">
       <h1 class="text-2xl font-semibold">Paradas</h1>
-      <AppButton @click="showCreateModal = true">
+      <AppButton :full-width="false" @click="showCreateModal = true">
         <Icon name="tabler:plus" size="16" class="mr-1" />
         Nueva parada
       </AppButton>
     </div>
 
-    <div v-if="loading" class="bg-white rounded-xl p-6 border border-gray-200">
+    <div v-if="loading" class="card-surface rounded-xl p-6">
       <AppSkeleton />
     </div>
 
-    <div v-else class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+    <div v-else class="card-surface rounded-xl overflow-hidden">
       <table class="w-full">
-        <thead class="bg-gray-50 border-b border-gray-200">
+        <thead class="bg-surface-container border-b border-outline-variant">
           <tr>
-            <th class="text-left text-xs font-medium text-gray-500 px-6 py-3">Nombre</th>
-            <th class="text-left text-xs font-medium text-gray-500 px-6 py-3">Ciudad</th>
-            <th class="text-left text-xs font-medium text-gray-500 px-6 py-3">Dirección</th>
-            <th class="text-left text-xs font-medium text-gray-500 px-6 py-3">Conductores</th>
-            <th class="text-left text-xs font-medium text-gray-500 px-6 py-3">Estado</th>
-            <th class="text-right text-xs font-medium text-gray-500 px-6 py-3">Acciones</th>
+            <th class="text-left text-xs font-medium text-on-surface-variant px-6 py-3">Nombre</th>
+            <th class="text-left text-xs font-medium text-on-surface-variant px-6 py-3">Ciudad</th>
+            <th class="text-left text-xs font-medium text-on-surface-variant px-6 py-3">Dirección</th>
+            <th class="text-left text-xs font-medium text-on-surface-variant px-6 py-3">Conductores</th>
+            <th class="text-left text-xs font-medium text-on-surface-variant px-6 py-3">Estado</th>
+            <th class="text-right text-xs font-medium text-on-surface-variant px-6 py-3">Acciones</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-gray-100">
-          <tr v-for="station in stations" :key="station.id" class="hover:bg-gray-50">
+        <tbody class="divide-y divide-outline-variant">
+          <tr v-for="station in stations" :key="station.id" class="hover:bg-surface-container transition-colors">
             <td class="px-6 py-4">
               <div class="flex items-center gap-2">
                 <Icon name="tabler:map-pin" size="16" class="text-brand-gold" />
-                <span class="text-sm font-medium text-gray-900">{{ station.name }}</span>
+                <span class="text-sm font-medium text-on-surface">{{ station.name }}</span>
               </div>
             </td>
-            <td class="px-6 py-4 text-sm text-gray-600">{{ station.city }}</td>
-            <td class="px-6 py-4 text-sm text-gray-600">{{ station.address || '-' }}</td>
-            <td class="px-6 py-4 text-sm text-gray-600">{{ station.driver_count || 0 }}</td>
+            <td class="px-6 py-4 text-sm text-on-surface-variant">{{ station.city }}</td>
+            <td class="px-6 py-4 text-sm text-on-surface-variant">{{ station.address || '-' }}</td>
+            <td class="px-6 py-4 text-sm text-on-surface-variant">{{ station.driver_count || 0 }}</td>
             <td class="px-6 py-4">
               <span
                 class="text-xs px-2 py-1 rounded-full"
-                :class="station.is_active ? 'bg-success/10 text-success' : 'bg-gray-100 text-gray-500'"
+                :class="station.is_active ? 'bg-success/10 text-success' : 'bg-surface-container-high text-on-surface-variant'"
               >
                 {{ station.is_active ? 'Activa' : 'Inactiva' }}
               </span>
@@ -51,7 +51,7 @@
                 Editar
               </button>
               <button
-                class="text-sm text-error hover:text-red-700"
+                class="text-sm text-error hover:text-red-400"
                 @click="toggleActive(station)"
               >
                 {{ station.is_active ? 'Desactivar' : 'Activar' }}
@@ -63,9 +63,9 @@
     </div>
 
     <Teleport to="body">
-      <div v-if="showCreateModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-        <div class="bg-white rounded-xl p-6 max-w-md w-full mx-4">
-          <h2 class="text-lg font-semibold mb-4">{{ editingStation ? 'Editar parada' : 'Nueva parada' }}</h2>
+      <div v-if="showCreateModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+        <div class="card-surface rounded-xl p-6 max-w-md w-full mx-4 border border-outline-variant">
+          <h2 class="text-lg font-semibold text-on-surface mb-4">{{ editingStation ? 'Editar parada' : 'Nueva parada' }}</h2>
           <div class="space-y-4">
             <AppInput v-model="form.name" label="Nombre" placeholder="Ej: Aeropuerto de Asturias" />
             <AppInput v-model="form.city" label="Ciudad" placeholder="Ej: Castrillón" />

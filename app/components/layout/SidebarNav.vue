@@ -1,7 +1,7 @@
 <template>
-  <aside class="fixed left-0 top-0 bottom-0 w-64 text-white flex flex-col" style="background: var(--primary-container)">
+  <aside class="h-full w-full text-white flex flex-col" style="background: var(--primary-container)">
     <div class="p-6 border-b" style="border-color: var(--outline-variant)">
-      <NuxtLink :to="dashboardLink" class="flex items-center gap-2">
+      <NuxtLink :to="dashboardLink" class="flex items-center gap-2" @click="$emit('close')">
         <BrandDot />
         <span class="font-semibold text-base">Club Taxis</span>
       </NuxtLink>
@@ -14,6 +14,7 @@
         class="flex items-center gap-3 px-6 py-3 text-sm transition-colors"
         style="color: var(--on-surface-variant)"
         active-class="!text-secondary"
+        @click="$emit('close')"
       >
         <Icon :name="item.icon" size="18" />
         <span>{{ item.label }}</span>
@@ -37,9 +38,11 @@
 <script setup lang="ts">
 import Button from 'primevue/button'
 
-const route = useRoute()
+defineEmits(['close'])
 
-const isTaxista = computed(() => route.path.startsWith('/taxista'))
+const { isDriver } = useAuth()
+
+const isTaxista = computed(() => isDriver.value)
 const dashboardLink = computed(() => isTaxista.value ? '/taxista' : '/admin')
 
 const navItems = computed(() => {

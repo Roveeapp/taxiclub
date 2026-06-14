@@ -1,18 +1,18 @@
 <template>
   <div>
-    <NuxtLink to="/admin/reservas" class="flex items-center gap-1 text-sm text-gray-400 hover:text-gray-600 mb-4 transition-colors">
+    <NuxtLink to="/admin/reservas" class="flex items-center gap-1 text-sm text-on-surface-variant hover:text-on-surface mb-4 transition-colors">
       <Icon name="tabler:chevron-left" size="16" />
       Volver a reservas
     </NuxtLink>
 
-    <div v-if="loading" class="bg-white rounded-xl p-6 border border-gray-200">
+    <div v-if="loading" class="card-surface rounded-xl p-6">
       <AppSkeleton />
     </div>
 
     <div v-else-if="booking" class="space-y-6 max-w-3xl">
-      <div class="bg-white rounded-xl p-6 border border-gray-200">
+      <div class="card-surface rounded-xl p-6">
         <div class="flex items-center justify-between mb-6">
-          <h1 class="text-xl font-semibold">Reserva #{{ booking.id?.slice(0, 8) }}</h1>
+          <h1 class="text-xl font-semibold text-on-surface">Reserva #{{ booking.id?.slice(0, 8) }}</h1>
           <AppBadge
             :variant="booking.status"
             :label="statusLabel(booking.status)"
@@ -26,7 +26,7 @@
             </div>
             <div>
               <span class="field-label block">ORIGEN</span>
-              <span class="text-sm font-medium text-gray-900">{{ booking.origin_station_name }}</span>
+              <span class="text-sm font-medium text-on-surface">{{ booking.origin_station_name }}</span>
             </div>
           </div>
 
@@ -36,39 +36,39 @@
             </div>
             <div>
               <span class="field-label block">DESTINO</span>
-              <span class="text-sm font-medium text-gray-900">{{ booking.destination_address }}</span>
+              <span class="text-sm font-medium text-on-surface">{{ booking.destination_address }}</span>
             </div>
           </div>
 
           <div class="grid grid-cols-2 gap-4">
-            <div class="bg-gray-50 rounded-xl p-4">
+            <div class="bg-surface-container rounded-xl p-4">
               <span class="field-label block mb-1">FECHA/HORA</span>
-              <span class="text-sm font-medium text-gray-900">{{ formatDateTime(booking.pickup_at) }}</span>
+              <span class="text-sm font-medium text-on-surface">{{ formatDateTime(booking.pickup_at) }}</span>
             </div>
-            <div class="bg-gray-50 rounded-xl p-4">
+            <div class="bg-surface-container rounded-xl p-4">
               <span class="field-label block mb-1">PRECIO</span>
-              <span class="text-sm font-medium text-gray-900">{{ Number(booking.total_price).toFixed(2) }} €</span>
+              <span class="text-sm font-medium text-on-surface">{{ Number(booking.total_price).toFixed(2) }} €</span>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="bg-white rounded-xl p-6 border border-gray-200">
-        <h2 class="text-lg font-medium mb-4">Cliente</h2>
+      <div class="card-surface rounded-xl p-6">
+        <h2 class="text-lg font-medium text-on-surface mb-4">Cliente</h2>
         <div class="space-y-2">
-          <p class="text-sm text-gray-900">{{ booking.client_name || 'Sin nombre' }}</p>
-          <p class="text-sm text-gray-500">{{ booking.client_email || 'Sin email' }}</p>
+          <p class="text-sm text-on-surface">{{ booking.client_name || 'Sin nombre' }}</p>
+          <p class="text-sm text-on-surface-variant">{{ booking.client_email || 'Sin email' }}</p>
         </div>
       </div>
 
-      <div v-if="booking.driver_id" class="bg-white rounded-xl p-6 border border-gray-200">
-        <h2 class="text-lg font-medium mb-4">Conductor asignado</h2>
+      <div v-if="booking.driver_id" class="card-surface rounded-xl p-6">
+        <h2 class="text-lg font-medium text-on-surface mb-4">Conductor asignado</h2>
         <div class="space-y-2">
-          <p class="text-sm text-gray-900">ID: {{ booking.driver_id?.slice(0, 8) }}...</p>
-          <p v-if="booking.confirmed_plate" class="text-sm text-gray-900">
+          <p class="text-sm text-on-surface">ID: {{ booking.driver_id?.slice(0, 8) }}...</p>
+          <p v-if="booking.confirmed_plate" class="text-sm text-on-surface">
             Matrícula: <span class="font-medium">{{ booking.confirmed_plate }}</span>
           </p>
-          <p v-if="booking.confirmed_phone" class="text-sm text-gray-900">
+          <p v-if="booking.confirmed_phone" class="text-sm text-on-surface">
             Teléfono: <span class="font-medium">{{ booking.confirmed_phone }}</span>
           </p>
         </div>

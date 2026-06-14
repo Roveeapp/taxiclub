@@ -18,7 +18,7 @@
     </div>
 
     <div v-if="loading" class="space-y-3">
-      <div v-for="i in 3" :key="i" class="bg-white rounded-xl p-6 border border-gray-200">
+      <div v-for="i in 3" :key="i" class="card-surface rounded-xl p-6 border border-outline-variant">
         <AppSkeleton />
       </div>
     </div>
@@ -28,7 +28,7 @@
         v-for="booking in filteredBookings"
         :key="booking.id"
         :to="`/taxista/reservas/${booking.id}`"
-        class="block bg-white rounded-xl p-5 border border-gray-200 hover:border-brand-gold transition-colors"
+        class="block card-surface rounded-xl p-5 border border-outline-variant hover:border-brand-gold transition-colors"
       >
         <div class="flex items-start justify-between mb-3">
           <div class="flex items-center gap-3">
@@ -36,8 +36,8 @@
               <Icon name="tabler:map-pin-2" size="14" class="text-brand-gold" />
             </div>
             <div>
-              <p class="text-sm font-medium text-gray-900">{{ booking.origin_station_name }}</p>
-              <p class="text-xs text-gray-500">→ {{ booking.destination_address }}</p>
+              <p class="text-sm font-medium text-on-surface">{{ booking.origin_station_name }}</p>
+              <p class="text-xs text-on-surface-variant">→ {{ booking.destination_address }}</p>
             </div>
           </div>
           <AppBadge
@@ -46,7 +46,7 @@
           />
         </div>
 
-        <div class="flex items-center gap-4 text-xs text-gray-500">
+        <div class="flex items-center gap-4 text-xs text-on-surface-variant">
           <span class="flex items-center gap-1">
             <Icon name="tabler:calendar" size="14" />
             {{ formatDate(booking.pickup_at) }}
@@ -68,9 +68,9 @@
       </NuxtLink>
     </div>
 
-    <div v-else class="bg-white rounded-xl p-12 border border-gray-200 text-center">
+    <div v-else class="card-surface rounded-xl p-12 border border-outline-variant text-center">
       <Icon name="tabler:calendar" size="48" class="mx-auto text-gray-200 mb-4" />
-      <p class="text-gray-400">No hay reservas {{ activeFilter !== 'all' ? 'con este estado' : '' }}</p>
+      <p class="text-on-surface-variant">No hay reservas {{ activeFilter !== 'all' ? 'con este estado' : '' }}</p>
     </div>
   </div>
 </template>

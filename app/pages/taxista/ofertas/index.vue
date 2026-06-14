@@ -3,7 +3,7 @@
     <div class="flex items-center justify-between mb-6">
       <h1 class="text-2xl font-semibold">Mis ofertas</h1>
       <NuxtLink to="/taxista/ofertas/nueva">
-        <AppButton>
+        <AppButton :full-width="false">
           <Icon name="tabler:plus" size="16" class="mr-1" />
           Nueva oferta
         </AppButton>
@@ -11,7 +11,7 @@
     </div>
 
     <div v-if="loading" class="space-y-3">
-      <div v-for="i in 2" :key="i" class="bg-white rounded-xl p-6 border border-gray-200">
+      <div v-for="i in 2" :key="i" class="card-surface rounded-xl p-6 border border-outline-variant">
         <AppSkeleton />
       </div>
     </div>
@@ -20,12 +20,12 @@
       <div
         v-for="offer in offers"
         :key="offer.id"
-        class="bg-white rounded-xl p-5 border border-gray-200"
+        class="card-surface rounded-xl p-5 border border-outline-variant"
       >
         <div class="flex items-start justify-between mb-3">
           <div>
-            <p class="text-sm font-medium text-gray-900">{{ offer.origin_address }}</p>
-            <p class="text-xs text-gray-500">→ {{ offer.destination_station_name }}</p>
+            <p class="text-sm font-medium text-on-surface">{{ offer.origin_address }}</p>
+            <p class="text-xs text-on-surface-variant">→ {{ offer.destination_station_name }}</p>
           </div>
           <div class="flex items-center gap-2">
             <span v-if="offer.discount_pct > 0" class="badge-discount">-{{ offer.discount_pct }}%</span>
@@ -36,7 +36,7 @@
           </div>
         </div>
 
-        <div class="flex items-center gap-4 text-xs text-gray-500 mb-3">
+        <div class="flex items-center gap-4 text-xs text-on-surface-variant mb-3">
           <span class="flex items-center gap-1">
             <Icon name="tabler:clock" size="14" />
             {{ formatTime(offer.available_from) }} – {{ formatTime(offer.available_until) }}
@@ -60,9 +60,9 @@
       </div>
     </div>
 
-    <div v-else class="bg-white rounded-xl p-12 border border-gray-200 text-center">
+    <div v-else class="card-surface rounded-xl p-12 border border-outline-variant text-center">
       <Icon name="tabler:bolt" size="48" class="mx-auto text-gray-200 mb-4" />
-      <p class="text-gray-400 mb-4">No tienes ofertas activas</p>
+      <p class="text-on-surface-variant mb-4">No tienes ofertas activas</p>
       <NuxtLink to="/taxista/ofertas/nueva">
         <AppButton>Crear primera oferta</AppButton>
       </NuxtLink>
