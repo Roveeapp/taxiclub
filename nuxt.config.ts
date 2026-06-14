@@ -114,12 +114,6 @@ export default defineNuxtConfig({
     imports: {
       dirs: ['app/server/services'],
     },
-    scheduledTasks: {
-      '*/5 * * * *':  ['expire-offers'],
-      '*/15 * * * *': ['remind-unconfirmed'],
-      '0 8 1 * *':    ['process-payouts'],
-      '0 9 1 * *':    ['charge-memberships'],
-    },
   },
 
   tailwindcss: {
