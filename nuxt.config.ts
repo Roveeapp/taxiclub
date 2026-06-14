@@ -129,4 +129,9 @@ export default defineNuxtConfig({
   typescript: {
     strict: true,
   },
+
+  sourcemap: {
+    server: false,
+    client: false,
+  },
 })
