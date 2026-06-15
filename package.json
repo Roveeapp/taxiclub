@@ -15,6 +15,7 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
+    "@block65/webcrypto-web-push": "^1.0.2",
     "@nuxt/icon": "^2.2.3",
     "@nuxt/ui": "^2.21.0",
     "@nuxtjs/supabase": "^1.4.6",
@@ -38,8 +39,7 @@
     "twilio": "^5.4.4",
     "v-calendar": "^3.1.2",
     "vue": "^3.5.13",
-    "vue-router": "^4.5.0",
-    "web-push": "^3.6.7"
+    "vue-router": "^4.5.0"
   },
   "devDependencies": {
     "@iconify-json/tabler": "^1.2.35",

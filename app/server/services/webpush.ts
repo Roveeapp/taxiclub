@@ -1,5 +1,9 @@
-// @ts-ignore -- no type declarations available for web-push
-import webpush from 'web-push'
+import {
+  buildPushPayload,
+  type PushSubscription,
+  type PushMessage,
+  type VapidKeys,
+} from '@block65/webcrypto-web-push'
 
 export async function sendWebPush(
   subscription: { endpoint: string; keys: { p256dh: string; auth: string } },
@@ -7,22 +11,36 @@ export async function sendWebPush(
 ) {
   const config = useRuntimeConfig()
 
-  if (!config.vapidPrivateKey) {
+  if (!config.vapidPrivateKey || !config.public.vapidPublicKey) {
     console.log('[Push] No VAPID key configured, skipping push notification')
     return
   }
 
-  webpush.setVapidDetails(
-    `mailto:${process.env.VAPID_MAILTO || 'admin@clubtaxisasturias.es'}`,
-    config.public.vapidPublicKey,
-    config.vapidPrivateKey,
-  )
+  const vapid: VapidKeys = {
+    subject: `mailto:${process.env.VAPID_MAILTO || 'admin@clubtaxisasturias.es'}`,
+    publicKey: config.public.vapidPublicKey,
+    privateKey: config.vapidPrivateKey,
+  }
+
+  const sub: PushSubscription = {
+    endpoint: subscription.endpoint,
+    expirationTime: null,
+    keys: subscription.keys,
+  }
+
+  const message: PushMessage = {
+    data: JSON.stringify(payload),
+    options: { ttl: 60 },
+  }
 
   try {
-    await webpush.sendNotification(
-      subscription,
-      JSON.stringify(payload),
-    )
+    const pushPayload = await buildPushPayload(message, sub, vapid)
+    // buildPushPayload returns a fetch-ready init; cast because the DOM lib's
+    // BodyInit type doesn't include Uint8Array in this TS version (runtime is fine).
+    const res = await fetch(subscription.endpoint, pushPayload as RequestInit)
+    if (!res.ok) {
+      console.error(`[Push] Endpoint responded ${res.status} for ${subscription.endpoint}`)
+    }
   } catch (e) {
     console.error('[Push] Error sending notification:', e)
   }
