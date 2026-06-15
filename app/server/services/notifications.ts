@@ -1,4 +1,5 @@
 import { Resend } from 'resend'
+import { notifyDriverPush } from './webpush'
 
 let resend: Resend | null = null
 
@@ -134,6 +135,11 @@ export async function notifyDriver(driverId: string, booking: any) {
   if (d.phone) {
     await sendSMS(d.phone, `Nueva reserva Club Taxis: ${booking.origin_station_name || ''} → ${booking.destination_address || ''}. Confirma en ${appUrl}/taxista/reservas/${booking.id}`)
   }
+
+  // Push notification (best-effort: nunca debe romper el flujo de asignación)
+  await notifyDriverPush(driverId, booking).catch((e) => {
+    console.error('[Push] notifyDriver push failed:', e)
+  })
 }
 
 export async function notifyClientConfirmed(bookingId: string) {
