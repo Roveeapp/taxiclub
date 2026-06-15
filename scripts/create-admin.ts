@@ -10,8 +10,12 @@ const supabase = createClient(
 const sql = postgres(process.env.DATABASE_URL!)
 
 async function createAdmin() {
-  const email = 'dallaswk@gmail.com'
-  const password = 'Millenium2020!'
+  const email = process.env.ADMIN_EMAIL || 'dallaswk@gmail.com'
+  const password = process.env.ADMIN_PASSWORD
+  if (!password) {
+    console.error('Define ADMIN_PASSWORD en el entorno antes de ejecutar este script.')
+    process.exit(1)
+  }
 
   console.log(`Creating admin user: ${email}`)
 
