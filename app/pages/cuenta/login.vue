@@ -16,29 +16,57 @@
 
     <div class="bg-white rounded-card p-6">
       <div class="space-y-4">
-        <AppInput
-          v-model="email"
-          label="Email"
-          type="email"
-          placeholder="tu@email.com"
-          :error="errors.email"
-        />
+        <div>
+          <label class="text-[11px] font-medium text-slate-400 uppercase tracking-[0.08em] block mb-1">Email</label>
+          <div class="relative">
+            <Icon name="tabler:mail" size="18" class="text-secondary absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <input
+              v-model="email"
+              type="email"
+              placeholder="tu@email.com"
+              autocomplete="email"
+              class="login-input"
+            >
+          </div>
+          <p v-if="errors.email" class="text-error text-xs mt-1">{{ errors.email }}</p>
+        </div>
 
-        <AppInput
-          v-model="password"
-          label="Contraseña"
-          type="password"
-          placeholder="Mínimo 6 caracteres"
-          :error="errors.password"
-        />
+        <div>
+          <label class="text-[11px] font-medium text-slate-400 uppercase tracking-[0.08em] block mb-1">Contraseña</label>
+          <div class="relative">
+            <Icon name="tabler:lock" size="18" class="text-secondary absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <input
+              v-model="password"
+              :type="showPassword ? 'text' : 'password'"
+              placeholder="Mínimo 6 caracteres"
+              :autocomplete="isLogin ? 'current-password' : 'new-password'"
+              class="login-input !pr-11"
+            >
+            <button
+              type="button"
+              class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+              :aria-label="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+              @click="showPassword = !showPassword"
+            >
+              <Icon :name="showPassword ? 'tabler:eye-off' : 'tabler:eye'" size="18" />
+            </button>
+          </div>
+          <p v-if="errors.password" class="text-error text-xs mt-1">{{ errors.password }}</p>
+        </div>
 
         <div v-if="!isLogin">
-          <AppInput
-            v-model="fullName"
-            label="Nombre completo"
-            placeholder="Tu nombre y apellidos"
-            :error="errors.fullName"
-          />
+          <label class="text-[11px] font-medium text-slate-400 uppercase tracking-[0.08em] block mb-1">Nombre completo</label>
+          <div class="relative">
+            <Icon name="tabler:user" size="18" class="text-secondary absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <input
+              v-model="fullName"
+              type="text"
+              placeholder="Tu nombre y apellidos"
+              autocomplete="name"
+              class="login-input"
+            >
+          </div>
+          <p v-if="errors.fullName" class="text-error text-xs mt-1">{{ errors.fullName }}</p>
         </div>
 
         <div v-if="!isLogin">
@@ -100,6 +128,7 @@ const supabase = useSupabaseClient()
 const router = useRouter()
 
 const isLogin = ref(true)
+const showPassword = ref(false)
 const email = ref('')
 const password = ref('')
 const fullName = ref('')
@@ -208,3 +237,27 @@ function translateAuthError(message?: string) {
   return message
 }
 </script>
+
+<style scoped>
+/* Mismo estilo que los inputs del formulario de búsqueda */
+.login-input {
+  width: 100%;
+  height: 3rem;
+  background: #ffffff;
+  border: 2px solid var(--secondary);
+  border-radius: 0.75rem;
+  padding: 0 0.75rem 0 2.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #0f172a;
+  outline: none;
+  transition: box-shadow 0.15s ease;
+}
+.login-input::placeholder {
+  color: #94a3b8;
+  font-weight: 400;
+}
+.login-input:focus {
+  box-shadow: 0 0 0 3px rgba(250, 189, 50, 0.25);
+}
+</style>
