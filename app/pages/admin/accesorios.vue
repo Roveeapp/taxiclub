@@ -38,7 +38,7 @@
     </div>
 
     <div v-else class="card-surface rounded-xl overflow-hidden max-w-4xl">
-      <table class="w-full">
+      <table class="w-full responsive-table">
         <thead class="bg-surface-container border-b border-outline-variant">
           <tr>
             <th class="text-left text-xs font-medium text-on-surface-variant px-6 py-3">Accesorio</th>
@@ -49,7 +49,7 @@
         </thead>
         <tbody class="divide-y divide-outline-variant">
           <tr v-for="acc in accessories" :key="acc.id" class="hover:bg-surface-container transition-colors" :class="{ 'opacity-50': !acc.is_active }">
-            <td class="px-6 py-4">
+            <td class="px-6 py-4 mobile-primary" data-label="Accesorio">
               <div class="flex items-center gap-3">
                 <div class="w-9 h-9 rounded-lg bg-secondary/10 flex items-center justify-center">
                   <Icon :name="acc.icon || 'tabler:star'" size="18" class="text-secondary" />
@@ -60,17 +60,17 @@
                 <p v-else class="text-sm font-medium text-on-surface">{{ acc.name }}</p>
               </div>
             </td>
-            <td class="px-6 py-4">
+            <td class="px-6 py-4" data-label="Descripción">
               <input v-if="editingId === acc.id" v-model="editForm.description" class="acc-input !py-1.5">
               <span v-else class="text-sm text-on-surface-variant">{{ acc.description || '—' }}</span>
             </td>
-            <td class="px-6 py-4 text-center">
+            <td class="px-6 py-4 text-center" data-label="Activo">
               <ToggleSwitch
                 :model-value="acc.is_active"
                 @update:model-value="(v: boolean) => toggleActive(acc, v)"
               />
             </td>
-            <td class="px-6 py-4 text-right whitespace-nowrap">
+            <td class="px-6 py-4 text-right whitespace-nowrap mobile-actions" data-label="">
               <template v-if="editingId === acc.id">
                 <button class="text-sm text-success mr-3" @click="saveEdit(acc)">Guardar</button>
                 <button class="text-sm text-on-surface-variant" @click="editingId = null">Cancelar</button>

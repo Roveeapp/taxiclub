@@ -1,11 +1,11 @@
 <template>
   <div>
-    <div class="flex items-center justify-between mb-6">
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
       <div>
         <h1 class="text-2xl font-semibold text-on-surface">Miembros</h1>
         <p class="text-sm text-on-surface-variant mt-1">Altas, bajas y exenciones de la membresía del club</p>
       </div>
-      <div class="flex items-center gap-3">
+      <div class="flex flex-wrap items-center gap-3">
         <span class="text-sm text-on-surface-variant">{{ memberCount }} {{ memberCount === 1 ? 'miembro' : 'miembros' }}</span>
         <select
           v-if="collaborators.length > 0"
@@ -26,7 +26,7 @@
     </div>
 
     <div v-else class="card-surface rounded-xl overflow-hidden">
-      <table class="w-full">
+      <table class="w-full responsive-table">
         <thead class="bg-surface-container border-b border-outline-variant">
           <tr>
             <th class="text-left text-xs font-medium text-on-surface-variant px-6 py-3">Conductor</th>
@@ -37,27 +37,29 @@
         </thead>
         <tbody class="divide-y divide-outline-variant">
           <tr v-for="driver in members" :key="driver.id" class="hover:bg-surface-container transition-colors">
-            <td class="px-6 py-4">
-              <p class="text-sm font-medium text-on-surface">{{ driver.full_name }}</p>
-              <p class="text-xs text-on-surface-variant">
-                {{ driver.license_number }}
-                <span v-if="driver.member_since"> · miembro desde {{ formatDate(driver.member_since) }}</span>
-              </p>
+            <td class="px-6 py-4 mobile-primary" data-label="Conductor">
+              <div>
+                <p class="text-sm font-medium text-on-surface">{{ driver.full_name }}</p>
+                <p class="text-xs text-on-surface-variant">
+                  {{ driver.license_number }}
+                  <span v-if="driver.member_since"> · miembro desde {{ formatDate(driver.member_since) }}</span>
+                </p>
+              </div>
             </td>
-            <td class="px-6 py-4">
+            <td class="px-6 py-4" data-label="Cuota">
               <span v-if="driver.is_exempt" class="text-xs text-on-surface-variant">Exento</span>
               <span v-else-if="driver.custom_monthly_fee !== null" class="text-sm text-brand-gold font-medium">
                 {{ Number(driver.custom_monthly_fee).toFixed(2) }} € <span class="text-[10px]">(propia)</span>
               </span>
               <span v-else class="text-sm text-on-surface">{{ globalFee }} €</span>
             </td>
-            <td class="px-6 py-4 text-center">
+            <td class="px-6 py-4 text-center" data-label="Exento">
               <ToggleSwitch
                 :model-value="driver.is_exempt"
                 @update:model-value="(v: boolean) => updateDriver(driver, { isExempt: v })"
               />
             </td>
-            <td class="px-6 py-4 text-right whitespace-nowrap">
+            <td class="px-6 py-4 text-right whitespace-nowrap mobile-actions" data-label="">
               <NuxtLink :to="`/admin/conductores/${driver.id}`" class="text-sm text-brand-gold hover:text-gold-600 mr-4">
                 Ficha
               </NuxtLink>

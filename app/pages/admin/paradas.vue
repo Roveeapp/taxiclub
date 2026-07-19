@@ -13,7 +13,7 @@
     </div>
 
     <div v-else class="card-surface rounded-xl overflow-hidden">
-      <table class="w-full">
+      <table class="w-full responsive-table">
         <thead class="bg-surface-container border-b border-outline-variant">
           <tr>
             <th class="text-left text-xs font-medium text-on-surface-variant px-6 py-3">Nombre</th>
@@ -30,16 +30,22 @@
         </thead>
         <tbody class="divide-y divide-outline-variant">
           <tr v-for="station in stations" :key="station.id" class="hover:bg-surface-container transition-colors">
-            <td class="px-6 py-4">
+            <td class="px-6 py-4 mobile-primary" data-label="Nombre">
               <div class="flex items-center gap-2">
                 <Icon name="tabler:map-pin" size="16" class="text-brand-gold" />
                 <span class="text-sm font-medium text-on-surface">{{ station.name }}</span>
+                <span
+                  class="md:hidden text-xs px-2 py-0.5 rounded-full ml-auto"
+                  :class="station.is_active ? 'bg-success/10 text-success' : 'bg-surface-container-high text-on-surface-variant'"
+                >
+                  {{ station.is_active ? 'Activa' : 'Inactiva' }}
+                </span>
               </div>
             </td>
-            <td class="px-6 py-4 text-sm text-on-surface-variant">{{ station.city }}</td>
-            <td class="px-6 py-4 text-sm text-on-surface-variant">{{ station.address || '-' }}</td>
-            <td class="px-6 py-4 text-sm text-on-surface-variant">{{ station.driver_count || 0 }}</td>
-            <td class="px-6 py-4">
+            <td class="px-6 py-4 text-sm text-on-surface-variant" data-label="Ciudad">{{ station.city }}</td>
+            <td class="px-6 py-4 text-sm text-on-surface-variant" data-label="Dirección">{{ station.address || '-' }}</td>
+            <td class="px-6 py-4 text-sm text-on-surface-variant" data-label="Conductores">{{ station.driver_count || 0 }}</td>
+            <td class="px-6 py-4 hidden md:table-cell" data-label="Exclusividad">
               <select
                 :value="station.exclusive_driver_id || ''"
                 class="excl-select"
@@ -52,7 +58,7 @@
                 </option>
               </select>
             </td>
-            <td class="px-6 py-4">
+            <td class="px-6 py-4 hidden md:table-cell" data-label="Estado">
               <span
                 class="text-xs px-2 py-1 rounded-full"
                 :class="station.is_active ? 'bg-success/10 text-success' : 'bg-surface-container-high text-on-surface-variant'"
@@ -60,7 +66,7 @@
                 {{ station.is_active ? 'Activa' : 'Inactiva' }}
               </span>
             </td>
-            <td class="px-6 py-4 text-right">
+            <td class="px-6 py-4 text-right mobile-actions" data-label="">
               <button
                 class="text-sm text-brand-gold hover:text-gold-600 mr-3"
                 @click="editStation(station)"

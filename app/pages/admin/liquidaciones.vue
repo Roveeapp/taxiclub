@@ -1,8 +1,8 @@
 <template>
   <div>
-    <div class="flex items-center justify-between mb-6">
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
       <h1 class="text-2xl font-semibold">Liquidaciones</h1>
-      <AppButton variant="gold" :full-width="false" @click="handleProcess" :loading="processing">
+      <AppButton variant="gold" :full-width="false" class="w-full sm:w-auto" @click="handleProcess" :loading="processing">
         <Icon name="tabler:coin" size="16" class="mr-1" />
         Procesar liquidaciones del mes
       </AppButton>
@@ -13,7 +13,7 @@
     </div>
 
     <div v-else-if="payouts.length > 0" class="card-surface rounded-xl overflow-hidden">
-      <table class="w-full">
+      <table class="w-full responsive-table">
         <thead class="bg-surface-container border-b border-outline-variant">
           <tr>
             <th class="text-left text-xs font-medium text-on-surface-variant px-6 py-3">Conductor</th>
@@ -27,18 +27,23 @@
         </thead>
         <tbody class="divide-y divide-outline-variant">
           <tr v-for="payout in payouts" :key="payout.id" class="hover:bg-surface-container transition-colors">
-            <td class="px-6 py-4">
-              <p class="text-sm font-medium text-on-surface">{{ payout.driver_name }}</p>
-              <p class="text-xs text-on-surface-variant">{{ payout.driver_email }}</p>
+            <td class="px-6 py-4 mobile-primary" data-label="Conductor">
+              <div>
+                <p class="text-sm font-medium text-on-surface">{{ payout.driver_name }}</p>
+                <p class="text-xs text-on-surface-variant">{{ payout.driver_email }}</p>
+              </div>
+              <span class="md:hidden text-xs px-2 py-1 rounded-full ml-auto" :class="payout.paid_at ? 'bg-success/10 text-success' : 'bg-warning/10 text-warning'">
+                {{ payout.paid_at ? 'Pagado' : 'Pendiente' }}
+              </span>
             </td>
-            <td class="px-6 py-4 text-sm text-on-surface-variant">
+            <td class="px-6 py-4 text-sm text-on-surface-variant" data-label="Período">
               {{ formatDate(payout.period_start) }} - {{ formatDate(payout.period_end) }}
             </td>
-            <td class="px-6 py-4 text-sm text-right text-on-surface">{{ Number(payout.gross_amount).toFixed(2) }} €</td>
-            <td class="px-6 py-4 text-sm text-right text-error">-{{ Number(payout.commission_amt).toFixed(2) }} €</td>
-            <td class="px-6 py-4 text-sm text-right text-error">-{{ Number(payout.membership_fee || 0).toFixed(2) }} €</td>
-            <td class="px-6 py-4 text-sm text-right font-semibold text-success">{{ Number(payout.final_payout).toFixed(2) }} €</td>
-            <td class="px-6 py-4">
+            <td class="px-6 py-4 text-sm text-right text-on-surface" data-label="Bruto">{{ Number(payout.gross_amount).toFixed(2) }} €</td>
+            <td class="px-6 py-4 text-sm text-right text-error" data-label="Comisión">-{{ Number(payout.commission_amt).toFixed(2) }} €</td>
+            <td class="px-6 py-4 text-sm text-right text-error" data-label="Cuota">-{{ Number(payout.membership_fee || 0).toFixed(2) }} €</td>
+            <td class="px-6 py-4 text-sm text-right font-semibold text-success" data-label="Neto">{{ Number(payout.final_payout).toFixed(2) }} €</td>
+            <td class="px-6 py-4 hidden md:table-cell" data-label="Estado">
               <span
                 class="text-xs px-2 py-1 rounded-full"
                 :class="payout.paid_at ? 'bg-success/10 text-success' : 'bg-warning/10 text-warning'"

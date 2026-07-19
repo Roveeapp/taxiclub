@@ -205,3 +205,75 @@
     backdrop-filter: blur(8px);
   }
 }
+
+/* ─── Responsive table → card layout on mobile ─── */
+@media (max-width: 767px) {
+  .responsive-table thead {
+    display: none;
+  }
+
+  .responsive-table tbody {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .responsive-table tbody tr {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background: var(--surface-container);
+    border: 1px solid var(--outline-variant);
+    border-radius: 14px;
+    padding: 14px 16px;
+  }
+
+  .responsive-table tbody tr:hover {
+    background: var(--surface-container-high);
+  }
+
+  .responsive-table tbody td {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 !important;
+    gap: 8px;
+  }
+
+  .responsive-table tbody td::before {
+    content: attr(data-label);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--on-surface-variant);
+    flex-shrink: 0;
+    min-width: 80px;
+  }
+
+  .responsive-table tbody td:empty {
+    display: none;
+  }
+
+  /* Actions column - full width */
+  .responsive-table tbody td.mobile-actions {
+    justify-content: flex-end;
+    padding-top: 4px !important;
+    border-top: 1px solid var(--outline-variant);
+    margin-top: 4px;
+  }
+
+  .responsive-table tbody td.mobile-actions::before {
+    display: none;
+  }
+
+  /* Primary cell (first meaningful data) - make it prominent */
+  .responsive-table tbody td.mobile-primary {
+    justify-content: flex-start;
+  }
+
+  .responsive-table tbody td.mobile-primary::before {
+    display: none;
+  }
+}

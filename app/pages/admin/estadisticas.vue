@@ -41,7 +41,7 @@
             {{ stats.unassigned }} reservas sin asignar este mes
           </span>
         </div>
-        <table class="w-full">
+        <table class="w-full responsive-table">
           <thead class="bg-surface-container border-b border-outline-variant">
             <tr>
               <th class="text-left text-xs font-medium text-on-surface-variant px-6 py-3">Taxista</th>
@@ -54,7 +54,7 @@
           </thead>
           <tbody class="divide-y divide-outline-variant">
             <tr v-for="(d, i) in stats.perDriver" :key="d.driverId" class="hover:bg-surface-container transition-colors">
-              <td class="px-6 py-4">
+              <td class="px-6 py-4 mobile-primary" data-label="Taxista">
                 <div class="flex items-center gap-3">
                   <span class="w-6 h-6 rounded-full bg-surface-container-high text-[11px] font-semibold text-on-surface-variant flex items-center justify-center">{{ i + 1 }}</span>
                   <div>
@@ -66,11 +66,11 @@
                   </div>
                 </div>
               </td>
-              <td class="px-4 py-4 text-right text-sm font-medium text-success">{{ d.completed }}</td>
-              <td class="px-4 py-4 text-right text-sm text-on-surface-variant">{{ d.pending }}</td>
-              <td class="px-4 py-4 text-right text-sm text-on-surface-variant">{{ d.cancelled }}</td>
-              <td class="px-4 py-4 text-right text-sm font-medium text-on-surface">{{ d.revenue.toFixed(2) }} €</td>
-              <td class="px-6 py-4 text-right text-sm text-brand-gold">{{ d.commission.toFixed(2) }} €</td>
+              <td class="px-4 py-4 text-right text-sm font-medium text-success" data-label="Completados">{{ d.completed }}</td>
+              <td class="px-4 py-4 text-right text-sm text-on-surface-variant" data-label="Pendientes">{{ d.pending }}</td>
+              <td class="px-4 py-4 text-right text-sm text-on-surface-variant" data-label="Cancelados">{{ d.cancelled }}</td>
+              <td class="px-4 py-4 text-right text-sm font-medium text-on-surface" data-label="Facturado">{{ d.revenue.toFixed(2) }} €</td>
+              <td class="px-6 py-4 text-right text-sm text-brand-gold" data-label="Comisión">{{ d.commission.toFixed(2) }} €</td>
             </tr>
           </tbody>
         </table>
