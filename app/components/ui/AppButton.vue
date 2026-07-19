@@ -24,7 +24,8 @@ withDefaults(defineProps<{
   fullWidth?: boolean
 }>(), {
   variant: 'primary',
-  fullWidth: true,
+  // Por defecto el botón se ajusta al contenido; usa full-width en CTAs móviles
+  fullWidth: false,
 })
 
 defineEmits<{

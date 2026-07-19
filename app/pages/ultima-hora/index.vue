@@ -1,6 +1,12 @@
 <template>
   <div class="pt-6">
-    <h1 class="text-[22px] font-medium text-white mb-4">Última Hora</h1>
+    <div class="mb-4">
+      <h1 class="text-[22px] font-medium text-white flex items-center gap-2">
+        Última Hora
+        <BrandDot />
+      </h1>
+      <p class="text-sm text-white/45 mt-1">Retornos con descuento publicados por taxistas del club</p>
+    </div>
 
     <div v-if="loading" class="space-y-3">
       <div v-for="i in 4" :key="i" class="bg-white/5 rounded-card p-4">
@@ -13,6 +19,7 @@
         v-for="offer in offers"
         :key="offer.id"
         :to="`/ultima-hora/${offer.id}`"
+        class="block"
       >
         <OfferCard :offer="offer" />
       </NuxtLink>

@@ -1,3 +1,39 @@
+export interface PayoutInput {
+  gross: number
+  isMember: boolean
+  isExempt: boolean
+  customCommissionPct?: number | null
+  customMonthlyFee?: number | null
+  config: Record<string, any>
+}
+
+/**
+ * Cálculo puro de la liquidación mensual (testeado en tests/unit/payouts.spec.ts).
+ * Prioridad: valores personalizados del conductor > configuración global.
+ */
+export function computePayoutBreakdown(input: PayoutInput) {
+  const { gross, isMember, isExempt, customCommissionPct, customMonthlyFee, config } = input
+
+  const commissionPct = customCommissionPct !== null && customCommissionPct !== undefined
+    ? Number(customCommissionPct)
+    : isMember
+      ? Number(config.commission_member_pct || 10)
+      : Number(config.commission_non_member_pct || 12)
+
+  const commissionAmt = Math.round(gross * commissionPct) / 100
+  const net = Math.round((gross - commissionAmt) * 100) / 100
+
+  const membershipFee = (isMember && !isExempt)
+    ? (customMonthlyFee !== null && customMonthlyFee !== undefined
+        ? Number(customMonthlyFee)
+        : Number(config.membership_monthly_fee || 20))
+    : 0
+
+  const finalPayout = Math.round((net - membershipFee) * 100) / 100
+
+  return { commissionPct, commissionAmt, net, membershipFee, finalPayout }
+}
+
 export async function calculateMonthlyPayout(driverId: string, month: Date) {
   const db = useDb()
   const config = await getSystemConfig()
@@ -23,18 +59,14 @@ export async function calculateMonthlyPayout(driverId: string, month: Date) {
 
   const gross = (trips || []).reduce((sum: number, t: any) => sum + Number(t.total_price), 0)
 
-  const commissionPct = d.is_member
-    ? Number(config.commission_member_pct || 10)
-    : Number(config.commission_non_member_pct || 12)
-
-  const commissionAmt = gross * commissionPct / 100
-  const net = gross - commissionAmt
-
-  const membershipFee = (d.is_member && !d.is_exempt)
-    ? Number(config.membership_monthly_fee || 20)
-    : 0
-
-  const finalPayout = net - membershipFee
+  const { commissionPct, commissionAmt, net, membershipFee, finalPayout } = computePayoutBreakdown({
+    gross,
+    isMember: !!d.is_member,
+    isExempt: !!d.is_exempt,
+    customCommissionPct: d.custom_commission_pct,
+    customMonthlyFee: d.custom_monthly_fee,
+    config,
+  })
 
   return {
     driverId,

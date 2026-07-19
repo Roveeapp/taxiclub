@@ -13,13 +13,29 @@ export default defineEventHandler(async (event) => {
   if (body.lng !== undefined) updateData.lng = body.lng
   if (body.isActive !== undefined) updateData.is_active = body.isActive
 
-  const { error } = await (db
-    .from('stations') as any)
-    .update(updateData)
-    .eq('id', id)
+  if (Object.keys(updateData).length > 0) {
+    const { error } = await (db
+      .from('stations') as any)
+      .update(updateData)
+      .eq('id', id)
 
-  if (error) {
-    throw createError({ statusCode: 500, message: error.message })
+    if (error) {
+      throw createError({ statusCode: 500, message: error.message })
+    }
+  }
+
+  // Exclusividad de taxista (null = quitar). Solo visible/gestionable por admins.
+  if (body.exclusiveDriverId !== undefined) {
+    if (body.exclusiveDriverId === null || body.exclusiveDriverId === '') {
+      const { error } = await db.from('station_exclusivities').delete().eq('station_id', id)
+      if (error) throw createError({ statusCode: 500, message: error.message })
+    } else {
+      const { error } = await (db.from('station_exclusivities') as any).upsert(
+        { station_id: id, driver_id: body.exclusiveDriverId },
+        { onConflict: 'station_id' },
+      )
+      if (error) throw createError({ statusCode: 500, message: error.message })
+    }
   }
 
   return { success: true }

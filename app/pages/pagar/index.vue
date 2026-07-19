@@ -5,7 +5,7 @@
       Volver
     </NuxtLink>
 
-    <div class="card-surface rounded-xl p-6">
+    <div class="card-surface rounded-card p-6">
       <h1 class="text-[22px] font-medium text-on-surface mb-6">Confirmar y pagar</h1>
 
       <div class="space-y-4 mb-6">
@@ -43,28 +43,47 @@
         <div class="flex items-center gap-4 text-sm text-on-surface-variant">
           <span class="flex items-center gap-1">
             <Icon name="tabler:users" size="14" />
-            {{ bookingData?.passengers }} pasajeros
+            {{ bookingData?.passengers }} {{ bookingData?.passengers === 1 ? 'pasajero' : 'pasajeros' }}
           </span>
           <span v-if="bookingData?.luggageBig" class="flex items-center gap-1">
             <Icon name="tabler:luggage" size="14" />
-            {{ bookingData.luggageBig }} maletas
+            {{ bookingData.luggageBig }} {{ bookingData.luggageBig === 1 ? 'maleta' : 'maletas' }}
           </span>
         </div>
       </div>
 
       <div class="border-t border-outline-variant pt-4 mb-6">
-        <div class="flex justify-between text-sm mb-2">
-          <span class="text-on-surface-variant">Tarifa base</span>
-          <span class="text-on-surface">{{ formatPrice(priceData?.basePrice) }}</span>
-        </div>
-        <div v-if="priceData?.extras" class="flex justify-between text-sm mb-2">
-          <span class="text-on-surface-variant">Extras</span>
-          <span class="text-on-surface">{{ formatPrice(priceData.extras) }}</span>
-        </div>
-        <div class="flex justify-between text-base font-semibold pt-2 border-t border-outline-variant">
-          <span class="text-on-surface">Total</span>
-          <span class="text-brand-gold">{{ formatPrice(priceData?.totalPrice) }}</span>
-        </div>
+        <!-- Desglose de oferta con señal -->
+        <template v-if="offerAmounts">
+          <div class="flex justify-between text-sm mb-2">
+            <span class="text-on-surface-variant">Precio del viaje</span>
+            <span class="text-on-surface">{{ formatPrice(offerAmounts.finalPrice) }}</span>
+          </div>
+          <div class="flex justify-between text-base font-semibold pt-2 border-t border-outline-variant mb-1">
+            <span class="text-on-surface">Señal ahora (10%)</span>
+            <span class="text-brand-gold">{{ formatPrice(offerAmounts.deposit) }}</span>
+          </div>
+          <div class="flex justify-between text-sm">
+            <span class="text-on-surface-variant">Resto al taxista al final del viaje</span>
+            <span class="text-on-surface-variant">{{ formatPrice(offerAmounts.remainder) }}</span>
+          </div>
+        </template>
+
+        <!-- Desglose normal -->
+        <template v-else>
+          <div class="flex justify-between text-sm mb-2">
+            <span class="text-on-surface-variant">Tarifa base</span>
+            <span class="text-on-surface">{{ formatPrice(priceData?.basePrice) }}</span>
+          </div>
+          <div v-if="priceData?.extras" class="flex justify-between text-sm mb-2">
+            <span class="text-on-surface-variant">Extras</span>
+            <span class="text-on-surface">{{ formatPrice(priceData.extras) }}</span>
+          </div>
+          <div class="flex justify-between text-base font-semibold pt-2 border-t border-outline-variant">
+            <span class="text-on-surface">Total</span>
+            <span class="text-brand-gold">{{ formatPrice(priceData?.totalPrice) }}</span>
+          </div>
+        </template>
       </div>
 
       <div v-if="!user" class="mb-6">
@@ -96,7 +115,7 @@
               Crear una cuenta para gestionar mis reservas
             </label>
           </div>
-          
+
           <div v-if="createAccount" class="animate-fade-in">
             <AppInput
               v-model="guestData.password"
@@ -110,19 +129,31 @@
 
       <div class="mb-6">
         <p class="field-label mb-2 text-on-surface-variant">DATOS DE PAGO</p>
-        <div id="payment-element" class="bg-surface-container rounded-xl p-4 min-h-[200px]">
-          <p class="text-sm text-on-surface-variant text-center py-8">
-            Stripe Payment Element se cargará aquí
+        <div class="bg-surface-container rounded-xl p-4 min-h-[100px]">
+          <div id="payment-element" />
+          <div v-if="paymentUiState === 'loading'" class="text-center py-6">
+            <Icon name="tabler:loader" size="22" class="mx-auto text-brand-gold animate-spin mb-2" />
+            <p class="text-xs text-on-surface-variant">Cargando pasarela de pago segura…</p>
+          </div>
+          <p v-else-if="paymentUiState === 'unavailable'" class="text-sm text-on-surface-variant text-center py-6">
+            La pasarela de pago no está disponible ahora mismo.<br>
+            <span class="text-xs">Tu reserva se creará y podrás pagar al taxista.</span>
           </p>
         </div>
       </div>
 
       <p class="text-xs text-on-surface-variant mb-4">
-        Al confirmar, Stripe pre-autorizará el pago. El cargo se realizará cuando el taxista complete el viaje.
+        <template v-if="offerAmounts">
+          Al confirmar, Stripe pre-autorizará la señal del 10%. Se cargará al completarse el viaje y el resto se lo pagas al taxista directamente.
+        </template>
+        <template v-else>
+          Al confirmar, Stripe pre-autorizará el pago. El cargo se realizará cuando el taxista complete el viaje.
+        </template>
       </p>
 
       <AppButton
         variant="gold"
+        full-width
         :loading="processing"
         :disabled="!bookingData || (!user && (!guestData.name || !guestData.email || !guestData.phone || (createAccount && !guestData.password)))"
         @click="handleConfirm"
@@ -130,6 +161,8 @@
         Confirmar reserva
       </AppButton>
     </div>
+
+    <AppToast ref="toastRef" :message="toastMessage" type="error" :duration="6000" />
   </div>
 </template>
 
@@ -148,28 +181,83 @@ interface BookingResponse {
 }
 
 const router = useRouter()
+const route = useRoute()
 const bookingStore = useBookingStore()
 const user = useSupabaseUser()
+const runtimeConfig = useRuntimeConfig()
+const { config: systemConfig, load: loadSystemConfig } = useSystemConfig()
+
+// Publishable key: panel admin (vía /api/config) > .env
+const stripePk = computed(() =>
+  (systemConfig.value?.stripe_publishable_key as string)
+  || (runtimeConfig.public.stripePublishableKey as string)
+  || '',
+)
+
+// Modo oferta de Última Hora (señal del 10%)
+const offerId = computed(() => route.query.offer as string | undefined)
+const offer = ref<any>(null)
+const offerAmounts = ref<{ finalPrice: number, deposit: number, remainder: number } | null>(null)
 
 const processing = ref(false)
 const stations = ref<Station[]>([])
 const createAccount = ref(false)
+const toastRef = ref<{ show: () => void } | null>(null)
+const toastMessage = ref('')
+
+// Stripe
+const paymentUiState = ref<'loading' | 'ready' | 'unavailable'>('loading')
+let stripe: any = null
+let elements: any = null
+let clientSecret: string | null = null
+let paymentIntentId: string | null = null
 
 const guestData = reactive({
-  name: '',
-  email: '',
-  phone: '',
+  name: bookingStore.formData?.guestName || '',
+  email: bookingStore.formData?.guestEmail || '',
+  phone: bookingStore.formData?.guestPhone || '',
   password: '',
 })
 
-const bookingData = computed(() => bookingStore.formData)
+const bookingData = computed(() => {
+  // En modo oferta sintetizamos los datos desde la oferta
+  if (offer.value) {
+    const pickup = new Date(offer.value.available_from)
+    return {
+      originAddress: offer.value.origin_address,
+      destination: destinationStationName.value,
+      date: pickup.toISOString().slice(0, 10),
+      time: pickup.toTimeString().slice(0, 5),
+      passengers: 1,
+      luggageBig: 0,
+      luggageHand: 0,
+    } as any
+  }
+  return bookingStore.formData
+})
 
-const priceData = computed(() => bookingStore.currentBooking)
+const priceData = computed(() => {
+  if (offerAmounts.value) {
+    return {
+      basePrice: offerAmounts.value.finalPrice,
+      extras: 0,
+      totalPrice: offerAmounts.value.finalPrice,
+    } as any
+  }
+  return bookingStore.currentBooking
+})
+
+const destinationStationName = computed(() => {
+  if (!offer.value) return ''
+  const station = stations.value.find((s: Station) => s.id === offer.value.destination_station_id)
+  return station?.name || 'Parada de destino'
+})
 
 const originName = computed(() => {
+  if (offer.value) return offer.value.origin_address
   if (!bookingData.value) return ''
   const station = stations.value.find((s: Station) => s.id === bookingData.value?.originStationId)
-  return station?.name || 'Parada seleccionada'
+  return station?.name || (bookingData.value as any).originAddress || 'Origen seleccionado'
 })
 
 const formattedDate = computed(() => {
@@ -178,27 +266,136 @@ const formattedDate = computed(() => {
   return date.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' })
 })
 
-const formattedTime = computed(() => {
-  return bookingData.value?.time || ''
-})
+const formattedTime = computed(() => bookingData.value?.time || '')
 
 function formatPrice(price?: number | string) {
   const num = Number(price || 0)
   return `${num.toFixed(2)} €`
 }
 
-onMounted(async () => {
-  if (!bookingStore.formData) {
-    router.push('/')
+function showError(message: string) {
+  toastMessage.value = message
+  toastRef.value?.show()
+}
+
+function loadStripeJs(): Promise<any> {
+  return new Promise((resolve, reject) => {
+    if ((window as any).Stripe) return resolve((window as any).Stripe)
+    const script = document.createElement('script')
+    script.src = 'https://js.stripe.com/v3/'
+    script.onload = () => resolve((window as any).Stripe)
+    script.onerror = () => reject(new Error('No se pudo cargar Stripe.js'))
+    document.head.appendChild(script)
+  })
+}
+
+async function initPayment() {
+  const pk = stripePk.value
+  if (!pk || !bookingData.value) {
+    paymentUiState.value = 'unavailable'
     return
   }
 
   try {
-    const data = await $fetch('/api/stations')
-    stations.value = data as Station[]
+    // Modo oferta: pre-autorizamos solo la señal del 10%
+    if (offerId.value) {
+      const intent: any = await $fetch(`/api/ofertas/${offerId.value}/intent`, { method: 'POST' })
+      offerAmounts.value = {
+        finalPrice: intent.finalPrice,
+        deposit: intent.deposit,
+        remainder: intent.remainder,
+      }
+      if (!intent.clientSecret) {
+        paymentUiState.value = 'unavailable'
+        return
+      }
+      clientSecret = intent.clientSecret
+      paymentIntentId = intent.paymentIntentId
+      await mountStripeElements(pk)
+      return
+    }
+
+    const data = bookingData.value as Record<string, any>
+    const intent: any = await $fetch('/api/payments/create-intent', {
+      method: 'POST',
+      body: {
+        originStationId: data.originStationId || undefined,
+        originAddress: data.originAddress || undefined,
+        destination: data.destination,
+        passengers: data.passengers,
+        luggageBig: data.luggageBig,
+        luggageHand: data.luggageHand ?? 0,
+        accessoryIds: data.accessoryIds ?? [],
+        pickupAt: data.date && data.time ? new Date(`${data.date}T${data.time}`).toISOString() : undefined,
+        createIntent: true,
+      },
+    })
+
+    // Refresca el precio (por si el usuario recargó la página)
+    bookingStore.setCurrentBooking({ ...data, ...intent })
+
+    if (!intent.clientSecret) {
+      paymentUiState.value = 'unavailable'
+      return
+    }
+
+    clientSecret = intent.clientSecret
+    paymentIntentId = intent.paymentIntentId
+    await mountStripeElements(pk)
+  } catch (e) {
+    console.error('Error initializing Stripe:', e)
+    paymentUiState.value = 'unavailable'
+  }
+}
+
+async function mountStripeElements(pk: string) {
+  const Stripe = await loadStripeJs()
+  stripe = Stripe(pk)
+  elements = stripe.elements({
+    clientSecret,
+    appearance: {
+      theme: 'night',
+      variables: {
+        colorPrimary: '#fabd32',
+        colorBackground: '#1f1f29',
+        colorText: '#e4e1ef',
+        borderRadius: '12px',
+        fontFamily: 'Inter, system-ui, sans-serif',
+      },
+    },
+  })
+  const paymentElement = elements.create('payment', { layout: 'tabs' })
+  paymentElement.mount('#payment-element')
+  paymentUiState.value = 'ready'
+}
+
+onMounted(async () => {
+  if (!bookingStore.formData && !offerId.value) {
+    router.push('/')
+    return
+  }
+
+  await loadSystemConfig()
+
+  try {
+    stations.value = await $fetch('/api/stations') as Station[]
   } catch (e) {
     console.error('Error loading stations:', e)
   }
+
+  // Modo oferta: cargar la oferta para el resumen
+  if (offerId.value) {
+    try {
+      offer.value = await $fetch(`/api/ofertas/${offerId.value}`)
+    } catch (e) {
+      console.error('Error loading offer:', e)
+      showError('Esta oferta ya no está disponible')
+      router.push('/ultima-hora')
+      return
+    }
+  }
+
+  await initPayment()
 })
 
 async function handleConfirm() {
@@ -207,14 +404,76 @@ async function handleConfirm() {
   processing.value = true
 
   try {
+    // 1. Crear cuenta si el invitado lo pidió
     if (!user.value && createAccount.value && guestData.password) {
       const { signUp } = useAuth()
-      await signUp(guestData.email, guestData.password, 'client', guestData.name, guestData.phone)
-      
-      // Wait a moment for session to propagate
-      await new Promise(resolve => setTimeout(resolve, 800))
+      try {
+        await signUp(guestData.email, guestData.password, 'client', guestData.name, guestData.phone)
+        await new Promise(resolve => setTimeout(resolve, 800))
+      } catch (e) {
+        console.error('Error creating account:', e)
+        showError('No se pudo crear la cuenta. Revisa el correo y la contraseña.')
+        return
+      }
     }
 
+    // 2. Pre-autorizar el pago con Stripe (si la pasarela está activa)
+    let intentIdForBooking = `pi_mock_${Date.now()}`
+    if (paymentUiState.value === 'ready' && stripe && elements) {
+      const { error: submitError } = await elements.submit()
+      if (submitError) {
+        showError(submitError.message || 'Revisa los datos de pago.')
+        return
+      }
+
+      const { error, paymentIntent } = await stripe.confirmPayment({
+        elements,
+        clientSecret,
+        redirect: 'if_required',
+        confirmParams: {
+          payment_method_data: {
+            billing_details: {
+              name: user.value?.user_metadata?.full_name || guestData.name || undefined,
+              email: user.value?.email || guestData.email || undefined,
+              phone: guestData.phone || undefined,
+            },
+          },
+        },
+      })
+
+      if (error) {
+        showError(error.message || 'El pago ha sido rechazado. Prueba con otra tarjeta.')
+        return
+      }
+
+      const okStatuses = ['requires_capture', 'processing', 'succeeded']
+      if (!paymentIntent || !okStatuses.includes(paymentIntent.status)) {
+        showError('No se pudo completar la pre-autorización del pago.')
+        return
+      }
+      intentIdForBooking = paymentIntent.id || paymentIntentId || intentIdForBooking
+    }
+
+    // 3a. Modo oferta: reservar la oferta con la señal pre-autorizada
+    if (offerId.value) {
+      const booking: any = await $fetch(`/api/ofertas/${offerId.value}/reservar`, {
+        method: 'POST',
+        body: {
+          stripePaymentIntentId: intentIdForBooking,
+          destinationName: destinationStationName.value,
+          guestName: !user.value ? guestData.name : undefined,
+          guestEmail: !user.value ? guestData.email : undefined,
+          guestPhone: !user.value ? guestData.phone : undefined,
+        },
+      })
+      const isReturn = route.query.is_return === 'true'
+      const isReturnQuery = isReturn ? '&is_return=true' : ''
+      const tokenQuery = booking.guest_token ? `?token=${booking.guest_token}${isReturnQuery}` : (isReturn ? `?is_return=true` : '')
+      router.push(`/reserva/confirmacion/${booking.id}${tokenQuery}`)
+      return
+    }
+
+    // 3b. Crear la reserva normal
     const pickupAt = new Date(`${bookingData.value.date}T${bookingData.value.time}`).toISOString()
 
     const booking = await $fetch('/api/bookings', {
@@ -225,7 +484,7 @@ async function handleConfirm() {
         pickupAt,
         basePrice: priceData.value.basePrice,
         totalPrice: priceData.value.totalPrice,
-        stripePaymentIntentId: `pi_mock_${Date.now()}`,
+        stripePaymentIntentId: intentIdForBooking,
         guestName: !user.value ? guestData.name : undefined,
         guestEmail: !user.value ? guestData.email : undefined,
         guestPhone: !user.value ? guestData.phone : undefined,
@@ -233,9 +492,14 @@ async function handleConfirm() {
     })
 
     bookingStore.clearFormData()
-    router.push(`/reserva/${(booking as BookingResponse).id}`)
+    const b = booking as BookingResponse & { guest_token?: string }
+    const isReturn = route.query.is_return === 'true'
+    const isReturnQuery = isReturn ? '&is_return=true' : ''
+    const tokenQuery = b.guest_token ? `?token=${b.guest_token}${isReturnQuery}` : (isReturn ? `?is_return=true` : '')
+    router.push(`/reserva/confirmacion/${b.id}${tokenQuery}`)
   } catch (e) {
     console.error('Error creating booking:', e)
+    showError('No se pudo crear la reserva. Inténtalo de nuevo en unos segundos.')
   } finally {
     processing.value = false
   }

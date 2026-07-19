@@ -58,7 +58,7 @@
         <p class="text-base font-medium text-white">{{ offer.driver_name || offer.driverName }}</p>
       </div>
 
-      <AppButton variant="gold" @click="handleBook">
+      <AppButton variant="gold" full-width @click="handleBook">
         Reservar esta oferta
       </AppButton>
     </div>

@@ -20,6 +20,10 @@
             <th class="text-left text-xs font-medium text-on-surface-variant px-6 py-3">Ciudad</th>
             <th class="text-left text-xs font-medium text-on-surface-variant px-6 py-3">Dirección</th>
             <th class="text-left text-xs font-medium text-on-surface-variant px-6 py-3">Conductores</th>
+            <th class="text-left text-xs font-medium text-on-surface-variant px-6 py-3">
+              Exclusividad
+              <Icon name="tabler:eye-off" size="12" class="inline -mt-0.5 ml-1 opacity-60" title="Solo visible para admins" />
+            </th>
             <th class="text-left text-xs font-medium text-on-surface-variant px-6 py-3">Estado</th>
             <th class="text-right text-xs font-medium text-on-surface-variant px-6 py-3">Acciones</th>
           </tr>
@@ -35,6 +39,19 @@
             <td class="px-6 py-4 text-sm text-on-surface-variant">{{ station.city }}</td>
             <td class="px-6 py-4 text-sm text-on-surface-variant">{{ station.address || '-' }}</td>
             <td class="px-6 py-4 text-sm text-on-surface-variant">{{ station.driver_count || 0 }}</td>
+            <td class="px-6 py-4">
+              <select
+                :value="station.exclusive_driver_id || ''"
+                class="excl-select"
+                :class="{ 'excl-select-set': station.exclusive_driver_id }"
+                @change="setExclusivity(station, ($event.target as HTMLSelectElement).value)"
+              >
+                <option value="">Sin exclusividad</option>
+                <option v-for="d in activeDrivers" :key="d.id" :value="d.id">
+                  {{ d.full_name }} ({{ d.license_number }})
+                </option>
+              </select>
+            </td>
             <td class="px-6 py-4">
               <span
                 class="text-xs px-2 py-1 rounded-full"
@@ -104,8 +121,31 @@ const form = reactive({
   lng: '',
 })
 
+// Taxistas para el selector de exclusividad
+const drivers = ref<any[]>([])
+const activeDrivers = computed(() =>
+  drivers.value.filter((d: any) => d.is_active && d.is_approved !== false),
+)
+
+async function setExclusivity(station: any, driverId: string) {
+  const prev = station.exclusive_driver_id
+  station.exclusive_driver_id = driverId || null
+  try {
+    await $fetch(`/api/admin/paradas/${station.id}`, {
+      method: 'PATCH',
+      body: { exclusiveDriverId: driverId || null },
+    })
+  } catch (e) {
+    station.exclusive_driver_id = prev
+    console.error('Error setting exclusivity:', e)
+  }
+}
+
 onMounted(async () => {
   await loadStations()
+  $fetch('/api/admin/conductores')
+    .then((data) => { drivers.value = data as any[] })
+    .catch((e) => console.error('Error loading drivers:', e))
 })
 
 async function loadStations() {
@@ -187,3 +227,30 @@ async function toggleActive(station: any) {
   }
 }
 </script>
+
+<style scoped>
+.excl-select {
+  max-width: 190px;
+  background: var(--surface-container);
+  border: 1px solid var(--outline-variant);
+  border-radius: 9px;
+  padding: 6px 10px;
+  font-size: 12px;
+  color: var(--on-surface-variant);
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+.excl-select:focus {
+  border-color: var(--secondary);
+}
+.excl-select-set {
+  border-color: rgba(250, 189, 50, 0.6);
+  color: var(--secondary);
+  font-weight: 500;
+}
+.excl-select option {
+  background: var(--surface-container-low);
+  color: var(--on-surface);
+}
+</style>

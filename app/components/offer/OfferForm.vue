@@ -1,6 +1,6 @@
 <template>
   <div class="card-surface rounded-xl p-6 border border-outline-variant">
-    <h3 class="text-lg font-medium text-on-surface mb-4">Crear oferta de retorno</h3>
+    <h3 class="text-lg font-medium text-on-surface mb-4">{{ isEdit ? 'Editar oferta de retorno' : 'Crear oferta de retorno' }}</h3>
 
     <div class="space-y-4">
       <AppInput
@@ -66,7 +66,7 @@
       </div>
 
       <AppButton @click="handleSubmit" :loading="submitting">
-        Publicar oferta
+        {{ isEdit ? 'Guardar cambios' : 'Publicar oferta' }}
       </AppButton>
     </div>
   </div>
@@ -81,6 +81,8 @@ const props = defineProps<{
   initialOrigin?: string
   initialDestinationStationId?: string
   basePrice?: number
+  /** Oferta existente (snake_case de la API) para modo edición */
+  initialOffer?: Record<string, any> | null
 }>()
 
 const emit = defineEmits<{
@@ -88,14 +90,16 @@ const emit = defineEmits<{
 }>()
 
 const submitting = ref(false)
+const isEdit = computed(() => !!props.initialOffer)
 
+const o = props.initialOffer
 const form = reactive({
-  originAddress: props.initialOrigin || '',
-  destinationStationId: props.initialDestinationStationId || '',
-  availableFrom: null as Date | null,
-  availableUntil: null as Date | null,
-  discountPct: 0,
-  maxPassengers: 4,
+  originAddress: o?.origin_address || props.initialOrigin || '',
+  destinationStationId: o?.destination_station_id || props.initialDestinationStationId || '',
+  availableFrom: (o?.available_from ? new Date(o.available_from) : null) as Date | null,
+  availableUntil: (o?.available_until ? new Date(o.available_until) : null) as Date | null,
+  discountPct: Number(o?.discount_pct ?? 0),
+  maxPassengers: Number(o?.max_passengers ?? 4),
 })
 
 const stationOptions = computed(() =>

@@ -41,6 +41,16 @@
       </div>
     </div>
 
+    <div v-if="metrics.dailyBookings && metrics.dailyBookings.length > 0" class="card-surface rounded-xl p-6 mb-6">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-medium text-on-surface">Reservas — últimos 14 días</h2>
+        <span class="text-xs text-on-surface-variant">
+          {{ totalLast14 }} reservas · {{ revenueLast14.toFixed(0) }} €
+        </span>
+      </div>
+      <AppBarChart :data="metrics.dailyBookings" :height="120" />
+    </div>
+
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div class="card-surface rounded-xl">
         <div class="flex items-center justify-between p-6 border-b border-outline-variant">
@@ -107,12 +117,26 @@
 <script setup lang="ts">
 definePageMeta({ layout: 'dashboard', middleware: 'auth' })
 
-const metrics = ref({
+const metrics = ref<{
+  bookingsToday: number
+  activeDrivers: number
+  monthlyRevenue: number
+  activeOffers: number
+  dailyBookings?: Array<{ date: string, count: number, revenue: number }>
+}>({
   bookingsToday: 0,
   activeDrivers: 0,
   monthlyRevenue: 0,
   activeOffers: 0,
+  dailyBookings: [],
 })
+
+const totalLast14 = computed(() =>
+  (metrics.value.dailyBookings || []).reduce((sum, d) => sum + d.count, 0),
+)
+const revenueLast14 = computed(() =>
+  (metrics.value.dailyBookings || []).reduce((sum, d) => sum + d.revenue, 0),
+)
 const recentBookings = ref<any[]>([])
 const drivers = ref<any[]>([])
 

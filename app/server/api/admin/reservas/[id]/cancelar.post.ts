@@ -28,10 +28,21 @@ export default defineEventHandler(async (event) => {
     .eq('id', id)
     .single()
 
-  if ((booking as any)?.stripe_payment_intent_id) {
-    const stripe = useStripe()
-    await stripe.paymentIntents.cancel((booking as any).stripe_payment_intent_id)
+  // Liberar la pre-autorización (best-effort)
+  const piId = (booking as any)?.stripe_payment_intent_id as string | undefined
+  if (piId && !piId.startsWith('pi_mock_')) {
+    try {
+      const stripe = useStripe()
+      await stripe.paymentIntents.cancel(piId)
+    } catch (e) {
+      console.error(`[Stripe] Error liberando pago de reserva ${id}:`, e)
+    }
   }
+
+  // Avisar al cliente (best-effort)
+  await notifyClientCancelled(id, body.reason || 'Cancelada por el administrador').catch((e) => {
+    console.error('[Notify] Error avisando cancelación:', e)
+  })
 
   return { success: true }
 })

@@ -1,15 +1,22 @@
 export default defineEventHandler(async (event) => {
-  const user = requireAuth(event)
   const id = getRouterParam(event, 'id')
   if (!id) throw createError({ statusCode: 400, message: 'Missing id' })
   const db = useDb()
 
-  const { data: booking, error: findError } = await db
-    .from('bookings')
-    .select('*')
-    .eq('id', id)
-    .eq('client_id', user.id)
-    .single()
+  // Dos vías de autorización: usuario dueño de la reserva, o token firmado
+  // (invitados que llegan desde el enlace de su email).
+  const token = getQuery(event).token as string | undefined
+  const hasValidToken = verifyBookingToken(id, token)
+  const user = hasValidToken ? event.context.user : requireAuth(event)
+
+  let query = db.from('bookings').select('*').eq('id', id)
+  if (!hasValidToken) {
+    query = query.eq('client_id', user!.id)
+  } else {
+    // El token solo autoriza reservas de invitado
+    query = query.is('client_id', null)
+  }
+  const { data: booking, error: findError } = await query.single()
 
   if (findError || !booking) {
     throw createError({ statusCode: 404, message: 'Booking not found' })
@@ -33,7 +40,7 @@ export default defineEventHandler(async (event) => {
     .update({
       status: 'cancelled',
       cancelled_at: new Date().toISOString(),
-      cancelled_by: user.id,
+      cancelled_by: user?.id || null,
       updated_at: new Date().toISOString(),
     })
     .eq('id', id)
@@ -42,9 +49,15 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 500, message: updateError.message })
   }
 
-  if ((booking as any).stripe_payment_intent_id) {
-    const stripe = useStripe()
-    await stripe.paymentIntents.cancel((booking as any).stripe_payment_intent_id)
+  // Liberar la pre-autorización (best-effort)
+  const piId = (booking as any).stripe_payment_intent_id as string | undefined
+  if (piId && !piId.startsWith('pi_mock_')) {
+    try {
+      const stripe = useStripe()
+      await stripe.paymentIntents.cancel(piId)
+    } catch (e) {
+      console.error(`[Stripe] Error liberando pago de reserva ${id}:`, e)
+    }
   }
 
   return { success: true }

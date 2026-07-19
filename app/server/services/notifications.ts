@@ -1,12 +1,16 @@
 import { Resend } from 'resend'
 import { notifyDriverPush } from './webpush'
+import { signBookingToken } from '../utils/bookingToken'
+import { getIntegration } from '../utils/integrations'
 
 let resend: Resend | null = null
+let resendKey = ''
 
-function useResend() {
-  if (!resend) {
-    const config = useRuntimeConfig()
-    resend = new Resend(config.resendApiKey)
+async function useResend() {
+  const key = await getIntegration('resend_api_key')
+  if (!resend || resendKey !== key) {
+    resend = new Resend(key)
+    resendKey = key
   }
   return resend
 }
@@ -59,6 +63,33 @@ function renderTemplate(template: string, data: Record<string, any>): string {
           </div>
         </div>`
 
+    case 'booking-created':
+      return `
+        <div style="font-family:Inter,sans-serif;max-width:480px;margin:0 auto">
+          <div style="background:#0c0c13;padding:24px;border-radius:14px 14px 0 0">
+            <h1 style="color:#fff;margin:0;font-size:20px">Reserva recibida <span style="color:#fabd32">✓</span></h1>
+          </div>
+          <div style="background:#fff;padding:24px;border:1px solid #ebebf0;border-radius:0 0 14px 14px">
+            <p style="color:#0c0c13;font-size:14px;margin:0 0 16px">
+              Hemos recibido tu reserva. Un taxista la confirmará en breve y te enviaremos la matrícula del vehículo.
+            </p>
+            <div style="background:#f4f4f8;border-radius:12px;padding:16px;margin-bottom:16px">
+              <p style="margin:0 0 4px;font-size:13px;color:#999">RUTA</p>
+              <p style="margin:0 0 12px;font-size:14px;color:#0c0c13;font-weight:500">${data.originStation || ''} → ${data.destination || ''}</p>
+              <p style="margin:0 0 4px;font-size:13px;color:#999">RECOGIDA</p>
+              <p style="margin:0 0 12px;font-size:14px;color:#0c0c13;font-weight:500">${data.pickupDate || ''}</p>
+              <p style="margin:0 0 4px;font-size:13px;color:#999">TOTAL</p>
+              <p style="margin:0;font-size:16px;color:#0c0c13;font-weight:600">${data.totalPrice || ''} €</p>
+            </div>
+            <a href="${data.bookingUrl || '#'}" style="display:block;background:#0c0c13;color:#fff;text-align:center;padding:14px;border-radius:14px;text-decoration:none;font-size:15px;font-weight:500">
+              Ver mi reserva
+            </a>
+            <p style="color:#999;font-size:12px;margin:16px 0 0">
+              Guarda este email: el enlace te permite consultar y gestionar tu reserva en cualquier momento.
+            </p>
+          </div>
+        </div>`
+
     case 'booking-cancelled':
       return `
         <div style="font-family:Inter,sans-serif;max-width:480px;margin:0 auto">
@@ -84,33 +115,27 @@ function renderTemplate(template: string, data: Record<string, any>): string {
 }
 
 export async function sendEmail(to: string, subject: string, template: string, data: Record<string, any>) {
-  const r = useResend()
+  const r = await useResend()
   const html = renderTemplate(template, data)
+  const from = (await getIntegration('email_from')) || 'noreply@clubtaxisasturias.es'
 
-  await r.emails.send({
-    from: process.env.EMAIL_FROM || 'noreply@clubtaxisasturias.es',
-    to,
-    subject,
-    html,
-  })
+  await r.emails.send({ from, to, subject, html })
 }
 
 export async function sendSMS(to: string, message: string) {
-  const config = useRuntimeConfig()
+  const sid = await getIntegration('twilio_account_sid')
+  const token = await getIntegration('twilio_auth_token')
+  const from = await getIntegration('twilio_phone_number')
 
-  if (!config.twilioAccountSid || !config.twilioAuthToken) {
+  if (!sid || !token) {
     console.log(`[SMS] To: ${to} — ${message}`)
     return
   }
 
   const twilio = await import('twilio')
-  const client = twilio.default(config.twilioAccountSid, config.twilioAuthToken)
+  const client = twilio.default(sid, token)
 
-  await client.messages.create({
-    body: message,
-    from: config.twilioPhoneNumber || process.env.TWILIO_PHONE_NUMBER,
-    to,
-  })
+  await client.messages.create({ body: message, from, to })
 }
 
 export async function notifyDriver(driverId: string, booking: any) {
@@ -139,6 +164,41 @@ export async function notifyDriver(driverId: string, booking: any) {
   // Push notification (best-effort: nunca debe romper el flujo de asignación)
   await notifyDriverPush(driverId, booking).catch((e) => {
     console.error('[Push] notifyDriver push failed:', e)
+  })
+}
+
+/**
+ * Email de "reserva recibida" al cliente (registrado o invitado).
+ * Para invitados el enlace incluye un token firmado que les permite
+ * consultar y cancelar la reserva sin cuenta.
+ */
+export async function notifyBookingCreated(booking: any) {
+  const db = useDb()
+  const config = useRuntimeConfig()
+  const appUrl = config.public.appUrl || 'https://clubtaxisasturias.es'
+
+  let email: string | null = booking.guest_email || null
+  if (!email && booking.client_id) {
+    const { data: u } = await db.from('users').select('email').eq('id', booking.client_id).single()
+    email = (u as any)?.email || null
+  }
+  if (!email) return
+
+  let stationName = booking.origin_address || ''
+  if (booking.origin_station_id) {
+    const { data: s } = await db.from('stations').select('name').eq('id', booking.origin_station_id).single()
+    stationName = (s as any)?.name || stationName
+  }
+
+  const isGuest = !booking.client_id
+  const token = isGuest ? `?token=${signBookingToken(booking.id)}` : ''
+
+  await sendEmail(email, 'Hemos recibido tu reserva — Club Taxis Asturias', 'booking-created', {
+    originStation: stationName,
+    destination: booking.destination_address || '',
+    pickupDate: booking.pickup_at ? new Date(booking.pickup_at).toLocaleString('es-ES', { dateStyle: 'full', timeStyle: 'short' }) : '',
+    totalPrice: Number(booking.total_price || 0).toFixed(2),
+    bookingUrl: `${appUrl}/reserva/${booking.id}${token}`,
   })
 }
 

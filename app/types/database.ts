@@ -46,6 +46,8 @@ export interface Database {
           is_active: boolean
           last_assigned_at: string | null
           stripe_account_id: string | null
+          custom_monthly_fee: number | null
+          custom_commission_pct: number | null
           created_at: string | null
         }
         Insert: {
@@ -58,6 +60,8 @@ export interface Database {
           is_active?: boolean
           last_assigned_at?: string | null
           stripe_account_id?: string | null
+          custom_monthly_fee?: number | null
+          custom_commission_pct?: number | null
           created_at?: string | null
         }
         Update: {
@@ -70,6 +74,8 @@ export interface Database {
           is_active?: boolean
           last_assigned_at?: string | null
           stripe_account_id?: string | null
+          custom_monthly_fee?: number | null
+          custom_commission_pct?: number | null
           created_at?: string | null
         }
       }

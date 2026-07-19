@@ -2,6 +2,8 @@ export default defineEventHandler(async (event) => {
   const id = getRouterParam(event, 'id')
   const db = useDb()
 
+  await expireStaleOffers()
+
   const { data, error } = await db
     .from('return_offers')
     .select(`

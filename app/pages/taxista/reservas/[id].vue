@@ -1,6 +1,6 @@
 <template>
   <div>
-    <NuxtLink to="/taxista/reservas" class="flex items-center gap-1 text-sm text-on-surface-variant hover:text-gray-600 mb-4 transition-colors">
+    <NuxtLink to="/taxista/reservas" class="flex items-center gap-1 text-sm text-on-surface-variant hover:text-on-surface mb-4 transition-colors">
       <Icon name="tabler:chevron-left" size="16" />
       Volver a reservas
     </NuxtLink>
@@ -41,28 +41,28 @@
           </div>
 
           <div class="grid grid-cols-2 gap-4">
-            <div class="bg-gray-50 rounded-xl p-4">
+            <div class="bg-surface-container rounded-xl p-4">
               <span class="field-label block mb-1">FECHA</span>
               <span class="text-sm font-medium text-on-surface">{{ formatDate(reservation.pickup_at) }}</span>
             </div>
-            <div class="bg-gray-50 rounded-xl p-4">
+            <div class="bg-surface-container rounded-xl p-4">
               <span class="field-label block mb-1">HORA</span>
               <span class="text-sm font-medium text-on-surface">{{ formatTime(reservation.pickup_at) }}</span>
             </div>
           </div>
 
           <div class="grid grid-cols-3 gap-4">
-            <div class="bg-gray-50 rounded-xl p-4 text-center">
+            <div class="bg-surface-container rounded-xl p-4 text-center">
               <Icon name="tabler:users" size="18" class="mx-auto text-on-surface-variant mb-1" />
               <span class="text-sm font-medium text-on-surface">{{ reservation.passengers }}</span>
               <span class="text-xs text-on-surface-variant block">pasajeros</span>
             </div>
-            <div class="bg-gray-50 rounded-xl p-4 text-center">
+            <div class="bg-surface-container rounded-xl p-4 text-center">
               <Icon name="tabler:luggage" size="18" class="mx-auto text-on-surface-variant mb-1" />
               <span class="text-sm font-medium text-on-surface">{{ reservation.luggage_big }}</span>
               <span class="text-xs text-on-surface-variant block">maletas</span>
             </div>
-            <div class="bg-gray-50 rounded-xl p-4 text-center">
+            <div class="bg-surface-container rounded-xl p-4 text-center">
               <Icon name="tabler:briefcase" size="18" class="mx-auto text-on-surface-variant mb-1" />
               <span class="text-sm font-medium text-on-surface">{{ reservation.luggage_hand }}</span>
               <span class="text-xs text-on-surface-variant block">mano</span>
@@ -70,10 +70,10 @@
           </div>
 
           <div v-if="hasExtras" class="flex flex-wrap gap-2">
-            <span v-if="reservation.needs_child_seat" class="text-xs bg-gold-50 text-gold-800 px-3 py-1 rounded-full">Silla bebé</span>
-            <span v-if="reservation.needs_pet_friendly" class="text-xs bg-gold-50 text-gold-800 px-3 py-1 rounded-full">Mascota</span>
-            <span v-if="reservation.needs_accessible" class="text-xs bg-gold-50 text-gold-800 px-3 py-1 rounded-full">PMR</span>
-            <span v-if="reservation.needs_large_vehicle" class="text-xs bg-gold-50 text-gold-800 px-3 py-1 rounded-full">Vehículo grande</span>
+            <span v-if="reservation.needs_child_seat" class="text-xs bg-secondary/10 text-secondary border border-secondary/20 px-3 py-1 rounded-full">Silla bebé</span>
+            <span v-if="reservation.needs_pet_friendly" class="text-xs bg-secondary/10 text-secondary border border-secondary/20 px-3 py-1 rounded-full">Mascota</span>
+            <span v-if="reservation.needs_accessible" class="text-xs bg-secondary/10 text-secondary border border-secondary/20 px-3 py-1 rounded-full">PMR</span>
+            <span v-if="reservation.needs_large_vehicle" class="text-xs bg-secondary/10 text-secondary border border-secondary/20 px-3 py-1 rounded-full">Vehículo grande</span>
           </div>
 
           <div class="flex items-center justify-between pt-4 border-t border-outline-variant">

@@ -72,6 +72,7 @@
         </div>
 
         <AppButton
+          full-width
           :loading="loading"
           :disabled="!isFormValid"
           @click="handleSubmit"
@@ -153,14 +154,17 @@ async function handleSubmit() {
   error.value = ''
 
   try {
+    let authedUser: { user_metadata?: Record<string, any> } | null = null
+
     if (isLogin.value) {
-      const { error: signInError } = await supabase.auth.signInWithPassword({
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({
         email: email.value,
         password: password.value,
       })
       if (signInError) throw signInError
+      authedUser = data.user
     } else {
-      const { error: signUpError } = await supabase.auth.signUp({
+      const { data, error: signUpError } = await supabase.auth.signUp({
         email: email.value,
         password: password.value,
         options: {
@@ -171,23 +175,36 @@ async function handleSubmit() {
         },
       })
       if (signUpError) throw signUpError
+      authedUser = data.user
     }
 
-    const user = useSupabaseUser()
-    if (user.value) {
-      const role = user.value.user_metadata?.role
-      if (role === 'driver') {
-        router.push('/taxista')
-      } else if (role === 'admin') {
-        router.push('/admin')
-      } else {
-        router.push('/')
-      }
+    const role = authedUser?.user_metadata?.role
+    if (role === 'driver') {
+      await router.push('/taxista')
+    } else if (role === 'admin') {
+      await router.push('/admin')
+    } else {
+      await router.push('/')
     }
   } catch (e: any) {
-    error.value = e.message || 'Error al procesar la solicitud'
+    error.value = translateAuthError(e?.message)
   } finally {
     loading.value = false
   }
+}
+
+function translateAuthError(message?: string) {
+  if (!message) return 'Error al procesar la solicitud'
+  const map: Array<[string, string]> = [
+    ['Invalid login credentials', 'Email o contraseña incorrectos'],
+    ['Email not confirmed', 'Confirma tu email antes de iniciar sesión'],
+    ['User already registered', 'Ya existe una cuenta con este email'],
+    ['Password should be at least', 'La contraseña debe tener al menos 6 caracteres'],
+    ['rate limit', 'Demasiados intentos. Espera unos minutos.'],
+  ]
+  for (const [en, es] of map) {
+    if (message.toLowerCase().includes(en.toLowerCase())) return es
+  }
+  return message
 }
 </script>

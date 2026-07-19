@@ -1,126 +1,191 @@
 <template>
   <div>
-    <h1 class="text-2xl font-semibold mb-6">Configuración global</h1>
+    <div class="mb-6">
+      <h1 class="text-2xl font-semibold text-on-surface">Configuración</h1>
+      <p class="text-sm text-on-surface-variant mt-1">
+        Integraciones de la plataforma. Las comisiones y tarifas se gestionan en
+        <NuxtLink to="/admin/comisiones" class="text-brand-gold hover:text-gold-600">Comisiones</NuxtLink>.
+      </p>
+    </div>
 
     <div v-if="loading" class="card-surface rounded-xl p-6">
       <AppSkeleton />
     </div>
 
     <div v-else class="space-y-6 max-w-2xl">
+      <!-- Stripe -->
       <div class="card-surface rounded-xl p-6">
-        <h2 class="text-lg font-medium text-on-surface mb-4">Reservas</h2>
+        <div class="flex items-center justify-between mb-1">
+          <h2 class="text-lg font-medium text-on-surface flex items-center gap-2">
+            <Icon name="tabler:brand-stripe" size="18" class="text-brand-gold" />
+            Stripe (pagos)
+          </h2>
+          <span class="text-xs px-2.5 py-1 rounded-full" :class="statusClass('stripe_secret_key')">
+            {{ statusLabel('stripe_secret_key') }}
+          </span>
+        </div>
+        <p class="text-xs text-on-surface-variant mb-4">
+          Claves de tu cuenta de Stripe (modo test: sk_test_… / pk_test_…). Los campos secretos muestran el valor enmascarado; escribe uno nuevo para reemplazarlo.
+        </p>
         <div class="space-y-4">
-          <div>
-            <label class="field-label block mb-1">Horas mínimas de antelación</label>
-            <InputNumber
-              v-model="config.min_advance_hours"
-              :min="1"
-              :max="72"
-              :pt="numberPt"
-              class="w-full"
-            />
-            <p class="text-xs text-on-surface-variant mt-1">Tiempo mínimo entre la reserva y la recogida</p>
-          </div>
-          <div>
-            <label class="field-label block mb-1">Horas máximas para cancelar</label>
-            <InputNumber
-              v-model="config.max_cancel_hours_before"
-              :min="1"
-              :max="168"
-              :pt="numberPt"
-              class="w-full"
-            />
-            <p class="text-xs text-on-surface-variant mt-1">Horas antes del viaje en que se puede cancelar</p>
-          </div>
+          <IntegrationField v-model="form.stripe_secret_key" label="Secret key (sk_...)" :current="current.stripe_secret_key" secret />
+          <IntegrationField v-model="form.stripe_publishable_key" label="Publishable key (pk_...)" :current="current.stripe_publishable_key" />
+          <IntegrationField v-model="form.stripe_webhook_secret" label="Webhook signing secret (whsec_...)" :current="current.stripe_webhook_secret" secret />
         </div>
       </div>
 
+      <!-- Email -->
       <div class="card-surface rounded-xl p-6">
-        <h2 class="text-lg font-medium text-on-surface mb-4">Comisiones</h2>
+        <div class="flex items-center justify-between mb-1">
+          <h2 class="text-lg font-medium text-on-surface flex items-center gap-2">
+            <Icon name="tabler:mail" size="18" class="text-brand-gold" />
+            Email (Resend)
+          </h2>
+          <span class="text-xs px-2.5 py-1 rounded-full" :class="statusClass('resend_api_key')">
+            {{ statusLabel('resend_api_key') }}
+          </span>
+        </div>
+        <p class="text-xs text-on-surface-variant mb-4">Para confirmaciones de reserva, recordatorios y avisos.</p>
         <div class="space-y-4">
-          <div>
-            <label class="field-label block mb-1">Comisión miembros (%)</label>
-            <InputNumber
-              v-model="config.commission_member_pct"
-              :min="0"
-              :max="50"
-              :pt="numberPt"
-              class="w-full"
-            />
-          </div>
-          <div>
-            <label class="field-label block mb-1">Comisión no miembros (%)</label>
-            <InputNumber
-              v-model="config.commission_non_member_pct"
-              :min="0"
-              :max="50"
-              :pt="numberPt"
-              class="w-full"
-            />
-          </div>
+          <IntegrationField v-model="form.resend_api_key" label="API key (re_...)" :current="current.resend_api_key" secret />
+          <IntegrationField v-model="form.email_from" label="Remitente" :current="current.email_from" placeholder="Club Taxis <noreply@tudominio.es>" />
         </div>
       </div>
 
+      <!-- SMS -->
       <div class="card-surface rounded-xl p-6">
-        <h2 class="text-lg font-medium text-on-surface mb-4">Membresía</h2>
-        <div>
-          <label class="field-label block mb-1">Cuota mensual (€)</label>
-          <InputNumber
-            v-model="config.membership_monthly_fee"
-            :min="0"
-            :min-fraction-digits="2"
-            :max-fraction-digits="2"
-            :pt="numberPt"
-            class="w-full"
-          />
+        <div class="flex items-center justify-between mb-1">
+          <h2 class="text-lg font-medium text-on-surface flex items-center gap-2">
+            <Icon name="tabler:message" size="18" class="text-brand-gold" />
+            SMS (Twilio)
+          </h2>
+          <span class="text-xs px-2.5 py-1 rounded-full" :class="statusClass('twilio_account_sid')">
+            {{ statusLabel('twilio_account_sid') }}
+          </span>
+        </div>
+        <p class="text-xs text-on-surface-variant mb-4">Opcional. Si no se configura, los SMS solo se registran en el log.</p>
+        <div class="space-y-4">
+          <IntegrationField v-model="form.twilio_account_sid" label="Account SID (AC...)" :current="current.twilio_account_sid" />
+          <IntegrationField v-model="form.twilio_auth_token" label="Auth token" :current="current.twilio_auth_token" secret />
+          <IntegrationField v-model="form.twilio_phone_number" label="Número emisor" :current="current.twilio_phone_number" placeholder="+34..." />
         </div>
       </div>
 
-      <AppButton
-        :loading="saving"
-        @click="handleSave"
-      >
-        Guardar configuración
-      </AppButton>
+      <div class="flex items-center gap-3">
+        <AppButton :loading="saving" @click="handleSave">
+          <Icon name="tabler:device-floppy" size="16" class="mr-1.5" />
+          Guardar integraciones
+        </AppButton>
+        <Transition name="fade">
+          <span v-if="saved" class="flex items-center gap-1.5 text-sm text-success">
+            <Icon name="tabler:circle-check" size="16" />
+            Guardado
+          </span>
+          <span v-else-if="saveError" class="flex items-center gap-1.5 text-sm text-error">
+            <Icon name="tabler:alert-circle" size="16" />
+            {{ saveError }}
+          </span>
+        </Transition>
+      </div>
+
+      <p class="text-[11px] text-on-surface-variant">
+        Los valores del panel tienen prioridad sobre el archivo .env y se guardan en una tabla
+        solo accesible por el servidor. El webhook de Stripe (edge function) usa sus propios
+        secretos de Supabase: <code class="text-brand-gold">supabase secrets set</code>.
+      </p>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import InputNumber from 'primevue/inputnumber'
-
 definePageMeta({ layout: 'dashboard', middleware: 'auth' })
 
-const config = ref<Record<string, any>>({})
+interface FieldInfo { value: string, source: 'panel' | 'env' | 'none', isSecret: boolean }
+
 const loading = ref(true)
 const saving = ref(false)
+const saved = ref(false)
+const saveError = ref('')
 
-const numberPt = {
-  input: { class: '!bg-surface-container !rounded-lg !border !border-outline-variant !text-sm !text-on-surface !shadow-none focus:!border-brand-gold' },
+const current = reactive<Record<string, FieldInfo>>({})
+const form = reactive<Record<string, string>>({
+  stripe_secret_key: '',
+  stripe_publishable_key: '',
+  stripe_webhook_secret: '',
+  resend_api_key: '',
+  email_from: '',
+  twilio_account_sid: '',
+  twilio_auth_token: '',
+  twilio_phone_number: '',
+})
+
+function statusLabel(key: string) {
+  switch (current[key]?.source) {
+    case 'panel': return 'Configurada (panel)'
+    case 'env': return 'Configurada (.env)'
+    default: return 'Sin configurar'
+  }
 }
 
-onMounted(async () => {
+function statusClass(key: string) {
+  switch (current[key]?.source) {
+    case 'panel': return 'bg-success/15 text-success'
+    case 'env': return 'bg-info/15 text-info'
+    default: return 'bg-warning/15 text-warning'
+  }
+}
+
+async function load() {
+  loading.value = true
   try {
-    const data = await $fetch('/api/admin/configuracion')
-    config.value = data as any
+    const data: any = await $fetch('/api/admin/integraciones')
+    for (const [key, info] of Object.entries(data)) {
+      current[key] = info as FieldInfo
+      // Los no-secretos se precargan editables; los secretos se dejan vacíos
+      if (!(info as FieldInfo).isSecret && (info as FieldInfo).source === 'panel') {
+        form[key] = (info as FieldInfo).value
+      }
+    }
   } catch (e) {
-    console.error('Error loading config:', e)
+    console.error('Error loading integrations:', e)
   } finally {
     loading.value = false
   }
-})
+}
+
+onMounted(load)
 
 async function handleSave() {
   saving.value = true
+  saved.value = false
+  saveError.value = ''
   try {
-    await $fetch('/api/admin/configuracion', {
-      method: 'PATCH',
-      body: config.value,
-    })
-  } catch (e) {
-    console.error('Error saving config:', e)
+    const body: Record<string, string> = {}
+    for (const [key, value] of Object.entries(form)) {
+      if (value && value.trim()) body[key] = value.trim()
+    }
+    await $fetch('/api/admin/integraciones', { method: 'PATCH', body })
+    // Limpiar secretos del formulario y recargar estados
+    for (const key of Object.keys(form)) form[key] = ''
+    await load()
+    saved.value = true
+    setTimeout(() => { saved.value = false }, 3000)
+  } catch (e: any) {
+    saveError.value = e?.data?.message || 'No se pudo guardar'
+    setTimeout(() => { saveError.value = '' }, 5000)
   } finally {
     saving.value = false
   }
 }
 </script>
+
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>

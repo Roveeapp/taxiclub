@@ -5,6 +5,41 @@
       <span class="text-sm text-on-surface-variant">{{ today }}</span>
     </div>
 
+    <div
+      v-if="nonMember"
+      class="flex items-start gap-3 bg-secondary/8 border border-secondary/30 rounded-xl p-4 mb-6"
+    >
+      <Icon name="tabler:bolt" size="20" class="text-secondary flex-shrink-0 mt-0.5" />
+      <div class="flex-1">
+        <p class="text-sm font-medium text-on-surface">Perfil de colaborador</p>
+        <p class="text-xs text-on-surface-variant mt-1">
+          Como conductor no miembro puedes publicar ofertas de retorno en Última Hora
+          y gestionar las reservas que generen. Las reservas del reparto automático
+          están reservadas a los miembros del club.
+        </p>
+      </div>
+      <NuxtLink to="/taxista/ofertas/nueva" class="flex-shrink-0">
+        <AppButton variant="gold">
+          <Icon name="tabler:plus" size="15" class="mr-1" />
+          Crear oferta
+        </AppButton>
+      </NuxtLink>
+    </div>
+
+    <div
+      v-if="pendingApproval"
+      class="flex items-start gap-3 bg-warning/10 border border-warning/30 rounded-xl p-4 mb-6"
+    >
+      <Icon name="tabler:clock-shield" size="20" class="text-warning flex-shrink-0 mt-0.5" />
+      <div>
+        <p class="text-sm font-medium text-on-surface">Cuenta pendiente de aprobación</p>
+        <p class="text-xs text-on-surface-variant mt-1">
+          Un administrador está revisando tu alta. Hasta entonces no recibirás asignaciones de reservas,
+          pero puedes ir configurando tus vehículos, paradas y disponibilidad.
+        </p>
+      </div>
+    </div>
+
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
       <div class="card-surface rounded-xl p-6 border border-outline-variant">
         <div class="flex items-center gap-3 mb-2">
@@ -83,6 +118,16 @@ definePageMeta({ layout: 'dashboard', middleware: 'auth' })
 const user = useSupabaseUser()
 const reservations = ref<any[]>([])
 const loading = ref(true)
+const pendingApproval = ref(false)
+const nonMember = ref(false)
+
+onMounted(async () => {
+  try {
+    const me: any = await $fetch('/api/auth/me')
+    pendingApproval.value = me?.driver && me.driver.is_approved === false
+    nonMember.value = me?.driver && me.driver.is_member === false
+  } catch { /* aviso opcional */ }
+})
 
 const today = computed(() =>
   new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' }),

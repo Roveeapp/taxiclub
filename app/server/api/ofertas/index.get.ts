@@ -1,6 +1,9 @@
 export default defineEventHandler(async () => {
   const db = useDb()
 
+  // Expira al vuelo las ofertas cuya ventana ya pasó
+  await expireStaleOffers()
+
   const { data, error } = await db
     .from('return_offers')
     .select(`

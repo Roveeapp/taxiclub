@@ -9,6 +9,49 @@
       <h1 class="text-xl font-semibold mb-6">{{ isEdit ? 'Editar vehículo' : 'Nuevo vehículo' }}</h1>
 
       <div class="space-y-4">
+        <!-- Foto del vehículo -->
+        <div>
+          <span class="field-label block mb-2">Foto del vehículo</span>
+          <div
+            class="relative h-44 rounded-xl overflow-hidden border-2 border-dashed transition-colors cursor-pointer"
+            :class="photoPreview ? 'border-transparent' : 'border-outline-variant hover:border-secondary/60'"
+            @click="photoInput?.click()"
+          >
+            <img
+              v-if="photoPreview"
+              :src="photoPreview"
+              alt="Foto del vehículo"
+              class="w-full h-full object-cover"
+            >
+            <div v-else class="w-full h-full flex flex-col items-center justify-center gap-2 bg-surface-container">
+              <Icon name="tabler:camera-plus" size="28" class="text-secondary" />
+              <span class="text-sm text-on-surface-variant">Toca para añadir una foto</span>
+              <span class="text-[11px] text-on-surface-variant/60">JPG, PNG o WebP · máx. 5 MB</span>
+            </div>
+
+            <div
+              v-if="photoPreview"
+              class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-3 flex justify-end gap-2"
+            >
+              <span class="text-xs text-white/90 mr-auto self-center flex items-center gap-1">
+                <Icon v-if="uploadingPhoto" name="tabler:loader" size="14" class="animate-spin" />
+                {{ uploadingPhoto ? 'Subiendo…' : 'Toca para cambiarla' }}
+              </span>
+            </div>
+          </div>
+          <input
+            ref="photoInput"
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            class="hidden"
+            @change="onPhotoSelected"
+          >
+          <p v-if="photoError" class="text-xs text-error mt-1.5">{{ photoError }}</p>
+          <p v-else-if="!isEdit && pendingPhotoFile" class="text-xs text-on-surface-variant mt-1.5">
+            La foto se subirá al guardar el vehículo.
+          </p>
+        </div>
+
         <div class="grid grid-cols-2 gap-4">
           <AppInput v-model="form.plate" label="Matrícula" placeholder="1234 ABC" required />
           <AppInput v-model="form.color" label="Color" placeholder="Blanco, negro..." />
@@ -74,6 +117,52 @@ const isEdit = computed(() => route.params.id && route.params.id !== 'nuevo')
 const saving = ref(false)
 const allAccessories = ref<Array<{ id: string; name: string; icon: string }>>([])
 
+// Foto del vehículo
+const photoInput = ref<HTMLInputElement | null>(null)
+const photoPreview = ref<string | null>(null)
+const pendingPhotoFile = ref<File | null>(null)
+const uploadingPhoto = ref(false)
+const photoError = ref('')
+
+function onPhotoSelected(event: Event) {
+  photoError.value = ''
+  const file = (event.target as HTMLInputElement).files?.[0]
+  if (!file) return
+
+  if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+    photoError.value = 'Formato no soportado (usa JPG, PNG o WebP)'
+    return
+  }
+  if (file.size > 5 * 1024 * 1024) {
+    photoError.value = 'La imagen supera el máximo de 5 MB'
+    return
+  }
+
+  photoPreview.value = URL.createObjectURL(file)
+
+  if (isEdit.value) {
+    // Vehículo existente: subir inmediatamente
+    uploadPhoto(route.params.id as string, file)
+  } else {
+    // Vehículo nuevo: se sube tras crearlo
+    pendingPhotoFile.value = file
+  }
+}
+
+async function uploadPhoto(vehicleId: string, file: File) {
+  uploadingPhoto.value = true
+  photoError.value = ''
+  try {
+    const fd = new FormData()
+    fd.append('file', file)
+    await $fetch(`/api/taxista/vehiculos/${vehicleId}/foto`, { method: 'POST', body: fd })
+  } catch (e: any) {
+    photoError.value = e?.data?.message || 'No se pudo subir la foto'
+  } finally {
+    uploadingPhoto.value = false
+  }
+}
+
 const form = reactive({
   plate: '',
   brand: '',
@@ -121,6 +210,7 @@ onMounted(async () => {
       form.isAccessible = v.is_accessible
       form.isLargeVehicle = v.is_large_vehicle
       form.accessoryIds = Array.isArray(v.accessories) ? v.accessories.map((a: any) => a.id) : []
+      photoPreview.value = v.photo_url || null
     } catch (e) {
       console.error('Error loading vehicle:', e)
     }
@@ -138,10 +228,14 @@ async function handleSave() {
         body: form,
       })
     } else {
-      await $fetch('/api/taxista/vehiculos', {
+      const created: any = await $fetch('/api/taxista/vehiculos', {
         method: 'POST',
         body: form,
       })
+      // Subir la foto pendiente al vehículo recién creado
+      if (pendingPhotoFile.value && created?.id) {
+        await uploadPhoto(created.id, pendingPhotoFile.value)
+      }
     }
     router.push('/taxista/vehiculos')
   } catch (e) {

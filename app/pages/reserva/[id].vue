@@ -17,7 +17,7 @@
           </div>
           <div>
             <span class="field-label block">DESDE</span>
-            <span class="text-sm text-white">{{ booking.origin_station_name }}</span>
+            <span class="text-sm text-white">{{ booking.origin_station_name || booking.origin_address }}</span>
           </div>
         </div>
 
@@ -48,6 +48,19 @@
         </div>
       </div>
 
+      <!-- Mapa de la ruta (si tenemos coordenadas) -->
+      <ClientOnly>
+        <div v-if="mapMarkers.length > 0" class="bg-white/5 border border-white/10 rounded-card overflow-hidden">
+          <AppMap
+            :lat="mapMarkers[0].lat"
+            :lng="mapMarkers[0].lng"
+            :markers="mapMarkers"
+            :zoom="10"
+            :height="220"
+          />
+        </div>
+      </ClientOnly>
+
       <div v-if="booking.confirmed_plate" class="bg-white/5 border border-white/10 rounded-card p-6">
         <PlateDisplay
           :plate="booking.confirmed_plate"
@@ -64,6 +77,7 @@
       <div v-if="booking.status !== 'cancelled' && booking.status !== 'completed'" class="space-y-2">
         <AppButton
           variant="secondary"
+          full-width
           @click="handleCancel"
           :loading="cancelling"
         >
@@ -77,6 +91,8 @@
       <p class="text-white/45">Reserva no encontrada</p>
       <NuxtLink to="/" class="text-brand-gold text-sm mt-2 inline-block">Volver al inicio</NuxtLink>
     </div>
+
+    <AppToast ref="toastRef" :message="toastMessage" type="error" :duration="6000" />
   </div>
 </template>
 
@@ -89,6 +105,8 @@ const router = useRouter()
 const booking = ref<any>(null)
 const loading = ref(true)
 const cancelling = ref(false)
+const toastRef = ref<{ show: () => void } | null>(null)
+const toastMessage = ref('')
 
 const formattedDate = computed(() => {
   if (!booking.value) return ''
@@ -108,9 +126,31 @@ const formattedPrice = computed(() => {
   return `${Number(price).toFixed(2)} €`
 })
 
+const originStation = ref<{ lat?: number, lng?: number, name?: string } | null>(null)
+
+const mapMarkers = computed(() => {
+  const markers: Array<{ lat: number, lng: number, label?: string }> = []
+  if (originStation.value?.lat && originStation.value?.lng) {
+    markers.push({ lat: Number(originStation.value.lat), lng: Number(originStation.value.lng), label: originStation.value.name || 'Origen' })
+  }
+  if (booking.value?.destination_lat && booking.value?.destination_lng) {
+    markers.push({ lat: Number(booking.value.destination_lat), lng: Number(booking.value.destination_lng), label: booking.value.destination_address || 'Destino' })
+  }
+  return markers
+})
+
+watch(booking, async (b) => {
+  if (!b?.origin_station_id || originStation.value) return
+  try {
+    const stations = await $fetch('/api/stations') as any[]
+    originStation.value = stations.find(s => s.id === b.origin_station_id) || null
+  } catch { /* mapa opcional */ }
+})
+
 onMounted(async () => {
   try {
-    const data = await $fetch(`/api/bookings/${route.params.id}`)
+    const token = route.query.token ? `?token=${route.query.token}` : ''
+    const data = await $fetch(`/api/bookings/${route.params.id}${token}`)
     booking.value = data
   } catch (e) {
     console.error('Error loading booking:', e)
@@ -142,10 +182,15 @@ async function handleCancel() {
 
   cancelling.value = true
   try {
-    await $fetch(`/api/bookings/${route.params.id}`, { method: 'DELETE' })
+    const token = route.query.token ? `?token=${route.query.token}` : ''
+    await $fetch(`/api/bookings/${route.params.id}${token}`, { method: 'DELETE' })
     booking.value = { ...booking.value, status: 'cancelled' }
-  } catch (e) {
+  } catch (e: any) {
     console.error('Error cancelling booking:', e)
+    toastMessage.value = e?.data?.message?.includes('Cannot cancel')
+      ? 'No se puede cancelar tan cerca de la hora de recogida.'
+      : 'No se pudo cancelar la reserva. Inténtalo de nuevo.'
+    toastRef.value?.show()
   } finally {
     cancelling.value = false
   }

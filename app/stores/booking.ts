@@ -1,17 +1,22 @@
 import { defineStore } from 'pinia'
 
 interface BookingFormData {
-  originStationId: string
+  originStationId?: string
+  originAddress?: string
   destination: string
   date: string
   time: string
   passengers: number
   luggageBig: number
   luggageHand: number
-  needsChildSeat: boolean
-  needsPetFriendly: boolean
-  needsAccessible: boolean
-  needsLargeVehicle: boolean
+  accessoryIds?: string[]
+  needsChildSeat?: boolean
+  needsPetFriendly?: boolean
+  needsAccessible?: boolean
+  needsLargeVehicle?: boolean
+  guestName?: string
+  guestEmail?: string
+  guestPhone?: string
 }
 
 export const useBookingStore = defineStore('booking', () => {

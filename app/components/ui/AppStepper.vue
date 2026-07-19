@@ -1,20 +1,29 @@
 <template>
-  <InputNumber
-    :model-value="modelValue"
-    :min="min"
-    :max="max"
-    :step="step"
-    show-buttons
-    :pt="stepperPt"
-    class="w-32"
-    @update:model-value="$emit('update:modelValue', $event)"
-  />
+  <div class="stepper">
+    <button
+      type="button"
+      class="stepper-btn"
+      :disabled="modelValue <= min"
+      aria-label="Reducir"
+      @click="change(-step)"
+    >
+      <Icon name="tabler:minus" size="15" />
+    </button>
+    <span class="stepper-value" aria-live="polite">{{ modelValue }}</span>
+    <button
+      type="button"
+      class="stepper-btn"
+      :disabled="modelValue >= max"
+      aria-label="Aumentar"
+      @click="change(step)"
+    >
+      <Icon name="tabler:plus" size="15" />
+    </button>
+  </div>
 </template>
 
 <script setup lang="ts">
-import InputNumber from 'primevue/inputnumber'
-
-withDefaults(defineProps<{
+const props = withDefaults(defineProps<{
   modelValue: number
   min?: number
   max?: number
@@ -25,14 +34,63 @@ withDefaults(defineProps<{
   step: 1,
 })
 
-defineEmits<{
+const emit = defineEmits<{
   'update:modelValue': [value: number]
 }>()
 
-const stepperPt = {
-  input: { class: '!w-12 !text-center !bg-white !border !border-slate-200 !rounded-lg !text-sm !shadow-none' },
-  buttonGroup: { class: '!border-none' },
-  incrementButton: { class: '!w-8 !h-8 !rounded-full !bg-white !border !border-slate-200 !text-slate-500 hover:!bg-slate-50 !text-sm' },
-  decrementButton: { class: '!w-8 !h-8 !rounded-full !bg-white !border !border-slate-200 !text-slate-500 hover:!bg-slate-50 !text-sm' },
+function change(delta: number) {
+  const next = Math.min(props.max, Math.max(props.min, (props.modelValue ?? 0) + delta))
+  if (next !== props.modelValue) emit('update:modelValue', next)
 }
 </script>
+
+<style scoped>
+.stepper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  background: var(--surface-container);
+  border: 1px solid var(--outline-variant);
+  border-radius: 12px;
+  padding: 6px;
+}
+
+.stepper-btn {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border-radius: 9px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(250, 189, 50, 0.12);
+  color: var(--secondary);
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.stepper-btn:not(:disabled):hover {
+  background: rgba(250, 189, 50, 0.22);
+}
+
+.stepper-btn:not(:disabled):active {
+  transform: scale(0.94);
+}
+
+.stepper-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.stepper-value {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--on-surface);
+  text-align: center;
+  min-width: 2ch;
+  font-variant-numeric: tabular-nums;
+}
+</style>

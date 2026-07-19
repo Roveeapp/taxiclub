@@ -12,6 +12,10 @@ export async function assignDriver(bookingInput: any) {
     p_needs_accessible: bookingInput.needsAccessible || false,
     p_needs_large_vehicle: bookingInput.needsLargeVehicle || false,
     p_pickup_at: bookingInput.pickupAt,
+    p_dest_lat: bookingInput.destinationLat ?? null,
+    p_dest_lng: bookingInput.destinationLng ?? null,
+    p_origin_lat: bookingInput.originLat ?? null,
+    p_origin_lng: bookingInput.originLng ?? null,
   })
 
   if (error || !result || (result as any[]).length === 0) {
