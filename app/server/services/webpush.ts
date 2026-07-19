@@ -17,7 +17,7 @@ export async function sendWebPush(
   }
 
   const vapid: VapidKeys = {
-    subject: `mailto:${process.env.VAPID_MAILTO || 'admin@clubtaxisasturias.es'}`,
+    subject: `mailto:${(config as any).vapidMailto || process.env.VAPID_MAILTO || 'admin@clubtaxisasturias.es'}`,
     publicKey: config.public.vapidPublicKey,
     privateKey: config.vapidPrivateKey,
   }

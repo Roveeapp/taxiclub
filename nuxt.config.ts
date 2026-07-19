@@ -57,6 +57,8 @@ export default defineNuxtConfig({
     stripeSecretKey: process.env.STRIPE_SECRET_KEY ?? '',
     stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET ?? '',
     resendApiKey: process.env.RESEND_API_KEY ?? '',
+    emailFrom: process.env.EMAIL_FROM ?? '',
+    vapidMailto: process.env.VAPID_MAILTO ?? '',
     twilioAccountSid: process.env.TWILIO_ACCOUNT_SID ?? '',
     twilioAuthToken: process.env.TWILIO_AUTH_TOKEN ?? '',
     twilioPhoneNumber: process.env.TWILIO_PHONE_NUMBER ?? '',

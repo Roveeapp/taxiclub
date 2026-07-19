@@ -56,7 +56,7 @@ function envFallback(key: IntegrationKey): string {
     case 'stripe_publishable_key': return (config.public.stripePublishableKey as string) || ''
     case 'stripe_webhook_secret': return (config.stripeWebhookSecret as string) || ''
     case 'resend_api_key': return (config.resendApiKey as string) || ''
-    case 'email_from': return process.env.EMAIL_FROM || ''
+    case 'email_from': return (config.emailFrom as string) || process.env.EMAIL_FROM || ''
     case 'twilio_account_sid': return (config.twilioAccountSid as string) || ''
     case 'twilio_auth_token': return (config.twilioAuthToken as string) || ''
     case 'twilio_phone_number': return (config.twilioPhoneNumber as string) || ''
