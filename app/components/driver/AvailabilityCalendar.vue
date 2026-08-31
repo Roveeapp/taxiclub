@@ -34,6 +34,7 @@
             class="day-cell"
             :class="dayClass(day)"
             :disabled="day.isPast"
+            :aria-label="etiquetaDia(day)"
             @click="openDayEditor(day)"
           >
             <span class="day-number">{{ day.dayNum }}</span>
@@ -229,6 +230,24 @@ const calendarDays = computed<Array<DayCell | null>>(() => {
   }
   return cells
 })
+
+/**
+ * Nombre accesible de una casilla del calendario. El botón ya contenía texto
+ * —el número y las franjas—, así que se anunciaba, pero sin la fecha completa
+ * ni el estado: «14» no dice de qué mes ni si el conductor está disponible.
+ */
+function etiquetaDia(day: { date: string, dayNum: number, state: string, isPast: boolean, slots: Array<{ from: string, to: string }> }): string {
+  const fecha = new Date(day.date + 'T00:00:00').toLocaleDateString('es-ES', {
+    weekday: 'long', day: 'numeric', month: 'long',
+  })
+  if (day.isPast) return `${fecha}, ya pasado`
+  if (day.state === 'off') return `${fecha}, no disponible`
+  if (day.state === 'partial') {
+    const franjas = day.slots.map(s => `de ${s.from} a ${s.to}`).join(' y ')
+    return `${fecha}, disponible ${franjas}`
+  }
+  return `${fecha}, disponible todo el día`
+}
 
 function dayClass(day: DayCell) {
   if (day.isPast) return 'day-past'

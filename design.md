@@ -24,7 +24,7 @@ La identidad visual debe transmitir **exclusividad sin ostentación**, **fiabili
 | Token | Hex | Uso |
 |---|---|---|
 | `--color-brand-dark` | `#0c0c13` | Fondo principal de la app, navbar, header |
-| `--color-brand-gold` | `#f0b429` | Acento primario: botones CTA, badges, iconos clave, punto de marca |
+| `--color-brand-gold` | `#fabd32` | Acento primario: botones CTA, badges, iconos clave, punto de marca. En Tailwind es `brand-gold` (89 usos) |
 | `--color-brand-white` | `#ffffff` | Tarjetas de formulario, fondos de contenido |
 
 ### Colores de superficie
@@ -61,7 +61,8 @@ La identidad visual debe transmitir **exclusividad sin ostentación**, **fiabili
 gold-50:  #fffbeb   (fondos de badges, hover suave)
 gold-100: #fef3c7   (chips seleccionados, fondo de alertas)
 gold-200: #fde68a   (bordes de elementos gold)
-gold-400: #f0b429   (acento principal — color de marca)
+gold-400: #fabd32   (acento principal — color de marca, `brand-gold`)
+gold-500: #f0b429   (tono más profundo; en el tema de PrimeVue es el 500)
 gold-600: #d97706   (hover sobre gold, texto sobre gold-100)
 gold-800: #92400e   (texto sobre gold-50)
 ```

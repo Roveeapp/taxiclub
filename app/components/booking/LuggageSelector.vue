@@ -33,15 +33,17 @@
             type="button"
             class="w-10 h-10 rounded-full border-2 border-slate-300 text-slate-600 hover:border-slate-400 hover:text-slate-800 text-lg font-bold flex items-center justify-center transition-colors"
             :disabled="big <= 0"
+            aria-label="Quitar una maleta grande"
             @click="big--"
           >
             <Icon name="tabler:minus" size="18" />
           </button>
-          <span class="text-lg font-bold text-slate-900 w-6 text-center">{{ big }}</span>
+          <span class="text-lg font-bold text-slate-900 w-6 text-center" aria-live="polite" :aria-label="`${big} maletas grandes`">{{ big }}</span>
           <button
             type="button"
             class="w-10 h-10 rounded-full bg-secondary text-white hover:bg-secondary/90 text-lg font-bold flex items-center justify-center transition-colors shadow-sm"
             :disabled="big >= 8"
+            aria-label="Añadir una maleta grande"
             @click="big++"
           >
             <Icon name="tabler:plus" size="18" />
@@ -63,6 +65,7 @@
             type="button"
             class="w-10 h-10 rounded-full border-2 border-slate-300 text-slate-600 hover:border-slate-400 hover:text-slate-800 text-lg font-bold flex items-center justify-center transition-colors"
             :disabled="hand <= 0"
+            aria-label="Quitar un bulto de mano"
             @click="hand--"
           >
             <Icon name="tabler:minus" size="18" />
@@ -72,6 +75,7 @@
             type="button"
             class="w-10 h-10 rounded-full bg-secondary text-white hover:bg-secondary/90 text-lg font-bold flex items-center justify-center transition-colors shadow-sm"
             :disabled="hand >= 8"
+            aria-label="Añadir un bulto de mano"
             @click="hand++"
           >
             <Icon name="tabler:plus" size="18" />

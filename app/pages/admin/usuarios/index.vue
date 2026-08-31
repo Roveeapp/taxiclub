@@ -32,8 +32,8 @@
         </div>
       </div>
 
-      <div class="card-surface rounded-xl overflow-hidden">
-        <table class="w-full">
+      <div class="card-surface rounded-xl overflow-x-auto">
+        <table class="w-full min-w-[640px] sm:min-w-0">
           <thead class="bg-surface-container border-b border-outline-variant">
             <tr>
               <th class="text-left text-xs font-medium text-on-surface-variant px-6 py-3">Usuario</th>

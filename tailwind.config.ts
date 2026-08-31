@@ -11,8 +11,9 @@ export default <Config>{
   theme: {
     extend: {
       colors: {
+        // `gold` es el acento de marca. Había además un token `gold-accent`
+        // con #f0b429 que no usaba nadie y competía por el mismo nombre.
         brand: { dark: '#0c0c13', gold: '#fabd32', white: '#ffffff' },
-        'gold-accent': '#f0b429',
         surface: {
           DEFAULT: '#12121c',
           dim: '#12121c',

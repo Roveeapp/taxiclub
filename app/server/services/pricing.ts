@@ -197,7 +197,13 @@ export async function peekAssignedDriverRate(params: {
           return { driverId, perKm, fixedPrice: Number(r.price) }
         }
       }
-    } catch { /* tabla aún sin migrar */ }
+    } catch (e) {
+      // El comentario original decía «tabla aún sin migrar», pero
+      // driver_fixed_routes existe desde la migración 031: este catch ya no
+      // protege de nada y sí oculta un fallo que CAMBIA EL PRECIO, porque se
+      // pierde la ruta fija del conductor y se cae a la estimación.
+      console.error('[Pricing] No se pudieron leer las rutas fijas del conductor:', (e as Error)?.message)
+    }
 
     // ── Anillos de precio fijo del conductor desde la parada de origen ──
     if (params.originStationId && params.destLat && params.destLng) {
@@ -225,7 +231,11 @@ export async function peekAssignedDriverRate(params: {
             }
           }
         }
-      } catch { /* zonas aún sin migrar */ }
+      } catch (e) {
+        // driver_station_zones existe desde la migración 028. Perder esto
+        // significa ignorar los anillos de precio fijo del conductor.
+        console.error('[Pricing] No se pudieron leer las zonas del conductor:', (e as Error)?.message)
+      }
     }
 
     return { driverId, perKm, fixedPrice }
@@ -270,18 +280,26 @@ export async function calculateDistance(
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**
- * Suplementos por extras. Siguen siendo constantes de código: moverlos a
- * system_config está pendiente, pero al menos ya viven en un único sitio en
- * lugar de duplicados por ruta.
+ * Suplementos por extras y precio de último recurso, por defecto.
+ *
+ * Se leen de system_config, editable desde el panel: estaban incrustados en el
+ * código, así que cambiar el suplemento de la silla infantil exigía un
+ * despliegue. Estos valores solo actúan si la clave no está en la tabla.
  */
-export const BOOKING_EXTRAS = {
+export const BOOKING_EXTRAS_DEFECTO = {
   childSeat: 5,
   petFriendly: 3,
   largeVehicle: 8,
 } as const
 
 /** Precio de último recurso si no hay tarifa fija ni estimación por distancia. */
-export const FALLBACK_FARE = 25
+export const FALLBACK_FARE_DEFECTO = 25
+
+/** Lee un número de la configuración, con valor por defecto si falta o no es válido. */
+function numeroDeConfig(config: Record<string, unknown>, clave: string, defecto: number): number {
+  const valor = Number(config[clave])
+  return Number.isFinite(valor) && valor >= 0 ? valor : defecto
+}
 
 export interface BookingQuoteInput {
   originStationId?: string | null
@@ -339,6 +357,8 @@ async function fixedRoutePrice(originId: string, destinationId: string): Promise
  * cliente: todo se deriva del origen, el destino y la configuración.
  */
 export async function quoteBooking(input: BookingQuoteInput): Promise<BookingQuote> {
+  const config = await getSystemConfig()
+
   // 1. Extras: acepta flags directos o IDs de accesorios
   const flags = await resolveAccessoryFlags(input.accessoryIds)
   const needsChildSeat = Boolean(input.needsChildSeat) || flags.needsChildSeat
@@ -433,7 +453,7 @@ export async function quoteBooking(input: BookingQuoteInput): Promise<BookingQuo
         basePrice = estimated
         source = 'distance_estimate'
       } else {
-        basePrice = FALLBACK_FARE
+        basePrice = numeroDeConfig(config, 'fallback_fare', FALLBACK_FARE_DEFECTO)
         source = 'fallback'
       }
     }
@@ -441,9 +461,9 @@ export async function quoteBooking(input: BookingQuoteInput): Promise<BookingQuo
 
   // 5. Extras y total
   let extras = 0
-  if (needsChildSeat) extras += BOOKING_EXTRAS.childSeat
-  if (needsPetFriendly) extras += BOOKING_EXTRAS.petFriendly
-  if (needsLargeVehicle) extras += BOOKING_EXTRAS.largeVehicle
+  if (needsChildSeat) extras += numeroDeConfig(config, 'extra_child_seat', BOOKING_EXTRAS_DEFECTO.childSeat)
+  if (needsPetFriendly) extras += numeroDeConfig(config, 'extra_pet_friendly', BOOKING_EXTRAS_DEFECTO.petFriendly)
+  if (needsLargeVehicle) extras += numeroDeConfig(config, 'extra_large_vehicle', BOOKING_EXTRAS_DEFECTO.largeVehicle)
 
   const totalPrice = Math.round((basePrice + extras) * 100) / 100
 

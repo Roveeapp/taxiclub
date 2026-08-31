@@ -13,7 +13,11 @@ export default defineEventHandler(async (event) => {
   try {
     const { data } = await db.from('station_exclusivities').select('station_id, driver_id')
     exclusivities = (data || [])
-  } catch { /* tabla aún sin crear (migración 024) */ }
+  } catch (e) {
+    // station_exclusivities existe desde la migración 024, así que este catch
+    // ya no cubre una tabla ausente: solo oculta un fallo real.
+    console.error('[Paradas] No se pudieron leer las exclusividades:', (e as Error)?.message)
+  }
 
   const exclusivityMap = new Map(exclusivities.map(e => [e.station_id, e.driver_id]))
 

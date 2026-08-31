@@ -5,6 +5,7 @@
     option-label="label"
     option-value="value"
     :placeholder="placeholder"
+    :aria-label="label || placeholder"
     :pt="selectPt"
     class="w-full"
     append-to="self"
@@ -38,6 +39,11 @@ interface Option {
 const props = defineProps<{
   modelValue: string
   options: Option[]
+  /**
+   * Nombre accesible del desplegable. Se declaraba y no se usaba, así que el
+   * control quedaba sin nombre para un lector de pantalla; ahora alimenta
+   * aria-label, con el placeholder como respaldo.
+   */
   label?: string
   placeholder?: string
   icon?: string
