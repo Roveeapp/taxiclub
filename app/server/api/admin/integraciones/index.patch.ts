@@ -9,7 +9,7 @@ import type { IntegrationKey } from '../../../utils/integrations'
  */
 export default defineEventHandler(async (event) => {
   requireRole(event, 'admin')
-  const body = await readBody(event)
+  const body = await readValidated(event, integracionesSchema)
   const db = useDb()
 
   let changes = 0

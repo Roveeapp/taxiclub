@@ -5,8 +5,7 @@
  * https://docs.sentry.io/platforms/javascript/guides/nuxt/
  */
 export default defineEventHandler(async (event) => {
-  const body = await readBody(event).catch(() => null)
-  if (!body?.message) return { ok: false }
+  const body = await readValidated(event, errorClienteSchema)
 
   console.error('[ClientError]', JSON.stringify({
     message: String(body.message).slice(0, 500),

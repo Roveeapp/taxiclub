@@ -1,6 +1,6 @@
 export default defineEventHandler(async (event) => {
   requireRole(event, 'admin')
-  const body = await readBody(event)
+  const body = await readValidated(event, configuracionSchema)
   const db = useDb()
 
   const upserts = Object.entries(body).map(([key, value]) => ({

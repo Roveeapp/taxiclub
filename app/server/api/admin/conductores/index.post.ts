@@ -4,7 +4,7 @@
  */
 export default defineEventHandler(async (event) => {
   requireRole(event, 'admin')
-  const body = await readBody(event)
+  const body = await readValidated(event, crearConductorSchema)
   const db = useDb()
 
   const email = String(body?.email || '').trim().toLowerCase()

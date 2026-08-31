@@ -1,5 +1,5 @@
 export default defineEventHandler(async (event) => {
-  const body = await readBody(event)
+  const body = await readValidated(event, recuperarPasswordSchema)
 
   if (!body.email || !body.password) {
     throw createError({ statusCode: 400, message: 'Email and password required' })

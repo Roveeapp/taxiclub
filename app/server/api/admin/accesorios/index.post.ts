@@ -1,6 +1,6 @@
 export default defineEventHandler(async (event) => {
   requireRole(event, 'admin')
-  const body = await readBody(event)
+  const body = await readValidated(event, crearAccesorioSchema)
   const db = useDb()
 
   const name = String(body?.name || '').trim()

@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
   requireRole(event, 'admin')
   const id = getRouterParam(event, 'id')
   if (!id) throw createError({ statusCode: 400, message: 'Missing id' })
-  const body = await readBody(event)
+  const body = await readValidated(event, asignarReservaSchema)
   const driverId = body?.driverId as string | undefined
   if (!driverId) throw createError({ statusCode: 400, message: 'driverId es obligatorio' })
 

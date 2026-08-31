@@ -36,7 +36,7 @@ function validateSlots(slots?: TimeSlot[]): TimeSlot[] | null {
 
 export default defineEventHandler(async (event) => {
   const user = requireAuth(event)
-  const body = await readBody<AvailabilityBody>(event)
+  const body = await readValidated(event, disponibilidadSchema)
   const db = useDb()
 
   // Franjas nuevas, o migrar formato antiguo hourFrom/hourTo

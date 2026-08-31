@@ -1,6 +1,6 @@
 export default defineEventHandler(async (event) => {
   requireRole(event, 'admin')
-  const body = await readBody(event)
+  const body = await readValidated(event, crearParadaSchema)
   const db = useDb()
 
   const { data: station, error } = await db

@@ -3,7 +3,7 @@
  */
 export default defineEventHandler(async (event) => {
   const user = requireAuth(event)
-  const body = await readBody(event)
+  const body = await readValidated(event, tarifaSchema)
   const db = useDb()
 
   let perKm: number | null = null

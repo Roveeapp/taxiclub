@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
   const user = requireAuth(event)
   const id = getRouterParam(event, 'id')
   if (!id) throw createError({ statusCode: 400, message: 'Missing id' })
-  const body = await readBody(event)
+  const body = await readValidated(event, editarOfertaSchema)
   const db = useDb()
 
   const { data: offer, error: findError } = await db

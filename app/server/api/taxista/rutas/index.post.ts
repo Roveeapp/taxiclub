@@ -2,7 +2,7 @@ import { geocodeAddress } from '~/server/services/pricing'
 
 export default defineEventHandler(async (event) => {
   const user = requireAuth(event)
-  const body = await readBody(event)
+  const body = await readValidated(event, rutaFijaSchema)
   const db = useDb()
 
   const originLabel = String(body?.originLabel || '').trim()

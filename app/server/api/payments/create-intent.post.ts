@@ -18,7 +18,7 @@ interface CreateIntentBody {
 }
 
 export default defineEventHandler(async (event) => {
-  const body = await readBody<CreateIntentBody>(event)
+  const body = await readValidated(event, presupuestoSchema)
 
   if (!body?.originStationId && !body?.originAddress) {
     throw createError({ statusCode: 400, message: 'Falta el origen (originStationId u originAddress)' })

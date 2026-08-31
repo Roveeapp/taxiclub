@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
   requireRole(event, 'admin')
   const id = getRouterParam(event, 'id')
   if (!id) throw createError({ statusCode: 400, message: 'Missing id' })
-  const body = await readBody(event)
+  const body = await readValidated(event, pagoReservaSchema)
   const action = body?.action as 'capture' | 'cancel' | 'refund' | undefined
 
   if (!action || !['capture', 'cancel', 'refund'].includes(action)) {

@@ -2,7 +2,7 @@ export default defineEventHandler(async (event) => {
   requireRole(event, 'admin')
   const id = getRouterParam(event, 'id')
   if (!id) throw createError({ statusCode: 400, message: 'Missing id' })
-  const body = await readBody(event)
+  const body = await readValidated(event, editarParadaSchema)
   const db = useDb()
 
   const updateData: Record<string, any> = {}
