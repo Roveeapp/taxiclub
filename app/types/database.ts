@@ -278,6 +278,27 @@ export type Database = {
           },
         ]
       }
+      cron_task_runs: {
+        Row: {
+          id: number
+          jobname: string
+          queued_at: string
+          request_id: number | null
+        }
+        Insert: {
+          id?: number
+          jobname: string
+          queued_at?: string
+          request_id?: number | null
+        }
+        Update: {
+          id?: number
+          jobname?: string
+          queued_at?: string
+          request_id?: number | null
+        }
+        Relationships: []
+      }
       driver_availability: {
         Row: {
           date: string
@@ -385,10 +406,13 @@ export type Database = {
       }
       driver_payouts: {
         Row: {
+          amount_due: number | null
           commission_amt: number
           commission_pct: number
           created_at: string | null
+          direction: string | null
           driver_id: string
+          due_date: string | null
           final_payout: number
           gross_amount: number
           id: string
@@ -397,13 +421,19 @@ export type Database = {
           paid_at: string | null
           period_end: string
           period_start: string
+          settled_amount: number
+          settlement_status: string
           stripe_payout_id: string | null
+          trip_count: number | null
         }
         Insert: {
+          amount_due?: number | null
           commission_amt: number
           commission_pct: number
           created_at?: string | null
+          direction?: string | null
           driver_id: string
+          due_date?: string | null
           final_payout: number
           gross_amount: number
           id?: string
@@ -412,13 +442,19 @@ export type Database = {
           paid_at?: string | null
           period_end: string
           period_start: string
+          settled_amount?: number
+          settlement_status?: string
           stripe_payout_id?: string | null
+          trip_count?: number | null
         }
         Update: {
+          amount_due?: number | null
           commission_amt?: number
           commission_pct?: number
           created_at?: string | null
+          direction?: string | null
           driver_id?: string
+          due_date?: string | null
           final_payout?: number
           gross_amount?: number
           id?: string
@@ -427,7 +463,10 @@ export type Database = {
           paid_at?: string | null
           period_end?: string
           period_start?: string
+          settled_amount?: number
+          settlement_status?: string
           stripe_payout_id?: string | null
+          trip_count?: number | null
         }
         Relationships: [
           {
@@ -643,6 +682,60 @@ export type Database = {
             columns: ["driver_id"]
             isOneToOne: false
             referencedRelation: "drivers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payout_settlements: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          method: string
+          notes: string | null
+          payout_id: string
+          receipt_path: string | null
+          recorded_by: string | null
+          reference: string | null
+          settled_at: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: string
+          method: string
+          notes?: string | null
+          payout_id: string
+          receipt_path?: string | null
+          recorded_by?: string | null
+          reference?: string | null
+          settled_at?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          method?: string
+          notes?: string | null
+          payout_id?: string
+          receipt_path?: string | null
+          recorded_by?: string | null
+          reference?: string | null
+          settled_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payout_settlements_payout_id_fkey"
+            columns: ["payout_id"]
+            isOneToOne: false
+            referencedRelation: "driver_payouts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payout_settlements_recorded_by_fkey"
+            columns: ["recorded_by"]
+            isOneToOne: false
+            referencedRelation: "users"
             referencedColumns: ["id"]
           },
         ]
@@ -1045,7 +1138,33 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      cron_task_health: {
+        Row: {
+          error_msg: string | null
+          id: number | null
+          jobname: string | null
+          outcome: string | null
+          queued_at: string | null
+          request_id: number | null
+          response_excerpt: string | null
+          status_code: number | null
+          timed_out: boolean | null
+        }
+        Relationships: []
+      }
+      cron_task_status: {
+        Row: {
+          active: boolean | null
+          fallos_ultimas_24h: number | null
+          jobname: string | null
+          last_outcome: string | null
+          last_run_at: string | null
+          last_status_code: number | null
+          response_excerpt: string | null
+          schedule: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       expire_old_offers: {

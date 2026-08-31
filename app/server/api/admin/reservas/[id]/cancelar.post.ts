@@ -7,8 +7,7 @@ export default defineEventHandler(async (event) => {
 
   const user = requireAuth(event)
 
-  const { error: updateError } = await (db
-    .from('bookings') as any)
+  const { error: updateError } = await writeTable('bookings')
     .update({
       status: 'cancelled',
       cancelled_at: new Date().toISOString(),

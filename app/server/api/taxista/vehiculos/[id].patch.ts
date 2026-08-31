@@ -19,8 +19,7 @@ export default defineEventHandler(async (event) => {
   if (body.isAccessible !== undefined) updateData.is_accessible = body.isAccessible
   if (body.isLargeVehicle !== undefined) updateData.is_large_vehicle = body.isLargeVehicle
 
-  const { error: updateError } = await (db
-    .from('vehicles') as any)
+  const { error: updateError } = await writeTable('vehicles')
     .update(updateData)
     .eq('id', id)
     .eq('driver_id', user.id)

@@ -28,7 +28,7 @@ export default defineEventHandler(async (event) => {
   }
 
   // Cancelar sus ofertas activas
-  await (db.from('return_offers') as any)
+  await writeTable('return_offers')
     .update({ status: 'cancelled' })
     .eq('driver_id', id)
     .eq('status', 'active')

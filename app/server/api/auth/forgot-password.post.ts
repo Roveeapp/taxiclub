@@ -6,7 +6,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const supabase = useDb()
-  const { data, error } = await supabase.auth.admin.generateLink({
+  const { data: _data, error } = await supabase.auth.admin.generateLink({
     type: 'magiclink',
     email: body.email,
   })

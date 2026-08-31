@@ -23,7 +23,7 @@ export default defineEventHandler(async (event) => {
 
   if (actual > rule.limit) {
     const espera = secondsUntilReset(rule, now)
-    setHeader(event, 'Retry-After', String(espera))
+    setHeader(event, 'Retry-After', espera)
     console.warn(`[RateLimit] ${ip} superó el límite de ${rule.bucket} (${actual}/${rule.limit})`)
     throw createError({
       statusCode: 429,

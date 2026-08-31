@@ -1,7 +1,6 @@
 export default defineEventHandler(async (event) => {
   requireRole(event, 'admin')
   const body = await readValidated(event, crearAccesorioSchema)
-  const db = useDb()
 
   const name = String(body?.name || '').trim()
   if (!name) throw createError({ statusCode: 400, message: 'El nombre es obligatorio' })
@@ -13,7 +12,7 @@ export default defineEventHandler(async (event) => {
     .replace(/[^a-z0-9]+/g, '_')
     .replace(/^_+|_+$/g, '')
 
-  const { data, error } = await (db.from('accessories') as any)
+  const { data, error } = await writeTable('accessories')
     .insert({
       name,
       icon: String(body?.icon || 'tabler:star').trim(),

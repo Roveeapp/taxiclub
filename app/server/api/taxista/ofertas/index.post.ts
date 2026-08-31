@@ -1,13 +1,11 @@
 export default defineEventHandler(async (event) => {
   const user = requireAuth(event)
   const body = await readValidated(event, crearOfertaSchema)
-  const db = useDb()
 
   const basePrice = 25
   const finalPrice = basePrice * (1 - (body.discountPct || 0) / 100)
 
-  const { data: offer, error } = await (db
-    .from('return_offers') as any)
+  const { data: offer, error } = await writeTable('return_offers')
     .insert({
       driver_id: user.id,
       origin_booking_id: body.originBookingId || null,

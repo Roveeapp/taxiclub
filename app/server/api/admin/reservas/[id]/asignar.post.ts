@@ -61,7 +61,7 @@ export default defineEventHandler(async (event) => {
     .maybeSingle()
 
   if (existing) {
-    const { error: updError } = await (db.from('booking_assignments') as any)
+    const { error: updError } = await writeTable('booking_assignments')
       .update({
         driver_id: driverId,
         assigned_at: new Date().toISOString(),
@@ -75,17 +75,17 @@ export default defineEventHandler(async (event) => {
       .eq('id', (existing as any).id)
     if (updError) throw createError({ statusCode: 500, message: updError.message })
   } else {
-    const { error: insError } = await (db.from('booking_assignments') as any)
+    const { error: insError } = await writeTable('booking_assignments')
       .insert({ booking_id: id, driver_id: driverId })
     if (insError) throw createError({ statusCode: 500, message: insError.message })
   }
 
   // 4. La reserva vuelve a pendiente hasta que el nuevo taxista confirme
-  await (db.from('bookings') as any)
+  await writeTable('bookings')
     .update({ status: 'pending', updated_at: new Date().toISOString() })
     .eq('id', id)
 
-  await (db.from('drivers') as any)
+  await writeTable('drivers')
     .update({ last_assigned_at: new Date().toISOString() })
     .eq('id', driverId)
 

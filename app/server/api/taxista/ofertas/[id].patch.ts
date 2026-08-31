@@ -71,8 +71,7 @@ export default defineEventHandler(async (event) => {
     return o
   }
 
-  const { data: updated, error: updateError } = await (db
-    .from('return_offers') as any)
+  const { data: updated, error: updateError } = await writeTable('return_offers')
     .update(updateData)
     .eq('id', id)
     .eq('driver_id', user.id)

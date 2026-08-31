@@ -16,8 +16,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, message: 'Assignment not found' })
   }
 
-  const { error: updateError } = await (db
-    .from('booking_assignments') as any)
+  const { error: updateError } = await writeTable('booking_assignments')
     .update({
       confirmed_at: new Date().toISOString(),
       confirmed_plate: body.plate,
@@ -32,8 +31,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 500, message: updateError.message })
   }
 
-  const { error: bookingError } = await (db
-    .from('bookings') as any)
+  const { error: bookingError } = await writeTable('bookings')
     .update({ status: 'confirmed', updated_at: new Date().toISOString() })
     .eq('id', id)
 

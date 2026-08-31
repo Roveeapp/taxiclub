@@ -1,10 +1,8 @@
 export default defineEventHandler(async (event) => {
   const user = requireAuth(event)
   const body = await readValidated(event, suscripcionPushSchema)
-  const db = useDb()
 
-  const { error } = await (db
-    .from('users') as any)
+  const { error } = await writeTable('users')
     .update({ push_subscription: body.subscription })
     .eq('id', user.id)
 

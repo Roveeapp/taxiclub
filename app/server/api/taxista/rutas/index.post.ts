@@ -3,7 +3,6 @@ import { geocodeAddress } from '~/server/services/pricing'
 export default defineEventHandler(async (event) => {
   const user = requireAuth(event)
   const body = await readValidated(event, rutaFijaSchema)
-  const db = useDb()
 
   const originLabel = String(body?.originLabel || '').trim()
   const destLabel = String(body?.destLabel || '').trim()
@@ -42,7 +41,7 @@ export default defineEventHandler(async (event) => {
     if (geo) { destLat = geo.lat; destLng = geo.lng }
   }
 
-  const { data, error } = await (db.from('driver_fixed_routes') as any)
+  const { data, error } = await writeTable('driver_fixed_routes')
     .insert({
       driver_id: user.id,
       origin_label: originLabel,

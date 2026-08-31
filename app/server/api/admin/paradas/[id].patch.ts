@@ -14,8 +14,7 @@ export default defineEventHandler(async (event) => {
   if (body.isActive !== undefined) updateData.is_active = body.isActive
 
   if (Object.keys(updateData).length > 0) {
-    const { error } = await (db
-      .from('stations') as any)
+    const { error } = await writeTable('stations')
       .update(updateData)
       .eq('id', id)
 
@@ -30,7 +29,7 @@ export default defineEventHandler(async (event) => {
       const { error } = await db.from('station_exclusivities').delete().eq('station_id', id)
       if (error) throw createError({ statusCode: 500, message: error.message })
     } else {
-      const { error } = await (db.from('station_exclusivities') as any).upsert(
+      const { error } = await writeTable('station_exclusivities').upsert(
         { station_id: id, driver_id: body.exclusiveDriverId },
         { onConflict: 'station_id' },
       )

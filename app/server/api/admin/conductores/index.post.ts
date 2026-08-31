@@ -44,7 +44,7 @@ export default defineEventHandler(async (event) => {
   const userId = created.user.id
 
   // 2. Asegurar filas en users y drivers (por si el trigger no cubre este flujo)
-  await (db.from('users') as any).upsert({
+  await writeTable('users').upsert({
     id: userId,
     email,
     full_name: fullName,
@@ -52,7 +52,7 @@ export default defineEventHandler(async (event) => {
     role: 'driver',
   }, { onConflict: 'id' })
 
-  const { error: driverError } = await (db.from('drivers') as any).upsert({
+  const { error: driverError } = await writeTable('drivers').upsert({
     id: userId,
     license_number: licenseNumber,
     license_city: licenseCity,

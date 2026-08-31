@@ -40,7 +40,7 @@ export default defineEventHandler(async (event) => {
     }
   }
 
-  const { data, error } = await (db.from('driver_station_zones') as any)
+  const { data, error } = await writeTable('driver_station_zones')
     .insert({
       driver_id: user.id,
       station_id: stationId,

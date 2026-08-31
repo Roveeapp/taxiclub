@@ -59,24 +59,42 @@ export async function callRpc<T>(
 
 type QueryResult<T> = Promise<{ data: T | null, error: { message: string } | null }>
 
+interface SelectChain {
+  single: <T = unknown>() => QueryResult<T>
+  maybeSingle: <T = unknown>() => QueryResult<T>
+}
+
+interface Filtrable {
+  eq: (column: string, value: unknown) => Filtrable & QueryResult<null> & { select: (columns?: string) => SelectChain & QueryResult<unknown[]> }
+  in: (column: string, values: unknown[]) => Filtrable & QueryResult<null>
+  is: (column: string, value: unknown) => Filtrable & QueryResult<null>
+}
+
 /**
  * Acceso de escritura a una tabla con una forma mínima declarada.
  *
- * Mismo motivo que callRpc: el patrón `(db.from('x') as Record<string, any>)`
- * está repetido por todo el servidor y desactiva el esquema tipado. Aquí el
- * cast vive en un solo sitio y quien llama declara el tipo de fila que espera.
+ * Mismo motivo que callRpc: el patrón `writeTable('x')` estaba repetido
+ * por todo el servidor y desactivaba el esquema tipado de types/database.ts.
+ * Aquí el cast vive en un solo sitio y quien llama declara el tipo de fila que
+ * espera.
  *
- * Es un paso intermedio: lo correcto a medio plazo es regenerar
- * types/database.ts y usar el cliente tipado directamente.
+ * Es un paso intermedio: ahora que los tipos se generan del esquema real, lo
+ * ideal es usar el cliente tipado directamente. Este ayudante cubre mientras
+ * tanto los sitios donde el tipo generado y el uso no encajan.
  */
 export function writeTable(name: string) {
   const db = useDb()
   return db.from(name as never) as unknown as {
     insert: (row: Record<string, unknown> | Array<Record<string, unknown>>) => {
-      select: (columns?: string) => { single: <T = unknown>() => QueryResult<T> }
+      select: (columns?: string) => SelectChain & QueryResult<unknown[]>
     } & QueryResult<null>
-    update: (row: Record<string, unknown>) => {
-      eq: (column: string, value: unknown) => QueryResult<null>
-    }
+    upsert: (
+      row: Record<string, unknown> | Array<Record<string, unknown>>,
+      options?: { onConflict?: string, ignoreDuplicates?: boolean },
+    ) => {
+      select: (columns?: string) => SelectChain & QueryResult<unknown[]>
+    } & QueryResult<null>
+    update: (row: Record<string, unknown>) => Filtrable
+    delete: () => Filtrable
   }
 }

@@ -12,8 +12,7 @@ export async function expireStaleOffers(force = false): Promise<void> {
   lastRun = Date.now()
 
   try {
-    const db = useDb()
-    await (db.from('return_offers') as any)
+    await writeTable('return_offers')
       .update({ status: 'expired' })
       .eq('status', 'active')
       .lt('available_until', new Date().toISOString())

@@ -35,8 +35,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, message: 'Cannot cancel within ' + maxCancelHours + ' hours of pickup' })
   }
 
-  const { error: updateError } = await (db
-    .from('bookings') as any)
+  const { error: updateError } = await writeTable('bookings')
     .update({
       status: 'cancelled',
       cancelled_at: new Date().toISOString(),

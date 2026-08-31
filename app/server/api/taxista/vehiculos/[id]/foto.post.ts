@@ -56,7 +56,7 @@ export default defineEventHandler(async (event) => {
   // Cache-buster para que el navegador refresque al reemplazar la foto
   const photoUrl = `${urlData.publicUrl}?v=${Date.now()}`
 
-  const { error: updateError } = await (db.from('vehicles') as any)
+  const { error: updateError } = await writeTable('vehicles')
     .update({ photo_url: photoUrl })
     .eq('id', id)
 

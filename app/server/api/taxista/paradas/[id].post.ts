@@ -1,9 +1,8 @@
 export default defineEventHandler(async (event) => {
   const user = requireAuth(event)
   const stationId = getRouterParam(event, 'id')
-  const db = useDb()
 
-  const { error } = await (db.from('driver_stations') as any).upsert({
+  const { error } = await writeTable('driver_stations').upsert({
     driver_id: user.id,
     station_id: stationId,
     is_active: true,

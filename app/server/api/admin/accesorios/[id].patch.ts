@@ -3,7 +3,6 @@ export default defineEventHandler(async (event) => {
   const id = getRouterParam(event, 'id')
   if (!id) throw createError({ statusCode: 400, message: 'Missing id' })
   const body = await readValidated(event, editarAccesorioSchema)
-  const db = useDb()
 
   const updateData: Record<string, any> = {}
   if (body.name !== undefined) {
@@ -17,7 +16,7 @@ export default defineEventHandler(async (event) => {
 
   if (Object.keys(updateData).length === 0) return { success: true }
 
-  const { error } = await (db.from('accessories') as any)
+  const { error } = await writeTable('accessories')
     .update(updateData)
     .eq('id', id)
 

@@ -15,8 +15,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, message: 'Assignment not found' })
   }
 
-  const { error: updateError } = await (db
-    .from('bookings') as any)
+  const { error: updateError } = await writeTable('bookings')
     .update({ status: 'completed', updated_at: new Date().toISOString() })
     .eq('id', id)
 

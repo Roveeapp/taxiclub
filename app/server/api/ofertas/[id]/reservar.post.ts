@@ -48,7 +48,7 @@ export default defineEventHandler(async (event) => {
     .single()
 
   // 3. Crear la reserva confirmada
-  const { data: booking, error: insertError } = await (db.from('bookings') as any)
+  const { data: booking, error: insertError } = await writeTable('bookings')
     .insert({
       client_id: user?.id || null,
       guest_name: user ? null : body.guestName,
@@ -78,7 +78,7 @@ export default defineEventHandler(async (event) => {
   const b = booking as Record<string, any>
 
   // 4. Asignación pre-confirmada al taxista de la oferta
-  await (db.from('booking_assignments') as any).insert({
+  await writeTable('booking_assignments').insert({
     booking_id: b.id,
     driver_id: o.driver_id,
     confirmed_at: new Date().toISOString(),
@@ -87,7 +87,7 @@ export default defineEventHandler(async (event) => {
   })
 
   // 5. Marcar la oferta como reservada (solo si sigue activa — evita carreras)
-  const { data: updatedOffer } = await (db.from('return_offers') as any)
+  const { data: updatedOffer } = await writeTable('return_offers')
     .update({ status: 'booked', booked_by_id: b.id })
     .eq('id', id)
     .eq('status', 'active')
@@ -95,7 +95,7 @@ export default defineEventHandler(async (event) => {
 
   if (!updatedOffer || (updatedOffer as any[]).length === 0) {
     // Alguien la reservó justo antes: revertir
-    await (db.from('bookings') as any).update({ status: 'cancelled', cancellation_reason: 'Oferta ya reservada' }).eq('id', b.id)
+    await writeTable('bookings').update({ status: 'cancelled', cancellation_reason: 'Oferta ya reservada' }).eq('id', b.id)
     throw createError({ statusCode: 409, message: 'Otra persona acaba de reservar esta oferta' })
   }
 

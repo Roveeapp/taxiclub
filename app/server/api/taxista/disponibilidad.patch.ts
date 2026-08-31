@@ -1,16 +1,5 @@
 interface TimeSlot { from: string, to: string }
 
-interface AvailabilityBody {
-  date?: string
-  dateFrom?: string
-  dateTo?: string
-  isAvailable: boolean
-  timeSlots?: TimeSlot[]
-  // Formato antiguo (compatibilidad)
-  hourFrom?: string
-  hourTo?: string
-}
-
 const TIME_RE = /^([01]\d|2[0-3]):[0-5]\d$/
 const MAX_BATCH_DAYS = 92 // ~3 meses
 
@@ -37,7 +26,6 @@ function validateSlots(slots?: TimeSlot[]): TimeSlot[] | null {
 export default defineEventHandler(async (event) => {
   const user = requireAuth(event)
   const body = await readValidated(event, disponibilidadSchema)
-  const db = useDb()
 
   // Franjas nuevas, o migrar formato antiguo hourFrom/hourTo
   let timeSlots = validateSlots(body.timeSlots)
@@ -69,7 +57,7 @@ export default defineEventHandler(async (event) => {
       upserts.push(row(d.toISOString().split('T')[0] ?? ''))
     }
 
-    const { error } = await (db.from('driver_availability') as any).upsert(upserts, {
+    const { error } = await writeTable('driver_availability').upsert(upserts, {
       onConflict: 'driver_id,date',
     })
     if (error) throw createError({ statusCode: 500, message: error.message })
@@ -78,7 +66,7 @@ export default defineEventHandler(async (event) => {
   }
 
   if (body.date) {
-    const { error } = await (db.from('driver_availability') as any).upsert(
+    const { error } = await writeTable('driver_availability').upsert(
       row(body.date),
       { onConflict: 'driver_id,date' },
     )

@@ -4,7 +4,6 @@
 export default defineEventHandler(async (event) => {
   const user = requireAuth(event)
   const body = await readValidated(event, tarifaSchema)
-  const db = useDb()
 
   let perKm: number | null = null
   if (body?.pricePerKm !== null && body?.pricePerKm !== undefined && body?.pricePerKm !== '') {
@@ -15,7 +14,7 @@ export default defineEventHandler(async (event) => {
     perKm = Math.round(perKm * 100) / 100
   }
 
-  const { error } = await (db.from('drivers') as any)
+  const { error } = await writeTable('drivers')
     .update({ custom_price_per_km: perKm })
     .eq('id', user.id)
 

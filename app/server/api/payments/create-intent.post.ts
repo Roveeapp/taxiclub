@@ -1,22 +1,3 @@
-interface CreateIntentBody {
-  originStationId?: string
-  originAddress?: string
-  destination?: string
-  destinationStationId?: string
-  passengers?: number
-  luggageBig?: number
-  luggageHand?: number
-  accessoryIds?: string[]
-  needsChildSeat?: boolean
-  needsPetFriendly?: boolean
-  needsAccessible?: boolean
-  needsLargeVehicle?: boolean
-  /** Fecha/hora de recogida ISO — permite calcular con la tarifa del conductor que recibirá la reserva */
-  pickupAt?: string
-  /** Si es true crea un PaymentIntent real en Stripe (pantalla de pago). Si no, solo devuelve el precio. */
-  createIntent?: boolean
-}
-
 export default defineEventHandler(async (event) => {
   const body = await readValidated(event, presupuestoSchema)
 

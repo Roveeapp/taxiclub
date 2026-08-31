@@ -30,8 +30,7 @@ export default defineEventHandler(async (event) => {
   }
 
   if (Object.keys(updateData).length > 0) {
-    const { error } = await (db
-      .from('drivers') as any)
+    const { error } = await writeTable('drivers')
       .update(updateData)
       .eq('id', id)
 
@@ -72,7 +71,7 @@ export default defineEventHandler(async (event) => {
 
     // Mantener sincronizada la tabla users
     if (newEmail) {
-      const { error: userError } = await (db.from('users') as any)
+      const { error: userError } = await writeTable('users')
         .update({ email: newEmail })
         .eq('id', id)
       if (userError) {

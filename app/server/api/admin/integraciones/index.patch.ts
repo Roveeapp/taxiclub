@@ -27,7 +27,7 @@ export default defineEventHandler(async (event) => {
     const value = String(raw ?? '').trim()
     if (!value) continue // vacío = no tocar (los secretos se muestran enmascarados)
 
-    const { error } = await (db.from('integration_settings') as any).upsert(
+    const { error } = await writeTable('integration_settings').upsert(
       { key, value, updated_at: new Date().toISOString() },
       { onConflict: 'key' },
     )
