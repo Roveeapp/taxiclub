@@ -66,8 +66,8 @@ export default defineNuxtConfig({
     vapidPrivateKey: process.env.VAPID_PRIVATE_KEY ?? '',
     public: {
       appUrl: process.env.NUXT_PUBLIC_APP_URL ?? '',
-      supabaseUrl: process.env.NUXT_PUBLIC_SUPABASE_URL ?? '',
-      supabaseAnonKey: process.env.NUXT_PUBLIC_SUPABASE_ANON_KEY ?? '',
+      supabaseUrl: process.env.SUPABASE_URL ?? '',
+      supabaseAnonKey: process.env.SUPABASE_ANON_KEY ?? '',
       stripePublishableKey: process.env.STRIPE_PUBLISHABLE_KEY ?? process.env.NUXT_PUBLIC_STRIPE_PK ?? '',
       vapidPublicKey: process.env.VAPID_PUBLIC_KEY ?? '',
     },
@@ -75,6 +75,10 @@ export default defineNuxtConfig({
 
   supabase: {
     redirect: false,
+    // Fuente única: el módulo leería SUPABASE_KEY / SUPABASE_SERVICE_KEY por
+    // defecto, así que los mapeamos explícitamente para no duplicar variables.
+    url: process.env.SUPABASE_URL,
+    key: process.env.SUPABASE_ANON_KEY,
     serviceKey: process.env.SUPABASE_SERVICE_ROLE_KEY,
   },
 
