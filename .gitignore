@@ -9,6 +9,9 @@ dist/
 # Cloudflare / Wrangler
 .wrangler/
 
+# Supabase — ficheros temporales del CLI, cambian solos
+supabase/.temp/
+
 # Node
 node_modules/
 npm-debug.log*
