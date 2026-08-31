@@ -21,7 +21,7 @@
             <th class="text-right text-xs font-medium text-on-surface-variant px-6 py-3">Bruto</th>
             <th class="text-right text-xs font-medium text-on-surface-variant px-6 py-3">Comisión</th>
             <th class="text-right text-xs font-medium text-on-surface-variant px-6 py-3">Cuota</th>
-            <th class="text-right text-xs font-medium text-on-surface-variant px-6 py-3">Neto</th>
+            <th class="text-right text-xs font-medium text-on-surface-variant px-6 py-3">Saldo</th>
             <th class="text-left text-xs font-medium text-on-surface-variant px-6 py-3">Estado</th>
           </tr>
         </thead>
@@ -40,9 +40,16 @@
               {{ formatDate(payout.period_start) }} - {{ formatDate(payout.period_end) }}
             </td>
             <td class="px-6 py-4 text-sm text-right text-on-surface" data-label="Bruto">{{ Number(payout.gross_amount).toFixed(2) }} €</td>
-            <td class="px-6 py-4 text-sm text-right text-error" data-label="Comisión">-{{ Number(payout.commission_amt).toFixed(2) }} €</td>
-            <td class="px-6 py-4 text-sm text-right text-error" data-label="Cuota">-{{ Number(payout.membership_fee || 0).toFixed(2) }} €</td>
-            <td class="px-6 py-4 text-sm text-right font-semibold text-success" data-label="Neto">{{ Number(payout.final_payout).toFixed(2) }} €</td>
+            <td class="px-6 py-4 text-sm text-right text-on-surface" data-label="Comisión">{{ Number(payout.commission_amt).toFixed(2) }} €</td>
+            <td class="px-6 py-4 text-sm text-right text-on-surface" data-label="Cuota">{{ Number(payout.membership_fee || 0).toFixed(2) }} €</td>
+            <td class="px-6 py-4 text-sm text-right font-semibold" data-label="Saldo">
+              <span :class="cobramos(payout) ? 'text-warning' : 'text-success'">
+                {{ cobramos(payout) ? '+' : '−' }}{{ importe(payout).toFixed(2) }} €
+              </span>
+              <span class="block text-xs font-normal text-on-surface-variant">
+                {{ cobramos(payout) ? 'nos debe' : 'le pagamos' }}
+              </span>
+            </td>
             <td class="px-6 py-4 hidden md:table-cell" data-label="Estado">
               <span
                 class="text-xs px-2 py-1 rounded-full"
@@ -65,6 +72,23 @@
 
 <script setup lang="ts">
 definePageMeta({ layout: 'dashboard', middleware: 'auth' })
+
+/**
+ * La liquidación va en dos sentidos según quién cobre al cliente. En el modelo
+ * del MVP el taxista cobra en mano, así que el saldo es a favor del club: esta
+ * tabla mostraba `final_payout` en verde como si le pagáramos nosotros.
+ */
+type Liquidacion = Record<string, unknown>
+
+function cobramos(payout: Liquidacion): boolean {
+  return payout.direction === 'driver_pays_platform'
+}
+
+function importe(payout: Liquidacion): number {
+  const due = payout.amount_due
+  if (due !== null && due !== undefined) return Math.abs(Number(due))
+  return Math.abs(Number(payout.final_payout ?? 0))
+}
 
 const payouts = ref<any[]>([])
 const loading = ref(true)

@@ -20,33 +20,52 @@
               {{ formatDate(payout.period_start) }} — {{ formatDate(payout.period_end) }}
             </p>
             <p class="text-xs text-on-surface-variant">
-              {{ payout.stripe_payout_id ? 'Pagado' : 'Pendiente' }}
+              {{ estado(payout) }}
             </p>
           </div>
           <div class="text-right">
-            <p class="text-2xl font-semibold text-success">{{ Number(payout.final_payout).toFixed(2) }} €</p>
-            <p class="text-xs text-on-surface-variant">neto</p>
+            <p
+              class="text-2xl font-semibold"
+              :class="debe(payout) ? 'text-warning' : 'text-success'"
+            >
+              {{ importe(payout).toFixed(2) }} €
+            </p>
+            <p class="text-xs text-on-surface-variant">
+              {{ debe(payout) ? 'a pagar al club' : 'a recibir' }}
+            </p>
           </div>
         </div>
 
         <div class="grid grid-cols-4 gap-2 pt-4 border-t border-gray-100">
           <div class="text-center">
-            <p class="text-xs text-on-surface-variant">Bruto</p>
-            <p class="text-sm font-medium text-on-surface">{{ Number(payout.gross_amount).toFixed(2) }} €</p>
+            <p class="text-xs text-on-surface-variant">Viajes</p>
+            <p class="text-sm font-medium text-on-surface">
+              {{ Number(payout.gross_amount).toFixed(2) }} €
+            </p>
           </div>
           <div class="text-center">
             <p class="text-xs text-on-surface-variant">Comisión</p>
-            <p class="text-sm font-medium text-error">-{{ Number(payout.commission_amt).toFixed(2) }} €</p>
+            <p class="text-sm font-medium text-on-surface">{{ Number(payout.commission_amt).toFixed(2) }} €</p>
           </div>
           <div class="text-center">
             <p class="text-xs text-on-surface-variant">Cuota</p>
-            <p class="text-sm font-medium text-error">-{{ Number(payout.membership_fee || 0).toFixed(2) }} €</p>
+            <p class="text-sm font-medium text-on-surface">{{ Number(payout.membership_fee || 0).toFixed(2) }} €</p>
           </div>
           <div class="text-center">
-            <p class="text-xs text-on-surface-variant">Neto</p>
-            <p class="text-sm font-medium text-success">{{ Number(payout.final_payout).toFixed(2) }} €</p>
+            <p class="text-xs text-on-surface-variant">{{ debe(payout) ? 'Debes' : 'Recibes' }}</p>
+            <p
+              class="text-sm font-medium"
+              :class="debe(payout) ? 'text-warning' : 'text-success'"
+            >
+              {{ importe(payout).toFixed(2) }} €
+            </p>
           </div>
         </div>
+
+        <p v-if="debe(payout)" class="text-xs text-on-surface-variant mt-3 pt-3 border-t border-gray-100">
+          Cobraste {{ Number(payout.gross_amount).toFixed(2) }} € directamente de los clientes.
+          De ahí, {{ importe(payout).toFixed(2) }} € corresponden al club.
+        </p>
       </div>
     </div>
 
@@ -63,6 +82,34 @@ definePageMeta({ layout: 'dashboard', middleware: 'auth' })
 const user = useSupabaseUser()
 const payouts = ref<any[]>([])
 const loading = ref(true)
+
+/**
+ * La liquidación va en dos sentidos según quién cobre al cliente. Con el modelo
+ * del MVP el taxista cobra en mano y es él quien debe al club la comisión y la
+ * cuota, así que esta pantalla no puede presentar el importe como dinero a su
+ * favor: antes mostraba `final_payout` en verde, que con 450 € de bruto le
+ * enseñaba 385 € «a cobrar» cuando en realidad debía 65 €.
+ *
+ * `direction` viene de la base de datos; las filas antiguas sin ese dato se
+ * interpretan como el modelo antiguo, en el que cobraba la plataforma.
+ */
+type Liquidacion = Record<string, unknown>
+
+function debe(payout: Liquidacion): boolean {
+  return payout.direction === 'driver_pays_platform'
+}
+
+function importe(payout: Liquidacion): number {
+  const due = payout.amount_due
+  if (due !== null && due !== undefined) return Math.abs(Number(due))
+  // Compatibilidad con filas generadas antes de que existiera la dirección
+  return Math.abs(Number(payout.final_payout ?? 0))
+}
+
+function estado(payout: Liquidacion): string {
+  if (payout.paid_at || payout.stripe_payout_id) return 'Liquidada'
+  return debe(payout) ? 'Pendiente de pago' : 'Pendiente de cobro'
+}
 
 function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })

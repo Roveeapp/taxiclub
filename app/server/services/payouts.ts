@@ -34,6 +34,72 @@ export function computePayoutBreakdown(input: PayoutInput) {
   return { commissionPct, commissionAmt, net, membershipFee, finalPayout }
 }
 
+/**
+ * Dirección del saldo mensual entre el club y el taxista.
+ *
+ * El negocio funciona en dos sentidos según quién cobre al cliente:
+ *
+ *   · `platform_pays_driver` — la plataforma cobra al cliente y le transfiere al
+ *     taxista el bruto menos la comisión y la cuota.
+ *   · `driver_pays_platform` — el taxista cobra en mano y le debe al club la
+ *     comisión más la cuota. Es el modelo del MVP.
+ */
+export type SettlementDirection = 'platform_pays_driver' | 'driver_pays_platform'
+
+export interface SettlementInput extends PayoutInput {
+  /** true cuando la plataforma cobra al cliente (bandera payments_enabled). */
+  platformCollects: boolean
+}
+
+export interface Settlement {
+  gross: number
+  commissionPct: number
+  commissionAmt: number
+  membershipFee: number
+  /** Saldo con signo desde el punto de vista del taxista: positivo, a su favor. */
+  balance: number
+  direction: SettlementDirection
+  /** Importe a liquidar, siempre positivo, en la dirección indicada. */
+  amountDue: number
+  /** Solo tiene sentido cuando cobra la plataforma; se conserva por compatibilidad. */
+  net: number
+  finalPayout: number
+}
+
+/**
+ * Liquidación mensual en los dos sentidos.
+ *
+ * Se apoya en computePayoutBreakdown, que calcula comisión y cuota —incluidos
+ * los importes personalizados por conductor y las exenciones— y que no depende
+ * de la dirección: esos dos números son los mismos en ambos modelos.
+ *
+ * La dirección sale del signo del saldo, no de la bandera, y eso cubre un caso
+ * límite real: con pagos activos, un taxista con pocos viajes puede tener una
+ * cuota mayor que su neto, y entonces es él quien debe. Decidirlo por el signo
+ * evita tener que tratar ese caso aparte.
+ */
+export function computeSettlement(input: SettlementInput): Settlement {
+  const { commissionPct, commissionAmt, net, membershipFee, finalPayout } = computePayoutBreakdown(input)
+
+  const balance = input.platformCollects
+    // La plataforma tiene el dinero del cliente: le devuelve el bruto menos lo suyo
+    ? finalPayout
+    // El taxista tiene el dinero: debe la comisión y la cuota
+    : Math.round(-(commissionAmt + membershipFee) * 100) / 100
+
+  return {
+    gross: input.gross,
+    commissionPct,
+    commissionAmt,
+    membershipFee,
+    balance,
+    direction: balance >= 0 ? 'platform_pays_driver' : 'driver_pays_platform',
+    amountDue: Math.abs(balance),
+    net,
+    finalPayout,
+  }
+}
+
 export async function calculateMonthlyPayout(driverId: string, month: Date) {
   const db = useDb()
   const config = await getSystemConfig()
@@ -59,13 +125,15 @@ export async function calculateMonthlyPayout(driverId: string, month: Date) {
 
   const gross = (trips || []).reduce((sum: number, t: any) => sum + Number(t.total_price), 0)
 
-  const { commissionPct, commissionAmt, net, membershipFee, finalPayout } = computePayoutBreakdown({
+  const settlement = computeSettlement({
     gross,
     isMember: !!d.is_member,
     isExempt: !!d.is_exempt,
     customCommissionPct: d.custom_commission_pct,
     customMonthlyFee: d.custom_monthly_fee,
     config,
+    // La bandera decide quién cobra al cliente, y con ello el sentido del saldo
+    platformCollects: await arePaymentsEnabled(),
   })
 
   return {
@@ -73,11 +141,7 @@ export async function calculateMonthlyPayout(driverId: string, month: Date) {
     driverName: d.full_name,
     periodStart: monthStart,
     periodEnd: monthEnd,
-    gross,
-    commissionPct,
-    commissionAmt,
-    net,
-    membershipFee,
-    finalPayout,
+    tripCount: (trips || []).length,
+    ...settlement,
   }
 }
