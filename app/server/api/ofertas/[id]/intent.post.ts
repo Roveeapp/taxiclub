@@ -35,7 +35,7 @@ export default defineEventHandler(async (event) => {
     remainder,
   }
 
-  if (await isStripeConfigured()) {
+  if (await arePaymentsEnabled()) {
     try {
       const stripe = useStripe()
       const intent = await stripe.paymentIntents.create({

@@ -116,7 +116,7 @@ const form = reactive<Record<string, any>>({
   base_fare: 4,
   price_per_km: 1.2,
   min_fare: 10,
-  min_advance_hours: 2,
+  min_advance_hours: 12,
   max_cancel_hours_before: 24,
 })
 

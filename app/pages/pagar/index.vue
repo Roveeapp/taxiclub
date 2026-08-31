@@ -127,7 +127,7 @@
         </div>
       </div>
 
-      <div class="mb-6">
+      <div v-if="paymentsEnabled" class="mb-6">
         <p class="field-label mb-2 text-on-surface-variant">DATOS DE PAGO</p>
         <div class="bg-surface-container rounded-xl p-4 min-h-[100px]">
           <div id="payment-element" />
@@ -136,14 +136,30 @@
             <p class="text-xs text-on-surface-variant">Cargando pasarela de pago segura…</p>
           </div>
           <p v-else-if="paymentUiState === 'unavailable'" class="text-sm text-on-surface-variant text-center py-6">
-            La pasarela de pago no está disponible ahora mismo.<br>
-            <span class="text-xs">Tu reserva se creará y podrás pagar al taxista.</span>
+            No hemos podido cargar la pasarela de pago.<br>
+            <span class="text-xs">Puedes confirmar la reserva y pagar directamente al taxista.</span>
           </p>
         </div>
       </div>
 
+      <div v-else class="mb-6">
+        <p class="field-label mb-2 text-on-surface-variant">FORMA DE PAGO</p>
+        <div class="bg-surface-container rounded-xl p-4 flex items-start gap-3">
+          <Icon name="tabler:cash" size="20" class="text-brand-gold shrink-0 mt-0.5" />
+          <div>
+            <p class="text-sm text-on-surface">Pago directo al taxista</p>
+            <p class="text-xs text-on-surface-variant mt-1">
+              Le pagas al final del viaje. No se te cobra nada ahora ni se guardan datos de tarjeta.
+            </p>
+          </div>
+        </div>
+      </div>
+
       <p class="text-xs text-on-surface-variant mb-4">
-        <template v-if="offerAmounts">
+        <template v-if="!paymentsEnabled">
+          Al confirmar reservas tu taxi. El importe se lo abonas al taxista al terminar el viaje.
+        </template>
+        <template v-else-if="offerAmounts">
           Al confirmar, Stripe pre-autorizará la señal del 10%. Se cargará al completarse el viaje y el resto se lo pagas al taxista directamente.
         </template>
         <template v-else>
@@ -185,7 +201,14 @@ const route = useRoute()
 const bookingStore = useBookingStore()
 const user = useSupabaseUser()
 const runtimeConfig = useRuntimeConfig()
-const { config: systemConfig, load: loadSystemConfig } = useSystemConfig()
+/**
+ * Con los pagos desactivados esta pantalla no anuncia ninguna pasarela: explica
+ * cómo se paga de verdad. Antes decía «la pasarela de pago no está disponible
+ * ahora mismo» —que suena a avería— y justo debajo, en un texto que no era
+ * condicional, prometía que «Stripe pre-autorizará el pago». Dos mensajes
+ * contradictorios seguidos.
+ */
+const { config: systemConfig, paymentsEnabled, load: loadSystemConfig } = useSystemConfig()
 
 // Publishable key: panel admin (vía /api/config) > .env
 const stripePk = computed(() =>
@@ -290,6 +313,14 @@ function loadStripeJs(): Promise<any> {
 }
 
 async function initPayment() {
+  // Con los pagos desactivados no se carga Stripe.js ni se pide un intent:
+  // evita una petición a js.stripe.com y una llamada al servidor que no van a
+  // servir para nada.
+  if (!paymentsEnabled.value) {
+    paymentUiState.value = 'unavailable'
+    return
+  }
+
   const pk = stripePk.value
   if (!pk || !bookingData.value) {
     paymentUiState.value = 'unavailable'

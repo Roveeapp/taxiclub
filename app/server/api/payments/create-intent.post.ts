@@ -55,7 +55,7 @@ export default defineEventHandler(async (event) => {
 
   // Pre-autorización Stripe (captura manual: el cargo se hace al completar el viaje)
   if (body.createIntent) {
-    if (await isStripeConfigured()) {
+    if (await arePaymentsEnabled()) {
       try {
         const stripe = useStripe()
         const intent = await stripe.paymentIntents.create({

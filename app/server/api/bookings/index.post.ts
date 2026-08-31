@@ -79,7 +79,7 @@ export default defineEventHandler(async (event) => {
   // El pago, si viene, tiene que existir en Stripe y cuadrar con este importe
   let verifiedPaymentIntentId: string | null = null
   if (body.stripePaymentIntentId) {
-    if (await isStripeConfigured()) {
+    if (await arePaymentsEnabled()) {
       verifiedPaymentIntentId = await verifyPaymentIntentForBooking(
         String(body.stripePaymentIntentId),
         quote.totalPrice,

@@ -9,6 +9,16 @@ export default defineEventHandler(async (event) => {
   const id = getRouterParam(event, 'id')
   if (!id) throw createError({ statusCode: 400, message: 'Missing id' })
   const body = await readValidated(event, pagoReservaSchema)
+  // Con los pagos desactivados no hay nada que capturar ni devolver. Sin esto
+  // el admin recibía un error crudo de Stripe («no API key»), que no explica
+  // que es una decisión de configuración y no una avería.
+  if (!await arePaymentsEnabled()) {
+    throw createError({
+      statusCode: 409,
+      message: 'Los pagos están desactivados. Actívalos en Configuración para capturar o devolver cobros.',
+    })
+  }
+
   const action = body?.action as 'capture' | 'cancel' | 'refund' | undefined
 
   if (!action || !['capture', 'cancel', 'refund'].includes(action)) {

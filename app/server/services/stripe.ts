@@ -33,6 +33,24 @@ export async function isStripeConfigured(): Promise<boolean> {
 }
 
 /**
+ * ¿Están los pagos activados?
+ *
+ * Exige DOS cosas: que la bandera `payments_enabled` de system_config esté
+ * activa Y que haya clave de Stripe. El MVP sale con la bandera en false, así
+ * que «sin pagos» es una decisión de producto y no el efecto colateral de que
+ * falte una clave — y un despliegue que por descuido tuviera clave no empieza
+ * a cobrar sin que nadie lo haya decidido.
+ *
+ * Todas las rutas que tocan Stripe pasan por aquí.
+ */
+export async function arePaymentsEnabled(): Promise<boolean> {
+  const config = await getSystemConfig()
+  const flag = String(config.payments_enabled ?? 'false').toLowerCase()
+  if (flag !== 'true' && flag !== '1') return false
+  return isStripeConfigured()
+}
+
+/**
  * Comprueba que un PaymentIntent enviado por el cliente es real y corresponde
  * al importe de ESTA reserva.
  *
