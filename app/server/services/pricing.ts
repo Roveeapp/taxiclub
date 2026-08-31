@@ -259,3 +259,230 @@ export async function calculateDistance(
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
   return R * c
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Presupuesto de una reserva — FUENTE ÚNICA DE VERDAD
+//
+// Antes este cálculo vivía dentro de payments/create-intent.post.ts y
+// bookings/index.post.ts se limitaba a guardar el precio que le enviaba el
+// cliente, con lo que cualquiera podía reservar por el importe que quisiera.
+// Ahora las dos rutas llaman aquí y el precio del cliente se ignora.
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Suplementos por extras. Siguen siendo constantes de código: moverlos a
+ * system_config está pendiente, pero al menos ya viven en un único sitio en
+ * lugar de duplicados por ruta.
+ */
+export const BOOKING_EXTRAS = {
+  childSeat: 5,
+  petFriendly: 3,
+  largeVehicle: 8,
+} as const
+
+/** Precio de último recurso si no hay tarifa fija ni estimación por distancia. */
+export const FALLBACK_FARE = 25
+
+export interface BookingQuoteInput {
+  originStationId?: string | null
+  originAddress?: string | null
+  /** Destino en texto libre. */
+  destination?: string | null
+  destinationStationId?: string | null
+  accessoryIds?: string[]
+  needsChildSeat?: boolean
+  needsPetFriendly?: boolean
+  needsAccessible?: boolean
+  needsLargeVehicle?: boolean
+  passengers?: number
+  luggageBig?: number
+  luggageHand?: number
+  /** Permite usar la tarifa del conductor que recibiría la reserva. */
+  pickupAt?: string | null
+  /** Coordenadas ya conocidas: evita volver a geocodificar. */
+  originLat?: number | null
+  originLng?: number | null
+  destinationLat?: number | null
+  destinationLng?: number | null
+}
+
+export interface BookingQuote {
+  basePrice: number
+  extras: number
+  totalPrice: number
+  needsChildSeat: boolean
+  needsPetFriendly: boolean
+  needsAccessible: boolean
+  needsLargeVehicle: boolean
+  /** Coordenadas resueltas, para que quien llame no geocodifique otra vez. */
+  originCoords: { lat: number, lng: number } | null
+  destinationCoords: { lat: number, lng: number } | null
+  /** De dónde sale basePrice, útil para diagnóstico y para el panel. */
+  source: 'driver_fixed_route' | 'route_price' | 'distance_estimate' | 'fallback'
+}
+
+/** Tarifa fija de ruta del admin, si el origen es una parada registrada. */
+async function fixedRoutePrice(originId: string, destinationId: string): Promise<number | null> {
+  const { data: prices } = await callRpc<Array<{ base_price: number | null }>>('get_route_price', {
+    p_origin_id: originId,
+    p_destination_id: destinationId,
+  })
+  const first = prices?.[0]
+  if (first && first.base_price !== null) {
+    return Number(first.base_price)
+  }
+  return null
+}
+
+/**
+ * Calcula el precio autoritativo de una reserva. Nunca acepta un importe del
+ * cliente: todo se deriva del origen, el destino y la configuración.
+ */
+export async function quoteBooking(input: BookingQuoteInput): Promise<BookingQuote> {
+  // 1. Extras: acepta flags directos o IDs de accesorios
+  const flags = await resolveAccessoryFlags(input.accessoryIds)
+  const needsChildSeat = Boolean(input.needsChildSeat) || flags.needsChildSeat
+  const needsPetFriendly = Boolean(input.needsPetFriendly) || flags.needsPetFriendly
+  const needsAccessible = Boolean(input.needsAccessible) || flags.needsAccessible
+  const needsLargeVehicle = Boolean(input.needsLargeVehicle) || flags.needsLargeVehicle
+
+  // 2. Coordenadas (reutiliza las recibidas; geocodifica solo si faltan)
+  let destinationCoords: { lat: number, lng: number } | null =
+    input.destinationLat != null && input.destinationLng != null
+      ? { lat: input.destinationLat, lng: input.destinationLng }
+      : null
+  if (!destinationCoords && input.destination) {
+    try {
+      destinationCoords = await geocodeAddress(input.destination)
+    } catch (e) {
+      console.error('[Pricing] Geocodificación del destino falló:', (e as Error)?.message)
+    }
+  }
+
+  let originCoords: { lat: number, lng: number } | null =
+    input.originLat != null && input.originLng != null
+      ? { lat: input.originLat, lng: input.originLng }
+      : null
+  if (!originCoords && !input.originStationId && input.originAddress) {
+    try {
+      originCoords = await geocodeAddress(input.originAddress)
+    } catch (e) {
+      console.error('[Pricing] Geocodificación del origen falló:', (e as Error)?.message)
+    }
+  }
+
+  // 3. Tarifa del conductor que recibiría la reserva: su €/km y sus anillos de
+  //    precio fijo prevalecen sobre lo global.
+  let driverPerKm: number | null = null
+  let driverFixedPrice: number | null = null
+  if (input.pickupAt) {
+    try {
+      const peek = await peekAssignedDriverRate({
+        originStationId: input.originStationId ?? undefined,
+        destinationStationId: input.destinationStationId ?? undefined,
+        passengers: input.passengers,
+        luggageBig: input.luggageBig,
+        luggageHand: input.luggageHand,
+        needsChildSeat,
+        needsPetFriendly,
+        needsAccessible,
+        needsLargeVehicle,
+        pickupAt: input.pickupAt,
+        destLat: destinationCoords?.lat ?? null,
+        destLng: destinationCoords?.lng ?? null,
+        originLat: originCoords?.lat ?? null,
+        originLng: originCoords?.lng ?? null,
+      })
+      driverPerKm = peek?.perKm ?? null
+      driverFixedPrice = peek?.fixedPrice ?? null
+    } catch (e) {
+      console.error('[Pricing] peekAssignedDriverRate falló:', (e as Error)?.message)
+    }
+  }
+
+  // 4. Precio base, en orden de prioridad
+  let basePrice: number
+  let source: BookingQuote['source']
+
+  if (driverFixedPrice != null) {
+    basePrice = driverFixedPrice
+    source = 'driver_fixed_route'
+  } else {
+    const destinationKey = input.destinationStationId || input.destination || ''
+    const routePrice = input.originStationId
+      ? await fixedRoutePrice(input.originStationId, destinationKey)
+      : null
+
+    if (routePrice != null) {
+      basePrice = routePrice
+      source = 'route_price'
+    } else {
+      let estimated: number | null = null
+      try {
+        const estimate = await estimateDistancePrice(
+          input.originStationId ?? null,
+          destinationKey,
+          input.originAddress ?? undefined,
+          driverPerKm,
+        )
+        estimated = estimate?.price ?? null
+      } catch (e) {
+        console.error('[Pricing] Estimación por distancia falló:', (e as Error)?.message)
+      }
+      if (estimated != null) {
+        basePrice = estimated
+        source = 'distance_estimate'
+      } else {
+        basePrice = FALLBACK_FARE
+        source = 'fallback'
+      }
+    }
+  }
+
+  // 5. Extras y total
+  let extras = 0
+  if (needsChildSeat) extras += BOOKING_EXTRAS.childSeat
+  if (needsPetFriendly) extras += BOOKING_EXTRAS.petFriendly
+  if (needsLargeVehicle) extras += BOOKING_EXTRAS.largeVehicle
+
+  const totalPrice = Math.round((basePrice + extras) * 100) / 100
+
+  return {
+    basePrice,
+    extras,
+    totalPrice,
+    needsChildSeat,
+    needsPetFriendly,
+    needsAccessible,
+    needsLargeVehicle,
+    originCoords,
+    destinationCoords,
+    source,
+  }
+}
+
+/**
+ * Antelación mínima exigida por la configuración. Se valida en servidor: el
+ * formulario también la respeta, pero eso no impide llamar a la API a mano.
+ */
+export async function assertPickupWithinPolicy(pickupAt: unknown): Promise<Date> {
+  if (typeof pickupAt !== 'string' || !pickupAt) {
+    throw createError({ statusCode: 400, message: 'Falta la fecha y hora de recogida' })
+  }
+  const pickup = new Date(pickupAt)
+  if (Number.isNaN(pickup.getTime())) {
+    throw createError({ statusCode: 400, message: 'La fecha y hora de recogida no es válida' })
+  }
+
+  const config = await getSystemConfig()
+  const minAdvanceHours = Number(config.min_advance_hours ?? 12)
+  const earliest = new Date(Date.now() + minAdvanceHours * 60 * 60 * 1000)
+
+  if (pickup < earliest) {
+    throw createError({
+      statusCode: 400,
+      message: `Las reservas necesitan al menos ${minAdvanceHours} h de antelación. La recogida más próxima disponible es el ${earliest.toLocaleString('es-ES')}.`,
+    })
+  }
+  return pickup
+}

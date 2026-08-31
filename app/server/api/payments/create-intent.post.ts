@@ -24,74 +24,33 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, message: 'Falta el origen (originStationId u originAddress)' })
   }
 
-  // Resolver extras: acepta tanto flags directos como IDs de accesorios seleccionados
-  const flags = await resolveAccessoryFlags(body.accessoryIds)
-  const needsChildSeat = body.needsChildSeat || flags.needsChildSeat
-  const needsPetFriendly = body.needsPetFriendly || flags.needsPetFriendly
-  const needsAccessible = body.needsAccessible || flags.needsAccessible
-  const needsLargeVehicle = body.needsLargeVehicle || flags.needsLargeVehicle
-
-  // Coordenadas de destino y origen libre (para zonas del conductor)
-  let destCoords: { lat: number, lng: number } | null = null
-  if (body.destination) {
-    try {
-      destCoords = await geocodeAddress(body.destination)
-    } catch { /* opcional */ }
-  }
-  let originCoords: { lat: number, lng: number } | null = null
-  if (!body.originStationId && body.originAddress) {
-    try {
-      originCoords = await geocodeAddress(body.originAddress)
-    } catch { /* opcional */ }
-  }
-
-  // Conductor que recibiría esta reserva (peek de asignación):
-  // su €/km y sus anillos de precio fijo prevalecen sobre lo global
-  let driverPerKm: number | null = null
-  let driverFixedPrice: number | null = null
-  if (body.pickupAt) {
-    const peek = await peekAssignedDriverRate({
-      originStationId: body.originStationId,
-      destinationStationId: body.destinationStationId,
-      passengers: body.passengers,
-      luggageBig: body.luggageBig,
-      luggageHand: body.luggageHand,
-      needsChildSeat,
-      needsPetFriendly,
-      needsAccessible,
-      needsLargeVehicle,
-      pickupAt: body.pickupAt,
-      destLat: destCoords?.lat ?? null,
-      destLng: destCoords?.lng ?? null,
-      originLat: originCoords?.lat ?? null,
-      originLng: originCoords?.lng ?? null,
-    })
-    driverPerKm = peek?.perKm ?? null
-    driverFixedPrice = peek?.fixedPrice ?? null
-  }
-
-  const basePrice = driverFixedPrice ?? await calculateRoutePrice(
-    body.originStationId || null,
-    body.destinationStationId || body.destination || '',
-    body.originAddress,
-    driverPerKm,
-  )
-
-  let extras = 0
-  if (needsChildSeat) extras += 5
-  if (needsPetFriendly) extras += 3
-  if (needsLargeVehicle) extras += 8
-
-  const totalPrice = Math.round((basePrice + extras) * 100) / 100
+  // El cálculo vive en services/pricing.ts, compartido con la creación de la
+  // reserva, para que el presupuesto que ve el cliente y el precio que se
+  // guarda no puedan divergir.
+  const quote = await quoteBooking({
+    originStationId: body.originStationId,
+    originAddress: body.originAddress,
+    destination: body.destination,
+    destinationStationId: body.destinationStationId,
+    accessoryIds: body.accessoryIds,
+    needsChildSeat: body.needsChildSeat,
+    needsPetFriendly: body.needsPetFriendly,
+    needsAccessible: body.needsAccessible,
+    needsLargeVehicle: body.needsLargeVehicle,
+    passengers: body.passengers,
+    luggageBig: body.luggageBig,
+    luggageHand: body.luggageHand,
+    pickupAt: body.pickupAt,
+  })
 
   const result: Record<string, unknown> = {
-    basePrice,
-    extras,
-    totalPrice,
-    needsChildSeat,
-    needsPetFriendly,
-    needsAccessible,
-    needsLargeVehicle,
+    basePrice: quote.basePrice,
+    extras: quote.extras,
+    totalPrice: quote.totalPrice,
+    needsChildSeat: quote.needsChildSeat,
+    needsPetFriendly: quote.needsPetFriendly,
+    needsAccessible: quote.needsAccessible,
+    needsLargeVehicle: quote.needsLargeVehicle,
   }
 
   // Pre-autorización Stripe (captura manual: el cargo se hace al completar el viaje)
@@ -100,7 +59,7 @@ export default defineEventHandler(async (event) => {
       try {
         const stripe = useStripe()
         const intent = await stripe.paymentIntents.create({
-          amount: Math.round(totalPrice * 100),
+          amount: Math.round(quote.totalPrice * 100),
           currency: 'eur',
           capture_method: 'manual',
           automatic_payment_methods: { enabled: true, allow_redirects: 'never' },
@@ -120,34 +79,3 @@ export default defineEventHandler(async (event) => {
 
   return result
 })
-
-async function calculateRoutePrice(
-  originId: string | null,
-  destinationId: string,
-  originAddress?: string,
-  driverPerKm?: number | null,
-): Promise<number> {
-  const db = useDb()
-
-  // 1. Tarifa fija de ruta configurada por el admin (si el origen es una parada)
-  if (originId) {
-    const { data: prices } = await (db.rpc as any)('get_route_price', {
-      p_origin_id: originId,
-      p_destination_id: destinationId,
-    })
-    if (prices && prices.length > 0 && prices[0].base_price !== null) {
-      return Number(prices[0].base_price)
-    }
-  }
-
-  // 2. Estimación por distancia (€/km del conductor asignado > global)
-  try {
-    const estimate = await estimateDistancePrice(originId, destinationId, originAddress, driverPerKm)
-    if (estimate) return estimate.price
-  } catch (e) {
-    console.error('[Pricing] Error estimando por distancia:', e)
-  }
-
-  // 3. Último recurso
-  return 25
-}

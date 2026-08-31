@@ -31,3 +31,48 @@ export function useDb(): SupabaseClient<Database> {
 export function useSql(): SupabaseClient<Database> {
   return useDb()
 }
+
+/**
+ * Llama a una función RPC de Postgres con un tipo de retorno declarado.
+ *
+ * El cliente tipado de Supabase no conoce las funciones propias del proyecto,
+ * y el atajo habitual en este código es `(db.rpc as any)(...)`, que aparece 124
+ * veces en el servidor y anula el esquema de types/database.ts. Este ayudante
+ * concentra el único cast necesario en un sitio y deja que quien llama declare
+ * la forma que espera.
+ */
+export async function callRpc<T>(
+  name: string,
+  args: Record<string, unknown> = {},
+): Promise<{ data: T | null, error: { message: string } | null }> {
+  const db = useDb()
+  const rpc = db.rpc as unknown as (
+    fn: string,
+    params: Record<string, unknown>,
+  ) => Promise<{ data: T | null, error: { message: string } | null }>
+  return rpc(name, args)
+}
+
+type QueryResult<T> = Promise<{ data: T | null, error: { message: string } | null }>
+
+/**
+ * Acceso de escritura a una tabla con una forma mínima declarada.
+ *
+ * Mismo motivo que callRpc: el patrón `(db.from('x') as Record<string, any>)`
+ * está repetido por todo el servidor y desactiva el esquema tipado. Aquí el
+ * cast vive en un solo sitio y quien llama declara el tipo de fila que espera.
+ *
+ * Es un paso intermedio: lo correcto a medio plazo es regenerar
+ * types/database.ts y usar el cliente tipado directamente.
+ */
+export function writeTable(name: string) {
+  const db = useDb()
+  return db.from(name as never) as unknown as {
+    insert: (row: Record<string, unknown> | Array<Record<string, unknown>>) => {
+      select: (columns?: string) => { single: <T = unknown>() => QueryResult<T> }
+    } & QueryResult<null>
+    update: (row: Record<string, unknown>) => {
+      eq: (column: string, value: unknown) => QueryResult<null>
+    }
+  }
+}
