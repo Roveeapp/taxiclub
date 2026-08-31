@@ -364,3 +364,22 @@ export const configuracionSchema = z
 export const integracionesSchema = z
   .record(z.string().max(60), z.union([z.string().max(500), z.null()]))
   .refine(d => Object.keys(d).length > 0, { message: 'no hay nada que guardar' })
+
+// ── Cobros de liquidaciones ──────────────────────────────────────────────────
+
+/**
+ * Un movimiento del libro de cobros. El importe puede ser negativo: así una
+ * corrección o una devolución se registra con un asiento nuevo en lugar de
+ * borrando historial.
+ */
+export const registrarCobroSchema = z.object({
+  amount: z.number()
+    .refine(v => v !== 0, { message: 'no puede ser cero' })
+    .refine(v => Math.abs(v) <= 100_000, { message: 'importe fuera de rango' }),
+  method: z.enum(['transfer', 'stripe', 'cash', 'adjustment'], {
+    errorMap: () => ({ message: 'el método tiene que ser transfer, stripe, cash o adjustment' }),
+  }),
+  reference: z.string().trim().max(120).nullish(),
+  notes: z.string().trim().max(500).nullish(),
+  settledAt: isoDate.optional(),
+})

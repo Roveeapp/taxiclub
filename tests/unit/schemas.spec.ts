@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import {
   crearReservaSchema, registroSchema, tarifaSchema, zonaSchema,
-  crearOfertaSchema, configuracionSchema, errorClienteSchema,
+  crearOfertaSchema, configuracionSchema, errorClienteSchema, registrarCobroSchema,
 } from '../../app/server/utils/schemas'
 
 const EN_3_DIAS = new Date(Date.now() + 3 * 86400_000).toISOString()
@@ -125,5 +125,34 @@ describe('errorClienteSchema', () => {
   it('corta los mensajes desmedidos en lugar de registrarlos', () => {
     expect(errorClienteSchema.safeParse({ message: 'a'.repeat(6000) }).success).toBe(false)
     expect(errorClienteSchema.safeParse({ message: 'fallo al pagar' }).success).toBe(true)
+  })
+})
+
+describe('registrarCobroSchema', () => {
+  it('admite los cuatro métodos de cobro', () => {
+    for (const method of ['transfer', 'stripe', 'cash', 'adjustment']) {
+      expect(registrarCobroSchema.safeParse({ amount: 65, method }).success, method).toBe(true)
+    }
+  })
+
+  it('rechaza métodos inventados', () => {
+    expect(registrarCobroSchema.safeParse({ amount: 65, method: 'bizum' }).success).toBe(false)
+  })
+
+  it('acepta importes negativos: una devolución es un asiento, no un borrado', () => {
+    expect(registrarCobroSchema.safeParse({ amount: -25, method: 'adjustment' }).success).toBe(true)
+  })
+
+  it('no admite un importe de cero, que no sería un movimiento', () => {
+    expect(registrarCobroSchema.safeParse({ amount: 0, method: 'transfer' }).success).toBe(false)
+  })
+
+  it('corta importes desmedidos', () => {
+    expect(registrarCobroSchema.safeParse({ amount: 999_999, method: 'transfer' }).success).toBe(false)
+  })
+
+  it('la referencia y las notas son opcionales pero acotadas', () => {
+    expect(registrarCobroSchema.safeParse({ amount: 65, method: 'transfer', reference: 'TRF-001' }).success).toBe(true)
+    expect(registrarCobroSchema.safeParse({ amount: 65, method: 'transfer', reference: 'x'.repeat(200) }).success).toBe(false)
   })
 })
