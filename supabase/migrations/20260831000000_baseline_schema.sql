@@ -24,21 +24,13 @@
 --       registrarse; sin él, el alta no crea la fila en public.users)
 --     · políticas driver_docs_admin y driver_docs_own sobre storage.objects
 --
---   Queda un hueco NO cubierto por ninguna migración, a recrear a mano si
---   algún día se reconstruye el proyecto desde cero:
+--   Los dos huecos que quedaban se cubrieron después:
+--     · event trigger ensure_rls → 20260831121034
+--     · jobs de pg_cron          → 20260831122637 (y de paso dejaron de llevar
+--       la service_role key hardcodeada; ahora la leen de Vault)
 --
---     1. Event trigger `ensure_rls`, que ejecuta rls_auto_enable() y activa RLS
---        automáticamente en cada tabla nueva de public. La función sí está en
---        este dump; el event trigger que la engancha, no (son de ámbito de
---        clúster, no de esquema). Es la red de seguridad que evita repetir el
---        agujero original.
---          CREATE EVENT TRIGGER ensure_rls ON ddl_command_end
---            WHEN TAG IN ('CREATE TABLE','CREATE TABLE AS','SELECT INTO')
---            EXECUTE FUNCTION public.rls_auto_enable();
---
---     2. Los jobs de pg_cron (ver _archive/014_cron_jobs.sql). La extensión se
---        instala en este dump, pero las filas de cron.job son datos y no se
---        volcan.
+--   Con eso, `supabase/migrations/` describe la BD por completo salvo lo que
+--   gestiona Supabase (esquemas auth, storage y realtime).
 --
 -- SOBRE FUTUROS `supabase db pull`
 --   Van a mostrar siempre el mismo ruido, que NO es drift real:
