@@ -133,7 +133,27 @@ export default defineEventHandler(async (event) => {
   // y el error original se perdía sin registrarse.
   const bookingId = booking.id
   try {
-    const driver = await assignDriver(body)
+    // Se le pasan los valores ya validados y las coordenadas que resolvió el
+    // presupuesto, no el cuerpo crudo. Antes iba `body` tal cual: si el cliente
+    // no enviaba `passengers`, la clave viajaba como undefined, Supabase la
+    // omitía y PostgREST no encontraba la firma del RPC. El error se
+    // enmascaraba como "no hay conductores disponibles".
+    const driver = await assignDriver({
+      originStationId: body.originStationId || null,
+      destinationStationId: body.destinationStationId || null,
+      passengers,
+      luggageBig,
+      luggageHand,
+      needsChildSeat: quote.needsChildSeat,
+      needsPetFriendly: quote.needsPetFriendly,
+      needsAccessible: quote.needsAccessible,
+      needsLargeVehicle: quote.needsLargeVehicle,
+      pickupAt: body.pickupAt,
+      originLat: quote.originCoords?.lat ?? null,
+      originLng: quote.originCoords?.lng ?? null,
+      destinationLat: quote.destinationCoords?.lat ?? null,
+      destinationLng: quote.destinationCoords?.lng ?? null,
+    })
     if (!driver) {
       await notifyAdminNoDrivers(bookingId)
     } else {
@@ -144,7 +164,13 @@ export default defineEventHandler(async (event) => {
       await writeTable('drivers')
         .update({ last_assigned_at: new Date().toISOString() })
         .eq('id', driver.id)
-      await notifyDriver(driver.id, booking)
+
+      // La notificación es best-effort, igual que el correo al cliente: si
+      // Resend o el push fallan, la reserva YA está asignada, y avisar al
+      // admin de "no hay conductores" sería directamente falso.
+      notifyDriver(driver.id, booking).catch((e: unknown) => {
+        console.error(`[Notify] No se pudo avisar al conductor ${driver.id} de la reserva ${bookingId}:`, e)
+      })
     }
   } catch (e) {
     console.error(`[Booking] Fallo asignando la reserva ${bookingId}:`, e)

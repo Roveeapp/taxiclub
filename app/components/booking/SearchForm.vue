@@ -15,6 +15,8 @@
           class="w-full"
           variant="filled"
           append-to="self"
+          :delay="400"
+          :min-length="3"
           @complete="onOriginSearch"
           @item-select="selectOrigin"
         >
@@ -49,6 +51,8 @@
           class="w-full"
           variant="filled"
           append-to="self"
+          :delay="400"
+          :min-length="3"
           @complete="onDestSearch"
           @item-select="selectDest"
           @focus="destFocused = true"

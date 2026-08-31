@@ -64,6 +64,10 @@ export default defineNuxtConfig({
     twilioPhoneNumber: process.env.TWILIO_PHONE_NUMBER ?? '',
     nominatimUrl: process.env.NOMINATIM_URL ?? 'https://nominatim.openstreetmap.org',
     vapidPrivateKey: process.env.VAPID_PRIVATE_KEY ?? '',
+    // Secreto propio para firmar los enlaces de reserva de invitados.
+    // Antes se reutilizaba la service role key, mezclando el secreto de
+    // firma con la credencial que salta el RLS.
+    bookingTokenSecret: process.env.BOOKING_TOKEN_SECRET ?? '',
     public: {
       appUrl: process.env.NUXT_PUBLIC_APP_URL ?? '',
       supabaseUrl: process.env.SUPABASE_URL ?? '',

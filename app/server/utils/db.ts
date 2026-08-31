@@ -45,12 +45,16 @@ export async function callRpc<T>(
   name: string,
   args: Record<string, unknown> = {},
 ): Promise<{ data: T | null, error: { message: string } | null }> {
-  const db = useDb()
-  const rpc = db.rpc as unknown as (
-    fn: string,
-    params: Record<string, unknown>,
-  ) => Promise<{ data: T | null, error: { message: string } | null }>
-  return rpc(name, args)
+  // Se invoca como método sobre el cliente, no desprendiendo db.rpc a una
+  // variable: `rpc` necesita su `this`, y separarlo rompe con
+  // "Cannot read properties of undefined (reading 'rest')".
+  const db = useDb() as unknown as {
+    rpc: (
+      fn: string,
+      params: Record<string, unknown>,
+    ) => Promise<{ data: T | null, error: { message: string } | null }>
+  }
+  return db.rpc(name, args)
 }
 
 type QueryResult<T> = Promise<{ data: T | null, error: { message: string } | null }>

@@ -32,17 +32,21 @@ export interface AssignDriverInput {
 export async function assignDriver(
   bookingInput: AssignDriverInput,
 ): Promise<AssignmentCandidate | null> {
+  // Todos los parámetros van siempre con un valor concreto: si alguno viaja
+  // como undefined, Supabase lo omite del JSON y PostgREST no encuentra la
+  // firma de la función, con lo que la asignación falla por una razón que no
+  // tiene nada que ver con la disponibilidad de conductores.
   const { data: result, error } = await callRpc<AssignmentCandidate[]>('get_driver_for_assignment', {
-    p_origin_station_id: bookingInput.originStationId,
+    p_origin_station_id: bookingInput.originStationId ?? null,
     p_destination_station_id: bookingInput.destinationStationId || null,
-    p_passengers: bookingInput.passengers,
-    p_luggage_big: bookingInput.luggageBig,
-    p_luggage_hand: bookingInput.luggageHand,
+    p_passengers: bookingInput.passengers ?? 1,
+    p_luggage_big: bookingInput.luggageBig ?? 0,
+    p_luggage_hand: bookingInput.luggageHand ?? 0,
     p_needs_child_seat: bookingInput.needsChildSeat || false,
     p_needs_pet_friendly: bookingInput.needsPetFriendly || false,
     p_needs_accessible: bookingInput.needsAccessible || false,
     p_needs_large_vehicle: bookingInput.needsLargeVehicle || false,
-    p_pickup_at: bookingInput.pickupAt,
+    p_pickup_at: bookingInput.pickupAt ?? null,
     p_dest_lat: bookingInput.destinationLat ?? null,
     p_dest_lng: bookingInput.destinationLng ?? null,
     p_origin_lat: bookingInput.originLat ?? null,
