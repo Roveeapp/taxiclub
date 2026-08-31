@@ -108,7 +108,15 @@ async function handleSearch(data: any) {
       body: {
         originStationId: data.originStationId || undefined,
         originAddress: data.originAddress || undefined,
+        originLat: data.originLat ?? undefined,
+        originLng: data.originLng ?? undefined,
         destination: data.destination,
+        // La parada y las coordenadas que el cliente eligió en el buscador. El
+        // presupuesto tiene que cotizar con lo mismo que va a guardar la
+        // reserva, o enseña un importe y cobra otro.
+        destinationStationId: data.destinationStationId || undefined,
+        destinationLat: data.destinationLat ?? undefined,
+        destinationLng: data.destinationLng ?? undefined,
         passengers: data.passengers,
         luggageBig: data.luggageBig,
         luggageHand: data.luggageHand ?? 0,

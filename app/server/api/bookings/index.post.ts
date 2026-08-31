@@ -7,8 +7,6 @@ export default defineEventHandler(async (event) => {
   const body = await readValidated(event, crearReservaSchema)
   const user = event.context.user
 
-  const db = useDb()
-
   if (!body.originStationId && !body.originAddress) {
     throw createError({ statusCode: 400, message: 'Falta el origen de la reserva' })
   }
@@ -30,20 +28,23 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, message: 'Falta el nombre de contacto' })
   }
 
-  // Detectar si el destino en texto libre es en realidad una parada
-  // registrada (habilita tarifas fijas y reglas de asignación por parada)
-  if (!body.destinationStationId && body.destinationAddress) {
-    try {
-      const { data: allStations } = await db.from('stations').select('id, name').eq('is_active', true)
-      const norm = (s: string) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
-      const dest = norm(String(body.destinationAddress))
-      const match = ((allStations || []) as Array<{ id: string, name: string }>)
-        .find(s => dest.includes(norm(s.name)))
-      if (match) body.destinationStationId = match.id
-    } catch (e) {
-      console.error('[Booking] No se pudo cotejar el destino con las paradas:', (e as Error)?.message)
-    }
+  // ¿El destino es una parada registrada? La respuesta activa la tarifa fija
+  // del conductor, que en pricing.ts gana a cualquier otro cálculo, así que se
+  // decide con reglas comprobables y no con un `includes` sobre el texto:
+  // «Calle Uría, Pravia» contiene «pravia» y acababa cobrando la tarifa fija de
+  // la parada. Ver utils/stationMatch.ts.
+  const paradaDestino = await resolveDestinationStation({
+    destinationStationId: body.destinationStationId,
+    destinationAddress: body.destinationAddress,
+    destinationLat: body.destinationLat,
+    destinationLng: body.destinationLng,
+  })
+  // Si el cliente declaró una parada que no existe o está de baja, no se
+  // acepta en silencio: el precio de la reserva depende de ese dato.
+  if (body.destinationStationId && !paradaDestino.stationId) {
+    throw createError({ statusCode: 400, message: 'La parada de destino indicada no existe o no está activa' })
   }
+  const destinationStationId = paradaDestino.stationId
 
   // Precio y extras: los calcula el servidor. Lo que envíe el cliente se
   // ignora — antes se guardaba tal cual y permitía reservar por un céntimo.
@@ -51,7 +52,7 @@ export default defineEventHandler(async (event) => {
     originStationId: body.originStationId,
     originAddress: body.originAddress,
     destination: body.destinationAddress,
-    destinationStationId: body.destinationStationId,
+    destinationStationId,
     accessoryIds: body.accessoryIds,
     needsChildSeat: body.needsChildSeat,
     needsPetFriendly: body.needsPetFriendly,
@@ -102,7 +103,7 @@ export default defineEventHandler(async (event) => {
       destination_address: body.destinationAddress,
       destination_lat: quote.destinationCoords?.lat ?? null,
       destination_lng: quote.destinationCoords?.lng ?? null,
-      destination_station_id: body.destinationStationId || null,
+      destination_station_id: destinationStationId,
       pickup_at: body.pickupAt,
       passengers,
       luggage_big: luggageBig,
@@ -140,7 +141,7 @@ export default defineEventHandler(async (event) => {
     // enmascaraba como "no hay conductores disponibles".
     const driver = await assignDriver({
       originStationId: body.originStationId || null,
-      destinationStationId: body.destinationStationId || null,
+      destinationStationId,
       passengers,
       luggageBig,
       luggageHand,

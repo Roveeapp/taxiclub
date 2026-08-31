@@ -5,6 +5,18 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, message: 'Falta el origen (originStationId u originAddress)' })
   }
 
+  // La parada de destino se resuelve con la MISMA regla que en la reserva.
+  // Antes solo la reserva cotejaba el destino con las paradas, así que el
+  // presupuesto cotizaba por kilómetros y la reserva podía guardar la tarifa
+  // fija de una parada: dos importes distintos para el mismo viaje, y el
+  // cliente veía el primero y pagaba el segundo.
+  const { stationId: destinationStationId } = await resolveDestinationStation({
+    destinationStationId: body.destinationStationId,
+    destinationAddress: body.destination,
+    destinationLat: body.destinationLat,
+    destinationLng: body.destinationLng,
+  })
+
   // El cálculo vive en services/pricing.ts, compartido con la creación de la
   // reserva, para que el presupuesto que ve el cliente y el precio que se
   // guarda no puedan divergir.
@@ -12,7 +24,7 @@ export default defineEventHandler(async (event) => {
     originStationId: body.originStationId,
     originAddress: body.originAddress,
     destination: body.destination,
-    destinationStationId: body.destinationStationId,
+    destinationStationId,
     accessoryIds: body.accessoryIds,
     needsChildSeat: body.needsChildSeat,
     needsPetFriendly: body.needsPetFriendly,
@@ -22,6 +34,10 @@ export default defineEventHandler(async (event) => {
     luggageBig: body.luggageBig,
     luggageHand: body.luggageHand,
     pickupAt: body.pickupAt,
+    originLat: body.originLat ?? null,
+    originLng: body.originLng ?? null,
+    destinationLat: body.destinationLat ?? null,
+    destinationLng: body.destinationLng ?? null,
   })
 
   const result: Record<string, unknown> = {
@@ -46,7 +62,7 @@ export default defineEventHandler(async (event) => {
           automatic_payment_methods: { enabled: true, allow_redirects: 'never' },
           metadata: {
             origin: body.originStationId || body.originAddress || '',
-            destination: body.destination || body.destinationStationId || '',
+            destination: body.destination || destinationStationId || '',
           },
         })
         result.clientSecret = intent.client_secret

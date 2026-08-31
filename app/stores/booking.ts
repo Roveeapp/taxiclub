@@ -3,7 +3,15 @@ import { defineStore } from 'pinia'
 interface BookingFormData {
   originStationId?: string
   originAddress?: string
+  originLat?: number | null
+  originLng?: number | null
   destination: string
+  // La parada de destino y sus coordenadas las elige el cliente en el buscador.
+  // Antes no viajaban hasta aquí, y el servidor tenía que adivinar la parada a
+  // partir del texto libre, con la que activa la tarifa fija del conductor.
+  destinationStationId?: string
+  destinationLat?: number | null
+  destinationLng?: number | null
   date: string
   time: string
   passengers: number

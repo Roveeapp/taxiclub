@@ -8,6 +8,20 @@ export async function getSystemConfig(): Promise<Record<string, unknown>> {
   return config
 }
 
+/**
+ * Traduce una dirección a coordenadas con Nominatim.
+ *
+ * El `catch` registraba el error, pero el caso frecuente NO es una excepción:
+ * es que Nominatim conteste `[]`. Eso devolvía `null` sin dejar rastro, y el
+ * presupuesto se caía al precio de último recurso sin que nadie lo supiera.
+ * Comprobado contra el servicio real: «Estación de RENFE, Oviedo» y «Calle
+ * Uría, Pravia» devuelven las dos una lista vacía, y ese viaje se cotizaba a
+ * 25 € cuando el conductor tiene una tarifa fija de 45 € para él.
+ *
+ * Los dos desenlaces se distinguen ahora en el registro, porque piden cosas
+ * distintas: «sin resultados» es una dirección que el cliente escribió y el
+ * mapa no conoce; «falló la petición» es un problema de servicio o de cuota.
+ */
 export async function geocodeAddress(address: string): Promise<{ lat: number; lng: number } | null> {
   const config = useRuntimeConfig()
   const nominatimUrl = config.nominatimUrl || 'https://nominatim.openstreetmap.org'
@@ -27,14 +41,19 @@ export async function geocodeAddress(address: string): Promise<{ lat: number; ln
 
     const first = response?.[0]
     if (first) {
-      return {
-        lat: parseFloat(first.lat),
-        lng: parseFloat(first.lon),
-      }
+      const lat = parseFloat(first.lat)
+      const lng = parseFloat(first.lon)
+      if (Number.isFinite(lat) && Number.isFinite(lng)) return { lat, lng }
+      console.error(`[Geocoding] Nominatim devolvió coordenadas ilegibles para «${address}»:`, first)
+      return null
     }
+    console.warn(
+      `[Geocoding] Sin resultados para «${address}». El precio se calculará sin `
+      + 'distancia, y la asignación por zonas del conductor no podrá aplicarse.',
+    )
     return null
   } catch (e) {
-    console.error('Geocoding error:', e)
+    console.error(`[Geocoding] Falló la consulta a Nominatim para «${address}»:`, (e as Error)?.message)
     return null
   }
 }
@@ -65,19 +84,31 @@ export async function getRouteDistanceKm(
  * Precio estimado por distancia cuando no existe tarifa fija de ruta.
  * Usa base_fare + km × price_per_km de system_config.
  * Devuelve null si no se puede geocodificar el destino.
+ *
+ * Acepta las coordenadas ya resueltas porque quien llama —`quoteBooking`— las
+ * ha calculado un momento antes. Sin eso, cada presupuesto geocodificaba la
+ * misma dirección DOS veces: se veía en el registro, dos avisos idénticos
+ * seguidos. Nominatim admite una petición por segundo, así que duplicarlas
+ * acerca al límite, y pasado el límite el desenlace es el precio de último
+ * recurso.
  */
 export async function estimateDistancePrice(
   originStationId: string | null,
   destinationText: string,
   originAddress?: string,
   perKmOverride?: number | null,
+  coordsConocidas?: {
+    origin?: { lat: number, lng: number } | null
+    destination?: { lat: number, lng: number } | null
+    /** El destino ya se intentó geocodificar y no salió: no repetir la consulta. */
+    noReintentarDestino?: boolean
+  },
 ): Promise<{ price: number, distanceKm: number } | null> {
-  if (!destinationText) return null
   const db = useDb()
 
-  // Origen: coordenadas de la parada, o geocodificación del texto libre
-  let origin: { lat: number, lng: number } | null = null
-  if (originStationId) {
+  // Origen: las coordenadas ya conocidas, la parada, o el texto libre
+  let origin: { lat: number, lng: number } | null = coordsConocidas?.origin ?? null
+  if (!origin && originStationId) {
     const { data: station } = await db
       .from('stations')
       .select('lat, lng')
@@ -91,7 +122,11 @@ export async function estimateDistancePrice(
   }
   if (!origin) return null
 
-  const dest = await geocodeAddress(destinationText)
+  let dest = coordsConocidas?.destination ?? null
+  if (!dest) {
+    if (coordsConocidas?.noReintentarDestino || !destinationText) return null
+    dest = await geocodeAddress(destinationText)
+  }
   if (!dest) return null
 
   const distanceKm = await getRouteDistanceKm(origin.lat, origin.lng, dest.lat, dest.lng)
@@ -367,11 +402,20 @@ export async function quoteBooking(input: BookingQuoteInput): Promise<BookingQuo
   const needsLargeVehicle = Boolean(input.needsLargeVehicle) || flags.needsLargeVehicle
 
   // 2. Coordenadas (reutiliza las recibidas; geocodifica solo si faltan)
+  //
+  // Se guarda si ya se INTENTÓ geocodificar, no solo el resultado: cuando el
+  // intento falla, `destinationCoords` queda a null y el cálculo por distancia
+  // volvía a geocodificar la misma dirección un instante después. Se veía en el
+  // registro en cuanto se dejó de tragar el fallo: dos avisos idénticos
+  // seguidos, y con Nominatim limitado a una petición por segundo, la mitad de
+  // las peticiones gastadas en repetir algo que ya se sabía que no resuelve.
   let destinationCoords: { lat: number, lng: number } | null =
     input.destinationLat != null && input.destinationLng != null
       ? { lat: input.destinationLat, lng: input.destinationLng }
       : null
+  let destinoYaIntentado = destinationCoords != null
   if (!destinationCoords && input.destination) {
+    destinoYaIntentado = true
     try {
       destinationCoords = await geocodeAddress(input.destination)
     } catch (e) {
@@ -444,6 +488,13 @@ export async function quoteBooking(input: BookingQuoteInput): Promise<BookingQuo
           destinationKey,
           input.originAddress ?? undefined,
           driverPerKm,
+          // Las coordenadas resueltas en el paso 2, para no geocodificar dos
+          // veces la misma dirección dentro de un mismo presupuesto
+          {
+            origin: originCoords,
+            destination: destinationCoords,
+            noReintentarDestino: destinoYaIntentado,
+          },
         )
         estimated = estimate?.price ?? null
       } catch (e) {
@@ -455,6 +506,14 @@ export async function quoteBooking(input: BookingQuoteInput): Promise<BookingQuo
       } else {
         basePrice = numeroDeConfig(config, 'fallback_fare', FALLBACK_FARE_DEFECTO)
         source = 'fallback'
+        // Este es el precio de «no sé cuánto cuesta este viaje», y es el que se
+        // cobra. Merece un aviso con las direcciones: era el desenlace real de
+        // cualquier destino que Nominatim no reconociera, y pasaba callado.
+        console.warn(
+          `[Pricing] Sin distancia ni tarifa: se cobra el precio de último recurso `
+          + `(${basePrice} €). origen=«${input.originStationId || input.originAddress || '?'}» `
+          + `destino=«${input.destination || input.destinationStationId || '?'}»`,
+        )
       }
     }
   }

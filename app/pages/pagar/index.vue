@@ -512,6 +512,11 @@ async function handleConfirm() {
       body: {
         ...bookingData.value,
         destinationAddress: bookingData.value.destination,
+        // Van ya en el spread, pero se dejan explícitas porque de ellas depende
+        // que la reserva se ate a una parada y cambie de precio.
+        destinationStationId: bookingData.value.destinationStationId || undefined,
+        destinationLat: bookingData.value.destinationLat ?? undefined,
+        destinationLng: bookingData.value.destinationLng ?? undefined,
         pickupAt,
         basePrice: priceData.value.basePrice,
         totalPrice: priceData.value.totalPrice,

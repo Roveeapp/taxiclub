@@ -122,8 +122,14 @@ export const crearReservaSchema = z.object({
 export const presupuestoSchema = z.object({
   originStationId: uuid.optional(),
   originAddress: z.string().trim().max(300).optional(),
+  originLat: latitud.nullish(),
+  originLng: longitud.nullish(),
   destination: z.string().trim().max(300).optional(),
   destinationStationId: uuid.optional(),
+  // El buscador ya tiene estas coordenadas del autocompletado y las tiraba.
+  // Son la señal fiable para saber si el destino es una parada registrada.
+  destinationLat: latitud.nullish(),
+  destinationLng: longitud.nullish(),
   passengers: z.number().int().min(1).max(8).optional(),
   luggageBig: z.number().int().min(0).max(20).optional(),
   luggageHand: z.number().int().min(0).max(20).optional(),
