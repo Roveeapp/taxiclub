@@ -2,7 +2,7 @@
 -- 034_harden_security_definer_functions.sql
 --
 -- APLICADA a hgnsvqhizbdwawkgjciw el 2026-08-31
--- (registrada como version 20260831112337 / harden_security_definer_functions).
+-- (registrada como version 20260831112130 / harden_security_definer_functions).
 --
 -- Cierra los avisos anon_security_definer_function_executable y
 -- function_search_path_mutable sobre las 5 funciones SECURITY DEFINER, que

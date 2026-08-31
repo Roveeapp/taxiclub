@@ -1,0 +1,24 @@
+-- ============================================================================
+-- CORRIGE una regresión introducida por 20260831112130.
+--
+-- Esa migración revocó EXECUTE sobre public.is_admin() a PUBLIC, anon y
+-- authenticated dando por hecho que ninguna política la usaba. La comprobación
+-- fue incompleta: se filtró pg_policies por schemaname='public', y la política
+-- que la usa vive en el esquema storage:
+--
+--   storage.objects / driver_docs_admin:
+--     (bucket_id = 'driver-docs' AND is_admin())
+--
+-- Las expresiones de una política RLS se evalúan con los privilegios del rol
+-- que consulta, así que sin EXECUTE cualquier SELECT sobre storage.objects
+-- fallaba con «42501 permission denied for function is_admin». Y como la
+-- política cubre toda la tabla (el filtro por bucket va dentro de la
+-- expresión), rompía el acceso a storage entero, no solo a driver-docs.
+--
+-- Devolver el EXECUTE es seguro: is_admin() solo lee el JWT del propio
+-- llamante y devuelve un booleano, no expone datos. Se mantiene el search_path
+-- fijado, que era el vector de escalada real, y siguen revocadas las otras
+-- cuatro funciones SECURITY DEFINER.
+-- ============================================================================
+
+GRANT EXECUTE ON FUNCTION public.is_admin() TO anon, authenticated;
