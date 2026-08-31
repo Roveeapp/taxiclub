@@ -352,7 +352,8 @@ function selectDest(event: { value: { id: string; label: string; description: st
 
 function toggleAccessory(id: string) {
   const next = new Set(selectedAccessories.value)
-  next.has(id) ? next.delete(id) : next.add(id)
+  if (next.has(id)) next.delete(id)
+  else next.add(id)
   selectedAccessories.value = next
 }
 

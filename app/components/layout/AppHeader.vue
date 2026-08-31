@@ -1,5 +1,5 @@
 <template>
-  <header class="bg-background w-full top-0 sticky z-50 border-b border-white/5">
+  <header class="bg-background w-full top-0 sticky z-50 border-b border-white/5 pt-safe">
     <div class="flex justify-between items-center px-md py-sm w-full max-w-mobile mx-auto">
       <Button
         icon="tabler:menu-2"

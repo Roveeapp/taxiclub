@@ -82,6 +82,8 @@
 </template>
 
 <script setup lang="ts">
+const { confirmar } = useConfirmacion()
+
 definePageMeta({ layout: 'dashboard', middleware: 'auth' })
 
 const user = useSupabaseUser()
@@ -119,7 +121,12 @@ onMounted(async () => {
 })
 
 async function handleCancel(id: string) {
-  if (!confirm('¿Cancelar esta oferta?')) return
+  if (!await confirmar({
+    titulo: 'Cancelar la oferta',
+    mensaje: 'Dejará de aparecer en Última Hora y no se podrá reservar.',
+    textoConfirmar: 'Cancelar la oferta',
+    destructivo: true,
+  })) return
   try {
     await $fetch(`/api/taxista/ofertas/${id}`, { method: 'DELETE' })
     offers.value = offers.value.filter((o: any) => o.id !== id)

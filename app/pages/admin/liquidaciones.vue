@@ -71,6 +71,8 @@
 </template>
 
 <script setup lang="ts">
+const { confirmar } = useConfirmacion()
+
 definePageMeta({ layout: 'dashboard', middleware: 'auth' })
 
 /**
@@ -110,7 +112,14 @@ onMounted(async () => {
 })
 
 async function handleProcess() {
-  if (!confirm('¿Procesar liquidaciones para todos los conductores activos?')) return
+  // Acción con consecuencias económicas para todo el colectivo: se pide
+  // escribir una palabra en lugar de aceptar un botón por inercia.
+  if (!await confirmar({
+    titulo: 'Procesar las liquidaciones del mes',
+    mensaje: 'Se calcularán y guardarán las liquidaciones de todos los conductores activos del mes anterior. Si ya existían, se recalcularán.',
+    textoConfirmar: 'Procesar',
+    palabraClave: 'LIQUIDAR',
+  })) return
   processing.value = true
   try {
     await $fetch('/api/admin/liquidaciones/procesar', { method: 'POST' })

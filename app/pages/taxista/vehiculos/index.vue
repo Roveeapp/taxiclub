@@ -36,6 +36,8 @@
 </template>
 
 <script setup lang="ts">
+const { confirmar } = useConfirmacion()
+
 definePageMeta({ layout: 'dashboard', middleware: 'auth' })
 
 const vehicles = ref<any[]>([])
@@ -53,7 +55,12 @@ onMounted(async () => {
 })
 
 async function handleDeactivate(id: string) {
-  if (!confirm('¿Desactivar este vehículo?')) return
+  if (!await confirmar({
+    titulo: 'Desactivar el vehículo',
+    mensaje: 'Dejará de usarse para asignarte reservas. Puedes volver a activarlo cuando quieras.',
+    textoConfirmar: 'Desactivar',
+    destructivo: true,
+  })) return
   try {
     await $fetch(`/api/taxista/vehiculos/${id}`, { method: 'DELETE' })
     vehicles.value = vehicles.value.filter((v: any) => v.id !== id)

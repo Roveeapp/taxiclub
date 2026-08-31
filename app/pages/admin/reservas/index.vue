@@ -75,6 +75,8 @@
 </template>
 
 <script setup lang="ts">
+const { confirmar } = useConfirmacion()
+
 definePageMeta({ layout: 'dashboard', middleware: 'auth' })
 
 const bookings = ref<any[]>([])
@@ -121,7 +123,12 @@ onMounted(async () => {
 })
 
 async function handleCancel(id: string) {
-  if (!confirm('¿Cancelar esta reserva? Se liberará el pago.')) return
+  if (!await confirmar({
+    titulo: 'Cancelar la reserva',
+    mensaje: 'Se cancelará la reserva y se liberará la pre-autorización del pago, si la hubiera.',
+    textoConfirmar: 'Cancelar la reserva',
+    destructivo: true,
+  })) return
   try {
     await $fetch(`/api/admin/reservas/${id}/cancelar`, {
       method: 'POST',

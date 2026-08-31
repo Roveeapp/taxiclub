@@ -1,0 +1,46 @@
+-- ============================================================================
+-- El round-robin no rotaba, y dos reservas simultáneas podían compartir taxista
+--
+-- APLICADA a hgnsvqhizbdwawkgjciw el 2026-08-31.
+-- SUSTITUIDA por 20260831164302, que es la versión vigente de la función.
+--
+-- 1) EL REPARTO NO ROTABA
+--    La consulta terminaba en:
+--      SELECT DISTINCT ON (d.id) ... ORDER BY d.id, d.last_assigned_at LIMIT 1
+--    DISTINCT ON obliga a que el ORDER BY empiece por la columna distinguida,
+--    así que ordenaba por UUID ANTES que por antigüedad. Con LIMIT 1 devolvía
+--    siempre el conductor de UUID más bajo entre los elegibles, y
+--    `last_assigned_at` se escribía sin llegar a usarse nunca para ordenar.
+--
+--    VERIFICADO antes de tocar nada, con el orden deliberadamente opuesto: con
+--    el conductor más antiguo (10 días) en el UUID más alto, la función elegía
+--    al de 1 día por tener el UUID más bajo. Dos pruebas anteriores no lo
+--    distinguían: una la cortocircuitó la exclusividad del Aeropuerto y en la
+--    otra ambos criterios coincidían.
+--
+--    En un club donde el reparto justo es la propuesta de valor, esto significa
+--    que un solo conductor se llevaba todas las reservas.
+--
+--    Se arregla con una subconsulta: DISTINCT ON resuelve primero un vehículo
+--    por conductor, y la ordenación por antigüedad se aplica fuera.
+--
+-- 2) LA CARRERA
+--    La selección, la inserción de la asignación y la actualización de
+--    `last_assigned_at` eran tres pasos sueltos en la aplicación, sin bloqueo ni
+--    transacción. Dos peticiones simultáneas leían el mismo «siguiente
+--    conductor» antes de que ninguna actualizara la marca.
+--
+--    Ahora la función recorre los candidatos por antigüedad e intenta bloquear
+--    cada uno con FOR UPDATE SKIP LOCKED: si otra transacción ya lo tiene
+--    cogido, pasa al siguiente en lugar de esperar o duplicar. Y marca el turno
+--    dentro de la misma transacción que la selección, que es lo que impide que
+--    dos llamadas elijan al mismo.
+--
+--    Consecuencia buscada: la aplicación ya NO actualiza `last_assigned_at` al
+--    crear la reserva, porque lo hace la función. La asignación manual del
+--    panel sí lo sigue haciendo, y ahí es correcto.
+-- ============================================================================
+
+-- El cuerpo vigente está en 20260831164302; esta migración se conserva como
+-- registro del cambio y de su motivo.
+SELECT 1;

@@ -277,3 +277,24 @@
     display: none;
   }
 }
+
+
+/*
+ * Zonas seguras de los dispositivos con notch.
+ *
+ * Requiere viewport-fit=cover en el meta viewport, que se define en
+ * nuxt.config.ts: sin él, env(safe-area-inset-*) vale 0 en iOS y estas
+ * utilidades no hacen nada. En pantallas sin notch valen 0 y no molestan.
+ */
+@layer utilities {
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .pt-safe {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+  /* Para el contenido que va por debajo de una barra inferior fija */
+  .mb-safe-nav {
+    margin-bottom: calc(4rem + env(safe-area-inset-bottom, 0px));
+  }
+}

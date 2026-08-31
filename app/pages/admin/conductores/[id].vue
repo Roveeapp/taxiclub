@@ -169,7 +169,10 @@
 </template>
 
 <script setup lang="ts">
+
 import ToggleSwitch from 'primevue/toggleswitch'
+
+const { confirmar } = useConfirmacion()
 
 definePageMeta({ layout: 'dashboard', middleware: 'auth' })
 
@@ -193,7 +196,13 @@ const router = useRouter()
 const deleting = ref(false)
 
 async function handleDelete() {
-  if (!confirm(`¿Dar de baja definitivamente a ${driver.value?.full_name || 'este conductor'}? Se eliminará su cuenta y no podrá acceder. Sus reservas históricas se conservan.`)) return
+  if (!await confirmar({
+    titulo: 'Baja definitiva del conductor',
+    mensaje: `Se eliminará la cuenta de ${driver.value?.full_name || 'este conductor'} y no podrá volver a acceder. Sus reservas históricas se conservan.`,
+    textoConfirmar: 'Dar de baja',
+    destructivo: true,
+    palabraClave: 'BAJA',
+  })) return
   deleting.value = true
   try {
     await $fetch(`/api/admin/conductores/${route.params.id}`, { method: 'DELETE' })

@@ -161,9 +161,9 @@ export default defineEventHandler(async (event) => {
         booking_id: bookingId,
         driver_id: driver.id,
       })
-      await writeTable('drivers')
-        .update({ last_assigned_at: new Date().toISOString() })
-        .eq('id', driver.id)
+      // El turno lo marca ya get_driver_for_assignment, en la misma transacción
+      // que la selección: es lo que impide que dos reservas simultáneas se
+      // lleven el mismo conductor. Actualizarlo aquí lo adelantaría dos veces.
 
       // La notificación es best-effort, igual que el correo al cliente: si
       // Resend o el push fallan, la reserva YA está asignada, y avisar al

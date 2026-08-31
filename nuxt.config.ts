@@ -39,7 +39,9 @@ export default defineNuxtConfig({
       title: 'Club Taxis Asturias',
       meta: [
         { charset: 'utf-8' },
-        { name: 'viewport', content: 'width=device-width, initial-scale=1, maximum-scale=1' },
+        // viewport-fit=cover es imprescindible: sin él, env(safe-area-inset-*)
+        // vale 0 en iOS y el padding de seguridad no hace nada.
+        { name: 'viewport', content: 'width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover' },
         { name: 'description', content: 'Tu taxi de confianza en Asturias' },
         { name: 'theme-color', content: '#0c0c13' },
       ],

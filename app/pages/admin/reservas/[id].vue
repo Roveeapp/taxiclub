@@ -246,6 +246,8 @@
 </style>
 
 <script setup lang="ts">
+const { confirmar } = useConfirmacion()
+
 definePageMeta({ layout: 'dashboard', middleware: 'auth' })
 
 const route = useRoute()
@@ -333,7 +335,11 @@ async function paymentAction(action: 'capture' | 'cancel' | 'refund') {
     cancel: '¿Liberar la retención? El cliente no pagará nada.',
     refund: '¿Reembolsar el importe completo al cliente?',
   }
-  if (!confirm(labels[action])) return
+  if (!await confirmar({
+    titulo: 'Confirmar la acción',
+    mensaje: labels[action] ?? '¿Seguro que quieres continuar?',
+    destructivo: action === 'cancel' || action === 'refund',
+  })) return
 
   payWorking.value = true
   try {
@@ -386,7 +392,12 @@ onMounted(async () => {
 })
 
 async function handleCancel() {
-  if (!confirm('¿Cancelar esta reserva? Se liberará el pago.')) return
+  if (!await confirmar({
+    titulo: 'Cancelar la reserva',
+    mensaje: 'Se cancelará la reserva y se liberará la pre-autorización del pago, si la hubiera.',
+    textoConfirmar: 'Cancelar la reserva',
+    destructivo: true,
+  })) return
   cancelling.value = true
   try {
     await $fetch(`/api/admin/reservas/${route.params.id}/cancelar`, {

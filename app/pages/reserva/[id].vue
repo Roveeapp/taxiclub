@@ -182,7 +182,14 @@ watch(assignment, (newVal) => {
 })
 
 async function handleCancel() {
-  if (!confirm('¿Estás seguro de que quieres cancelar esta reserva?')) return
+  const { confirmar } = useConfirmacion()
+  if (!await confirmar({
+    titulo: 'Cancelar la reserva',
+    mensaje: 'Se cancelará tu reserva y perderás la asignación de taxi. Esta acción no se puede deshacer.',
+    textoConfirmar: 'Sí, cancelar',
+    textoCancelar: 'No, mantenerla',
+    destructivo: true,
+  })) return
 
   cancelling.value = true
   try {

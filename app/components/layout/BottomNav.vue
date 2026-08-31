@@ -1,5 +1,12 @@
 <template>
-  <nav class="bg-surface-container-low fixed bottom-0 w-full z-50 rounded-t-xl shadow-lg border-t border-white/5">
+  <!--
+    La barra es fixed bottom-0 y la app es una PWA instalable: en cualquier
+    iPhone con notch se solapaba con el indicador de inicio del sistema, así que
+    los iconos quedaban medio tapados y el área táctil se comía el gesto de
+    volver al inicio. El padding de seguridad lo resuelve, y en dispositivos sin
+    notch env() vale 0 y no cambia nada.
+  -->
+  <nav class="bg-surface-container-low fixed bottom-0 w-full z-50 rounded-t-xl shadow-lg border-t border-white/5 pb-safe">
     <div class="flex justify-around items-center h-16 w-full max-w-mobile mx-auto px-lg">
       <NuxtLink
         to="/"

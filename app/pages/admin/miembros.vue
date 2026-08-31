@@ -104,7 +104,10 @@
 </style>
 
 <script setup lang="ts">
+
 import ToggleSwitch from 'primevue/toggleswitch'
+
+const { confirmar } = useConfirmacion()
 
 definePageMeta({ layout: 'dashboard', middleware: 'auth' })
 
@@ -135,7 +138,12 @@ async function addMember() {
 }
 
 async function removeMember(driver: any) {
-  if (!confirm(`¿Dar de baja la membresía de ${driver.full_name}? Pasará a colaborador (solo ofertas de Última Hora).`)) return
+  if (!await confirmar({
+    titulo: 'Dar de baja la membresía',
+    mensaje: `${driver.full_name} pasará a colaborador: dejará de entrar en el reparto de reservas y solo podrá publicar ofertas de Última Hora.`,
+    textoConfirmar: 'Dar de baja',
+    destructivo: true,
+  })) return
   await updateDriver(driver, { isMember: false })
 }
 
