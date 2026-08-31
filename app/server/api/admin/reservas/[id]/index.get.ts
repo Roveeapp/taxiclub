@@ -14,13 +14,13 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, message: 'Booking not found' })
   }
 
-  const b = booking as Record<string, any>
+  const b = booking as { id: string, client_id: string | null, origin_station_id: string | null, destination_station_id: string | null, stripe_payment_intent_id: string | null, [k: string]: unknown }
 
   // Estación de origen
   let originStationName = ''
   if (b.origin_station_id) {
     const { data: s } = await db.from('stations').select('name').eq('id', b.origin_station_id).single()
-    originStationName = (s as any)?.name || ''
+    originStationName = s?.name || ''
   }
 
   // Cliente (cuenta o invitado)
@@ -29,9 +29,9 @@ export default defineEventHandler(async (event) => {
   let clientPhone = b.guest_phone || null
   if (b.client_id) {
     const { data: u } = await db.from('users').select('full_name, email, phone').eq('id', b.client_id).single()
-    clientName = (u as any)?.full_name || clientName
-    clientEmail = (u as any)?.email || clientEmail
-    clientPhone = (u as any)?.phone || clientPhone
+    clientName = u?.full_name || clientName
+    clientEmail = u?.email || clientEmail
+    clientPhone = u?.phone || clientPhone
   }
 
   // Asignación + datos del conductor
@@ -41,23 +41,23 @@ export default defineEventHandler(async (event) => {
     .eq('booking_id', id)
     .maybeSingle()
 
-  let driver: Record<string, any> | null = null
-  const a = assignment as Record<string, any> | null
+  let driver: Record<string, unknown> | null = null
+  const a = assignment as { driver_id: string, [k: string]: unknown } | null
   if (a?.driver_id) {
     const { data: du } = await db.from('users').select('full_name, email, phone').eq('id', a.driver_id).single()
     const { data: dd } = await db.from('drivers').select('license_number, is_member').eq('id', a.driver_id).single()
     driver = {
       id: a.driver_id,
-      name: (du as any)?.full_name || '',
-      email: (du as any)?.email || '',
-      phone: (du as any)?.phone || '',
-      license_number: (dd as any)?.license_number || '',
-      is_member: (dd as any)?.is_member ?? null,
+      name: du?.full_name || '',
+      email: du?.email || '',
+      phone: du?.phone || '',
+      license_number: dd?.license_number || '',
+      is_member: dd?.is_member ?? null,
     }
   }
 
   // Estado del pago en Stripe (si existe PI real)
-  let payment: Record<string, any> | null = null
+  let payment: Record<string, unknown> | null = null
   const piId = b.stripe_payment_intent_id as string | undefined
   if (piId && !piId.startsWith('pi_mock_')) {
     try {

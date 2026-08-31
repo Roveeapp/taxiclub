@@ -25,15 +25,15 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 500, message: error.message })
   }
 
-  type Cobro = { receipt_path?: string | null, [k: string]: unknown }
-  type Liquidacion = { payout_settlements?: Cobro[], [k: string]: unknown }
+  interface Cobro { receipt_path?: string | null, settled_at?: string | null, [k: string]: unknown }
+  interface Liquidacion { payout_settlements?: Cobro[], [k: string]: unknown }
 
   // La ruta del resguardo no se expone: se indica si existe, y la descarga pasa
   // por la ruta que firma una URL temporal.
   return ((payouts || []) as Liquidacion[]).map(p => ({
     ...p,
     payout_settlements: (p.payout_settlements || [])
-      .map(({ receipt_path, ...c }) => ({ ...c, tiene_resguardo: Boolean(receipt_path) }))
-      .sort((a, b) => String(b.settled_at).localeCompare(String(a.settled_at))),
+      .map(({ receipt_path, ...cobro }): Cobro => ({ ...cobro, tiene_resguardo: Boolean(receipt_path) }))
+      .sort((a, b) => String(b.settled_at ?? '').localeCompare(String(a.settled_at ?? ''))),
   }))
 })

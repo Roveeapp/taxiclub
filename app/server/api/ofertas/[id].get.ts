@@ -18,7 +18,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, message: 'Offer not found' })
   }
 
-  const offer = data as Record<string, any>
+  const offer = data as { stations?: { name?: string, city?: string } | null, [k: string]: unknown }
   return {
     ...offer,
     destination_station_name: offer.stations?.name ?? '',

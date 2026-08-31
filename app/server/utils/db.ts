@@ -36,7 +36,7 @@ export function useSql(): SupabaseClient<Database> {
  * Llama a una función RPC de Postgres con un tipo de retorno declarado.
  *
  * El cliente tipado de Supabase no conoce las funciones propias del proyecto,
- * y el atajo habitual en este código es `(db.rpc as any)(...)`, que aparece 124
+ * y el atajo habitual en este código es `callRpc<Array<Record<string, unknown>>>(...)`, que aparece 124
  * veces en el servidor y anula el esquema de types/database.ts. Este ayudante
  * concentra el único cast necesario en un sitio y deja que quien llama declare
  * la forma que espera.
@@ -64,10 +64,19 @@ interface SelectChain {
   maybeSingle: <T = unknown>() => QueryResult<T>
 }
 
-interface Filtrable {
-  eq: (column: string, value: unknown) => Filtrable & QueryResult<null> & { select: (columns?: string) => SelectChain & QueryResult<unknown[]> }
-  in: (column: string, values: unknown[]) => Filtrable & QueryResult<null>
-  is: (column: string, value: unknown) => Filtrable & QueryResult<null>
+/**
+ * Filtros encadenables. Se declaran los que el servidor usa de verdad; añadir
+ * uno nuevo aquí es preferible a volver a un cast.
+ */
+interface Filtrable extends QueryResult<null> {
+  eq: (column: string, value: unknown) => Filtrable & { select: (columns?: string) => SelectChain & QueryResult<unknown[]> }
+  neq: (column: string, value: unknown) => Filtrable
+  in: (column: string, values: unknown[]) => Filtrable
+  is: (column: string, value: unknown) => Filtrable
+  lt: (column: string, value: unknown) => Filtrable
+  lte: (column: string, value: unknown) => Filtrable
+  gt: (column: string, value: unknown) => Filtrable
+  gte: (column: string, value: unknown) => Filtrable
 }
 
 /**

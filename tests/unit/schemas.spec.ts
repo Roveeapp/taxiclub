@@ -69,10 +69,22 @@ describe('crearReservaSchema', () => {
 
 describe('tarifaSchema', () => {
   it('no admite tarifas de cero, negativas ni absurdas', () => {
-    for (const pricePerKm of [0, -1, 100]) {
+    // El límite es el mismo que comprueba la ruta: > 100 €/km se rechaza
+    for (const pricePerKm of [0, -1, 100.01, 500]) {
       expect(tarifaSchema.safeParse({ pricePerKm }).success, String(pricePerKm)).toBe(false)
     }
-    expect(tarifaSchema.safeParse({ pricePerKm: 1.2 }).success).toBe(true)
+    for (const pricePerKm of [0.01, 1.2, 100]) {
+      expect(tarifaSchema.safeParse({ pricePerKm }).success, String(pricePerKm)).toBe(true)
+    }
+  })
+
+  it('admite vaciar el campo para volver a la tarifa global', () => {
+    // El panel envía '' al borrar el valor; el esquema lo normaliza a null
+    for (const pricePerKm of ['', null]) {
+      const r = tarifaSchema.safeParse({ pricePerKm })
+      expect(r.success, JSON.stringify(pricePerKm)).toBe(true)
+      if (r.success) expect(r.data.pricePerKm).toBe(null)
+    }
   })
 })
 

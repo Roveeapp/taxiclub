@@ -25,7 +25,7 @@ export default defineEventHandler(async () => {
     throw createError({ statusCode: 500, message: error.message })
   }
 
-  return (data || []).map((o: any) => ({
+  return (data || []).map((o: { stations?: { name?: string } | null, [k: string]: unknown }) => ({
     ...o,
     destination_station_name: o.stations?.name ?? '',
     stations: undefined,

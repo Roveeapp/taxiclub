@@ -22,14 +22,14 @@ export default defineEventHandler(async (event) => {
     .order('created_at', { ascending: false })
     .limit(100)
 
-  const rows = (bookings || []) as any[]
+  const rows = (bookings || [])
 
   // Nombre de la parada de origen si la hay
-  const stationIds = [...new Set(rows.map(b => b.origin_station_id).filter(Boolean))]
+  const stationIds = [...new Set(rows.map(b => b.origin_station_id).filter((id): id is string => Boolean(id)))]
   const stationNames = new Map<string, string>()
   if (stationIds.length > 0) {
     const { data: stations } = await db.from('stations').select('id, name').in('id', stationIds)
-    for (const s of (stations || []) as any[]) stationNames.set(s.id, s.name)
+    for (const s of (stations || [])) stationNames.set(s.id, s.name)
   }
 
   const stats = {
@@ -42,11 +42,11 @@ export default defineEventHandler(async (event) => {
   }
 
   return {
-    ...(user as any),
+    ...user,
     stats,
     bookings: rows.map(b => ({
       ...b,
-      origin_label: stationNames.get(b.origin_station_id) || b.origin_address || '—',
+      origin_label: (b.origin_station_id ? stationNames.get(b.origin_station_id) : null) || b.origin_address || '—',
     })),
   }
 })

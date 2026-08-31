@@ -4,9 +4,12 @@ export default defineEventHandler(async (event) => {
 
   const today = new Date().toISOString().split('T')[0]
 
-  const { data: metrics, error } = await (db.rpc as any)('get_metrics', { p_today: today })
+  const { data: metrics, error } = await callRpc<Array<Record<string, unknown>>>('get_metrics', { p_today: today })
 
-  if (error || !metrics || metrics.length === 0) {
+  // Se comprueba la fila y no la longitud: TypeScript no estrecha el acceso
+  // por índice desde un length, y así `m` queda garantizada más abajo.
+  const m = metrics?.[0]
+  if (error || !m) {
     return {
       bookingsToday: 0,
       activeDrivers: 0,
@@ -15,7 +18,6 @@ export default defineEventHandler(async (event) => {
     }
   }
 
-  const m = metrics[0]
 
   // Serie diaria (últimos 14 días) e ingresos del mes, calculados en JS
   // para no depender de otra migración.
@@ -39,7 +41,7 @@ export default defineEventHandler(async (event) => {
       d.setDate(since.getDate() + i)
       byDay.set(d.toISOString().slice(0, 10), { count: 0, revenue: 0 })
     }
-    for (const b of (recent || []) as any[]) {
+    for (const b of (recent || []) as Array<Record<string, unknown>>) {
       const day = String(b.created_at).slice(0, 10)
       const bucket = byDay.get(day)
       if (bucket && b.status !== 'cancelled') {
@@ -60,7 +62,8 @@ export default defineEventHandler(async (event) => {
       .gte('created_at', monthStart.toISOString())
 
     monthlyRevenue = Math.round(
-      ((monthRows || []) as any[]).reduce((sum, r) => sum + Number(r.total_price || 0), 0) * 100,
+      ((monthRows || []) as Array<{ total_price?: number | string | null }>)
+        .reduce((sum, r) => sum + Number(r.total_price || 0), 0) * 100,
     ) / 100
   } catch (e) {
     console.error('[Metrics] Error calculando series:', e)

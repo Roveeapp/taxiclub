@@ -3,6 +3,10 @@ export default defineEventHandler(async (event) => {
   const stationId = getRouterParam(event, 'id')
   const db = useDb()
 
+  if (!stationId) {
+    throw createError({ statusCode: 400, message: 'Falta el identificador de la parada' })
+  }
+
   const { error } = await db
     .from('driver_stations')
     .delete()

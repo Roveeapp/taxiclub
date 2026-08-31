@@ -5,7 +5,7 @@ export default defineEventHandler(async (event) => {
   const body = await readValidated(event, editarConductorSchema)
   const db = useDb()
 
-  const updateData: Record<string, any> = {}
+  const updateData: Record<string, unknown> = {}
   if (body.isMember !== undefined) updateData.is_member = body.isMember
   if (body.isExempt !== undefined) updateData.is_exempt = body.isExempt
   if (body.isActive !== undefined) updateData.is_active = body.isActive
@@ -13,7 +13,7 @@ export default defineEventHandler(async (event) => {
 
   // Cuota mensual personalizada (null = volver a la cuota global)
   if (body.customMonthlyFee !== undefined) {
-    const fee = body.customMonthlyFee === null || body.customMonthlyFee === '' ? null : Number(body.customMonthlyFee)
+    const fee = body.customMonthlyFee ?? null
     if (fee !== null && (Number.isNaN(fee) || fee < 0)) {
       throw createError({ statusCode: 400, message: 'Cuota mensual no válida' })
     }
@@ -22,7 +22,7 @@ export default defineEventHandler(async (event) => {
 
   // Comisión personalizada en % (null = volver a la comisión global)
   if (body.customCommissionPct !== undefined) {
-    const pct = body.customCommissionPct === null || body.customCommissionPct === '' ? null : Number(body.customCommissionPct)
+    const pct = body.customCommissionPct ?? null
     if (pct !== null && (Number.isNaN(pct) || pct < 0 || pct > 100)) {
       throw createError({ statusCode: 400, message: 'Comisión no válida (0–100)' })
     }

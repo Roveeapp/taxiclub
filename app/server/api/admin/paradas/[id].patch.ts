@@ -5,7 +5,7 @@ export default defineEventHandler(async (event) => {
   const body = await readValidated(event, editarParadaSchema)
   const db = useDb()
 
-  const updateData: Record<string, any> = {}
+  const updateData: Record<string, unknown> = {}
   if (body.name !== undefined) updateData.name = body.name
   if (body.city !== undefined) updateData.city = body.city
   if (body.address !== undefined) updateData.address = body.address

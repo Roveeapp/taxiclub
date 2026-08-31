@@ -32,7 +32,7 @@ export default defineEventHandler(async (event) => {
     .eq('id', id)
     .single()
 
-  const piId = (booking as any)?.stripe_payment_intent_id as string | undefined
+  const piId = (booking as { stripe_payment_intent_id?: string | null } | null)?.stripe_payment_intent_id ?? undefined
   if (!piId || piId.startsWith('pi_mock_')) {
     throw createError({ statusCode: 400, message: 'Esta reserva no tiene un pago real de Stripe' })
   }
@@ -51,7 +51,7 @@ export default defineEventHandler(async (event) => {
     // refund
     const refund = await stripe.refunds.create({ payment_intent: piId })
     return { success: true, status: refund.status }
-  } catch (e: any) {
-    throw createError({ statusCode: 400, message: e?.message || 'La operación de Stripe ha fallado' })
+  } catch (e) {
+    throw createError({ statusCode: 400, message: (e as Error)?.message || 'La operación de Stripe ha fallado' })
   }
 })

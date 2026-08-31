@@ -1,4 +1,4 @@
-import type { ZodType, ZodError } from 'zod'
+import type { ZodError, ZodTypeAny, output } from 'zod'
 
 /**
  * Lee y valida el cuerpo de una petición contra un esquema.
@@ -9,8 +9,16 @@ import type { ZodType, ZodError } from 'zod'
  * auditoría, incluido el precio manipulable.
  *
  * Devuelve el dato ya tipado, así que además sustituye a bastantes `as any`.
+ *
+ * Se tipa con `S extends ZodTypeAny` y `output<S>` en lugar de `ZodType<T>`:
+ * esa forma fuerza que la entrada y la salida del esquema sean el mismo tipo, y
+ * cualquier esquema con `z.preprocess` o `.transform()` las tiene distintas, con
+ * lo que la inferencia caía a `{}` y quien llamaba perdía los tipos.
  */
-export async function readValidated<T>(event: Parameters<typeof readBody>[0], schema: ZodType<T>): Promise<T> {
+export async function readValidated<S extends ZodTypeAny>(
+  event: Parameters<typeof readBody>[0],
+  schema: S,
+): Promise<output<S>> {
   const raw = await readBody(event).catch(() => null)
   const result = schema.safeParse(raw)
 
@@ -25,7 +33,10 @@ export async function readValidated<T>(event: Parameters<typeof readBody>[0], sc
 }
 
 /** Valida query params con el mismo contrato de error. */
-export async function readValidatedQuery<T>(event: Parameters<typeof getQuery>[0], schema: ZodType<T>): Promise<T> {
+export async function readValidatedQuery<S extends ZodTypeAny>(
+  event: Parameters<typeof getQuery>[0],
+  schema: S,
+): Promise<output<S>> {
   const result = schema.safeParse(getQuery(event))
   if (!result.success) {
     throw createError({

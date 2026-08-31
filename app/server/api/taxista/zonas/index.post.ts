@@ -7,9 +7,7 @@ export default defineEventHandler(async (event) => {
   const fromKm = Number(body?.fromKm ?? 0)
   const toKm = Number(body?.toKm)
   const mode = body?.mode as 'exclude' | 'fixed_price'
-  const fixedPrice = body?.fixedPrice !== undefined && body?.fixedPrice !== null && body?.fixedPrice !== ''
-    ? Number(body.fixedPrice)
-    : null
+  const fixedPrice = body.fixedPrice ?? null
 
   if (!stationId) throw createError({ statusCode: 400, message: 'Falta la parada' })
   if (!['exclude', 'fixed_price'].includes(mode)) {
@@ -29,7 +27,7 @@ export default defineEventHandler(async (event) => {
     .eq('driver_id', user.id)
     .eq('station_id', stationId)
 
-  for (const z of (existing || []) as any[]) {
+  for (const z of (existing || []) as Array<Record<string, unknown>>) {
     const zFrom = Number(z.radius_from_km)
     const zTo = Number(z.radius_to_km)
     if (fromKm < zTo && toKm > zFrom) {

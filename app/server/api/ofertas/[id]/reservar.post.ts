@@ -23,7 +23,7 @@ export default defineEventHandler(async (event) => {
     .single()
 
   if (findError || !offer) throw createError({ statusCode: 404, message: 'Oferta no encontrada' })
-  const o = offer as Record<string, any>
+  const o = offer as { id: string, driver_id: string, status: string, available_until: string, destination_station_id: string | null, final_price: number | string, max_passengers: number | null, [k: string]: unknown }
 
   if (o.status !== 'active' || new Date(o.available_until).getTime() < Date.now()) {
     throw createError({ statusCode: 400, message: 'Esta oferta ya no está disponible' })
@@ -75,15 +75,15 @@ export default defineEventHandler(async (event) => {
   if (insertError || !booking) {
     throw createError({ statusCode: 500, message: insertError?.message || 'No se pudo crear la reserva' })
   }
-  const b = booking as Record<string, any>
+  const b = booking as Record<string, unknown>
 
   // 4. Asignación pre-confirmada al taxista de la oferta
   await writeTable('booking_assignments').insert({
     booking_id: b.id,
     driver_id: o.driver_id,
     confirmed_at: new Date().toISOString(),
-    confirmed_plate: (vehicle as any)?.plate || null,
-    confirmed_phone: (driverUser as any)?.phone || null,
+    confirmed_plate: (vehicle as { plate?: string } | null)?.plate || null,
+    confirmed_phone: (driverUser as { phone?: string } | null)?.phone || null,
   })
 
   // 5. Marcar la oferta como reservada (solo si sigue activa — evita carreras)
@@ -93,20 +93,20 @@ export default defineEventHandler(async (event) => {
     .eq('status', 'active')
     .select('id')
 
-  if (!updatedOffer || (updatedOffer as any[]).length === 0) {
+  if (!updatedOffer || (updatedOffer as Array<Record<string, unknown>>).length === 0) {
     // Alguien la reservó justo antes: revertir
     await writeTable('bookings').update({ status: 'cancelled', cancellation_reason: 'Oferta ya reservada' }).eq('id', b.id)
     throw createError({ statusCode: 409, message: 'Otra persona acaba de reservar esta oferta' })
   }
 
   // 6. Avisar al taxista (best-effort)
-  notifyDriver(o.driver_id as string, {
-    ...b,
+  notifyDriver(o.driver_id, {
+    ...(b as ReservaNotificable),
     origin_station_name: b.origin_address,
   }).catch((e: unknown) => console.error('[Notify] oferta reservada:', e))
 
   // Email al cliente (best-effort)
-  notifyBookingCreated(b).catch((e: unknown) => console.error('[Notify] reserva de oferta:', e))
+  notifyBookingCreated(b as ReservaNotificable).catch((e: unknown) => console.error('[Notify] reserva de oferta:', e))
 
   const isGuest = !user?.id
   return {

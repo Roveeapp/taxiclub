@@ -21,7 +21,10 @@ export default defineEventHandler(async (event) => {
   interface UserStats { total: number, completed: number, cancelled: number, spent: number, lastBookingAt: string | null }
   const stats = new Map<string, UserStats>()
 
-  for (const b of (bookings || []) as any[]) {
+  for (const b of bookings || []) {
+    // La consulta filtra client_id no nulo, pero el tipo del esquema lo declara
+    // nullable, así que se comprueba en lugar de forzarlo con un cast.
+    if (!b.client_id) continue
     let s = stats.get(b.client_id)
     if (!s) {
       s = { total: 0, completed: 0, cancelled: 0, spent: 0, lastBookingAt: null }
@@ -33,10 +36,10 @@ export default defineEventHandler(async (event) => {
       s.spent = Math.round((s.spent + Number(b.total_price || 0)) * 100) / 100
     }
     if (b.status === 'cancelled') s.cancelled++
-    if (!s.lastBookingAt || b.created_at > s.lastBookingAt) s.lastBookingAt = b.created_at
+    if (b.created_at && (!s.lastBookingAt || b.created_at > s.lastBookingAt)) s.lastBookingAt = b.created_at
   }
 
-  return ((users || []) as any[]).map(u => ({
+  return (users || []).map(u => ({
     ...u,
     stats: stats.get(u.id) || { total: 0, completed: 0, cancelled: 0, spent: 0, lastBookingAt: null },
   }))

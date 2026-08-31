@@ -108,7 +108,13 @@ const saved = ref(false)
 const saveError = ref('')
 
 const current = reactive<Record<string, FieldInfo>>({})
-const form = reactive<Record<string, string>>({
+/**
+ * Las ocho claves de integración, declaradas de forma explícita en lugar de
+ * como Record<string, string>: el acceso indexado en un Record da
+ * `string | undefined`, y el v-model de IntegrationField espera `string`.
+ * Enumerarlas también documenta cuáles son y evita erratas al escribirlas.
+ */
+const form = reactive({
   stripe_secret_key: '',
   stripe_publishable_key: '',
   stripe_webhook_secret: '',
@@ -118,6 +124,18 @@ const form = reactive<Record<string, string>>({
   twilio_auth_token: '',
   twilio_phone_number: '',
 })
+
+/** Claves válidas del formulario, derivadas de su propia forma. */
+type ClaveIntegracion = keyof typeof form
+
+/**
+ * La API puede devolver claves que el formulario no muestra (por ejemplo una
+ * integración nueva antes de añadirle su campo). Este guardián evita indexar
+ * el formulario con una clave que no tiene.
+ */
+function esClaveDelFormulario(key: string): key is ClaveIntegracion {
+  return key in form
+}
 
 function statusLabel(key: string) {
   switch (current[key]?.source) {
@@ -139,11 +157,12 @@ async function load() {
   loading.value = true
   try {
     const data: any = await $fetch('/api/admin/integraciones')
-    for (const [key, info] of Object.entries(data)) {
-      current[key] = info as FieldInfo
+    for (const [key, raw] of Object.entries(data)) {
+      const info = raw as FieldInfo
+      current[key] = info
       // Los no-secretos se precargan editables; los secretos se dejan vacíos
-      if (!(info as FieldInfo).isSecret && (info as FieldInfo).source === 'panel') {
-        form[key] = (info as FieldInfo).value
+      if (!info.isSecret && info.source === 'panel' && esClaveDelFormulario(key)) {
+        form[key] = info.value
       }
     }
   } catch (e) {
@@ -166,7 +185,7 @@ async function handleSave() {
     }
     await $fetch('/api/admin/integraciones', { method: 'PATCH', body })
     // Limpiar secretos del formulario y recargar estados
-    for (const key of Object.keys(form)) form[key] = ''
+    for (const key of Object.keys(form) as ClaveIntegracion[]) form[key] = ''
     await load()
     saved.value = true
     setTimeout(() => { saved.value = false }, 3000)

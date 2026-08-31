@@ -23,22 +23,22 @@ export default defineEventHandler(async (event) => {
     .gte('pickup_at', start.toISOString())
     .lt('pickup_at', end.toISOString())
 
-  const bookingRows = (bookings || []) as any[]
+  const bookingRows = (bookings || [])
   const bookingIds = bookingRows.map(b => b.id)
 
-  let assignments: any[] = []
+  let assignments: Array<{ booking_id: string, driver_id: string }> = []
   if (bookingIds.length > 0) {
     const { data } = await db
       .from('booking_assignments')
       .select('booking_id, driver_id')
       .in('booking_id', bookingIds)
-    assignments = (data || []) as any[]
+    assignments = (data || [])
   }
   const driverByBooking = new Map(assignments.map(a => [a.booking_id, a.driver_id]))
 
   // Conductores (para nombre y comisión personalizada)
   const { data: drivers } = await db.rpc('get_admin_drivers')
-  const driverRows = ((drivers || []) as any[])
+  const driverRows = ((drivers || []))
   const config = await getSystemConfig()
 
   interface DriverStats {

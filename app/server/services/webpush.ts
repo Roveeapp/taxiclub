@@ -7,7 +7,7 @@ import {
 
 export async function sendWebPush(
   subscription: { endpoint: string; keys: { p256dh: string; auth: string } },
-  payload: { title: string; body: string; data?: any },
+  payload: { title: string; body: string; data?: Record<string, unknown> },
 ) {
   const config = useRuntimeConfig()
 
@@ -17,7 +17,7 @@ export async function sendWebPush(
   }
 
   const vapid: VapidKeys = {
-    subject: `mailto:${(config as any).vapidMailto || process.env.VAPID_MAILTO || 'admin@clubtaxisasturias.es'}`,
+    subject: `mailto:${(config.vapidMailto as string) || process.env.VAPID_MAILTO || 'admin@clubtaxisasturias.es'}`,
     publicKey: config.public.vapidPublicKey,
     privateKey: config.vapidPrivateKey,
   }
@@ -46,18 +46,18 @@ export async function sendWebPush(
   }
 }
 
-export async function notifyDriverPush(driverId: string, booking: any) {
-  const db = useDb()
-  const { data: subs } = await (db.rpc as any)('get_driver_push_sub', {
+export async function notifyDriverPush(driverId: string, booking: ReservaNotificable) {
+  const { data: subs } = await callRpc<Array<Record<string, unknown>>>('get_driver_push_sub', {
     p_driver_id: driverId,
   })
 
-  if (!subs || (subs as any[]).length === 0 || !(subs[0] as any).push_subscription) return
+  const sub = subs?.[0] as { push_subscription?: { endpoint: string, keys: { p256dh: string, auth: string } } | null } | undefined
+  if (!sub?.push_subscription) return
 
   const appUrl = useRuntimeConfig().public.appUrl || 'https://clubtaxisasturias.es'
 
   await sendWebPush(
-    (subs[0] as any).push_subscription,
+    sub.push_subscription,
     {
       title: 'Nueva reserva asignada',
       body: `${booking.origin_station_name || 'Parada'} → ${booking.destination_address || 'Destino'}`,

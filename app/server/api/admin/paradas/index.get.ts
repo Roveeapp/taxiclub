@@ -12,12 +12,12 @@ export default defineEventHandler(async (event) => {
   let exclusivities: Array<{ station_id: string, driver_id: string }> = []
   try {
     const { data } = await db.from('station_exclusivities').select('station_id, driver_id')
-    exclusivities = (data || []) as any[]
+    exclusivities = (data || [])
   } catch { /* tabla aún sin crear (migración 024) */ }
 
   const exclusivityMap = new Map(exclusivities.map(e => [e.station_id, e.driver_id]))
 
-  return ((stations || []) as any[]).map(s => ({
+  return ((stations || [])).map(s => ({
     ...s,
     exclusive_driver_id: exclusivityMap.get(s.id) || null,
   }))

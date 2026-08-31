@@ -5,7 +5,7 @@ export default defineEventHandler(async (event) => {
   const body = await readValidated(event, editarVehiculoSchema)
   const db = useDb()
 
-  const updateData: Record<string, any> = {}
+  const updateData: Record<string, unknown> = {}
   if (body.plate !== undefined) updateData.plate = body.plate
   if (body.brand !== undefined) updateData.brand = body.brand
   if (body.model !== undefined) updateData.model = body.model

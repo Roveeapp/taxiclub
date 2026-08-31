@@ -19,8 +19,8 @@
     </svg>
     <div class="flex justify-between text-[10px] text-on-surface-variant mt-1 px-0.5">
       <span>{{ formatDay(data[0]?.date) }}</span>
-      <span v-if="hovered !== null && data[hovered]" class="text-secondary font-medium">
-        {{ formatDay(data[hovered].date) }}: {{ data[hovered].count }} reservas · {{ data[hovered].revenue.toFixed(0) }} €
+      <span v-if="puntoActivo" class="text-secondary font-medium">
+        {{ formatDay(puntoActivo.date) }}: {{ puntoActivo.count }} reservas · {{ puntoActivo.revenue.toFixed(0) }} €
       </span>
       <span>{{ formatDay(data[data.length - 1]?.date) }}</span>
     </div>
@@ -42,6 +42,14 @@ const gap = 6
 const baseline = 1
 
 const hovered = ref<number | null>(null)
+
+/**
+ * El punto sobre el que está el cursor. Como computada en lugar de indexar en
+ * la plantilla: el `v-if` comprobaba `data[hovered]` pero TypeScript no
+ * propagaba esa garantía a los hermanos, así que cada acceso daba
+ * «Object is possibly undefined».
+ */
+const puntoActivo = computed(() => (hovered.value === null ? null : props.data[hovered.value] ?? null))
 
 const slotW = computed(() => props.data.length > 0 ? width / props.data.length : width)
 const maxCount = computed(() => Math.max(1, ...props.data.map(d => d.count)))

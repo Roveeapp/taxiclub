@@ -7,11 +7,11 @@ export default defineEventHandler(async (event) => {
     .from('stations')
     .insert({
       name: body.name,
-      city: body.city,
+      city: body.city ?? '',
       address: body.address || null,
       lat: body.lat || null,
       lng: body.lng || null,
-    } as any)
+    })
     .select()
     .single()
 

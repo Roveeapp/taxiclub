@@ -20,13 +20,13 @@ export default defineEventHandler(async (event) => {
   if (findError || !offer) {
     throw createError({ statusCode: 404, message: 'Oferta no encontrada' })
   }
-  const o = offer as Record<string, any>
+  const o = offer as { available_from: string, available_until: string, [k: string]: unknown }
 
   if (o.status !== 'active') {
     throw createError({ statusCode: 400, message: 'Solo se pueden editar ofertas activas' })
   }
 
-  const updateData: Record<string, any> = {}
+  const updateData: Record<string, unknown> = {}
 
   if (body.originAddress !== undefined) {
     if (!String(body.originAddress).trim()) {
@@ -48,8 +48,12 @@ export default defineEventHandler(async (event) => {
   }
 
   // Validar ventana horaria resultante
-  const from = new Date(updateData.available_from ?? o.available_from)
-  const until = new Date(updateData.available_until ?? o.available_until)
+  // Se toman de variables tipadas y no del Record genérico, cuyo valor es
+  // unknown y no se puede pasar a new Date().
+  const desde = (updateData.available_from as string | undefined) ?? o.available_from
+  const hasta = (updateData.available_until as string | undefined) ?? o.available_until
+  const from = new Date(desde)
+  const until = new Date(hasta)
   if (Number.isNaN(from.getTime()) || Number.isNaN(until.getTime()) || from >= until) {
     throw createError({ statusCode: 400, message: 'La ventana horaria no es válida (desde debe ser anterior a hasta)' })
   }

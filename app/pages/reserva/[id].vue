@@ -50,10 +50,10 @@
 
       <!-- Mapa de la ruta (si tenemos coordenadas) -->
       <ClientOnly>
-        <div v-if="mapMarkers.length > 0" class="bg-white/5 border border-white/10 rounded-card overflow-hidden">
+        <div v-if="primerMarcador" class="bg-white/5 border border-white/10 rounded-card overflow-hidden">
           <AppMap
-            :lat="mapMarkers[0].lat"
-            :lng="mapMarkers[0].lng"
+            :lat="primerMarcador.lat"
+            :lng="primerMarcador.lng"
             :markers="mapMarkers"
             :zoom="10"
             :height="220"
@@ -138,6 +138,10 @@ const mapMarkers = computed(() => {
   }
   return markers
 })
+
+// El v-if comprobaba length > 0 pero TypeScript no propagaba la garantía al
+// acceso [0]; con una computada el tipo ya viene estrechado.
+const primerMarcador = computed(() => mapMarkers.value[0] ?? null)
 
 watch(booking, async (b) => {
   if (!b?.origin_station_id || originStation.value) return

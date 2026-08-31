@@ -24,7 +24,7 @@ export default defineEventHandler(async (event) => {
   if (bookingError || !booking) {
     throw createError({ statusCode: 404, message: 'Reserva no encontrada' })
   }
-  const b = booking as Record<string, any>
+  const b = booking as { id: string, origin_station_id: string | null, [k: string]: unknown }
   if (b.status === 'cancelled' || b.status === 'completed') {
     throw createError({ statusCode: 400, message: 'No se puede asignar una reserva cancelada o completada' })
   }
@@ -49,7 +49,7 @@ export default defineEventHandler(async (event) => {
   if (driverError || !driver) {
     throw createError({ statusCode: 404, message: 'Conductor no encontrado' })
   }
-  if (!(driver as any).is_active) {
+  if (!driver.is_active) {
     throw createError({ statusCode: 400, message: 'El conductor está desactivado' })
   }
 
@@ -72,7 +72,7 @@ export default defineEventHandler(async (event) => {
         substitute_plate: null,
         substitute_phone: null,
       })
-      .eq('id', (existing as any).id)
+      .eq('id', existing.id)
     if (updError) throw createError({ statusCode: 500, message: updError.message })
   } else {
     const { error: insError } = await writeTable('booking_assignments')
@@ -96,7 +96,7 @@ export default defineEventHandler(async (event) => {
 
   await notifyDriver(driverId, {
     ...b,
-    origin_station_name: (station as any)?.name || '',
+    origin_station_name: station?.name || '',
   }).catch((e: unknown) => {
     console.error('[Notify] Error avisando al conductor asignado:', e)
   })

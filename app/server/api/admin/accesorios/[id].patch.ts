@@ -4,7 +4,7 @@ export default defineEventHandler(async (event) => {
   if (!id) throw createError({ statusCode: 400, message: 'Missing id' })
   const body = await readValidated(event, editarAccesorioSchema)
 
-  const updateData: Record<string, any> = {}
+  const updateData: Record<string, unknown> = {}
   if (body.name !== undefined) {
     const name = String(body.name).trim()
     if (!name) throw createError({ statusCode: 400, message: 'El nombre es obligatorio' })

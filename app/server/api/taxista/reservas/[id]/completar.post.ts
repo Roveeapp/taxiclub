@@ -31,7 +31,7 @@ export default defineEventHandler(async (event) => {
 
   // Capturar la pre-autorización (el cobro real). Best-effort: si falla,
   // el viaje queda completado y el admin puede capturar desde Stripe.
-  const piId = (booking as any)?.stripe_payment_intent_id as string | undefined
+  const piId = (booking as { stripe_payment_intent_id?: string | null } | null)?.stripe_payment_intent_id ?? undefined
   let paymentCaptured = false
   if (piId && !piId.startsWith('pi_mock_')) {
     try {

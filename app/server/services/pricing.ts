@@ -1,8 +1,8 @@
-export async function getSystemConfig(): Promise<Record<string, any>> {
+export async function getSystemConfig(): Promise<Record<string, unknown>> {
   const db = useDb()
   const { data: rows } = await db.from('system_config').select('key, value')
-  const config: Record<string, any> = {}
-  for (const row of (rows || []) as any[]) {
+  const config: Record<string, unknown> = {}
+  for (const row of (rows || []) as Array<Record<string, unknown>>) {
     config[row.key as string] = row.value
   }
   return config
@@ -133,7 +133,7 @@ export async function peekAssignedDriverRate(params: {
   const db = useDb()
 
   try {
-    const { data: result } = await (db.rpc as any)('get_driver_for_assignment', {
+    const { data: result } = await callRpc<Array<Record<string, unknown>>>('get_driver_for_assignment', {
       p_origin_station_id: params.originStationId || null,
       p_destination_station_id: params.destinationStationId || null,
       p_passengers: params.passengers ?? 1,
@@ -150,7 +150,7 @@ export async function peekAssignedDriverRate(params: {
       p_origin_lng: params.originLng ?? null,
     })
 
-    const driverId = (result as any[])?.[0]?.id as string | undefined
+    const driverId = (result as Array<Record<string, unknown>>)?.[0]?.id as string | undefined
     if (!driverId) return null
 
     const { data: driver } = await db
@@ -159,7 +159,7 @@ export async function peekAssignedDriverRate(params: {
       .eq('id', driverId)
       .single()
 
-    const perKmRaw = (driver as any)?.custom_price_per_km
+    const perKmRaw = (driver as { custom_price_per_km?: number | string | null } | null)?.custom_price_per_km
     const perKm = perKmRaw !== null && perKmRaw !== undefined ? Number(perKmRaw) : null
 
     // ── Precio fijo de trayecto (PRIORIDAD ABSOLUTA) ──
@@ -173,7 +173,7 @@ export async function peekAssignedDriverRate(params: {
         .select('price, origin_station_id, dest_station_id, origin_lat, origin_lng, dest_lat, dest_lng')
         .eq('driver_id', driverId)
 
-      for (const r of (routes || []) as any[]) {
+      for (const r of (routes || []) as Array<Record<string, unknown>>) {
         // Comprobar origen
         let originMatch = false
         if (r.origin_station_id && params.originStationId && r.origin_station_id === params.originStationId) {
@@ -218,7 +218,7 @@ export async function peekAssignedDriverRate(params: {
             .eq('station_id', params.originStationId)
             .eq('mode', 'fixed_price')
 
-          for (const z of (zones || []) as any[]) {
+          for (const z of (zones || []) as Array<Record<string, unknown>>) {
             if (distKm >= Number(z.radius_from_km) && distKm < Number(z.radius_to_km) && z.fixed_price) {
               fixedPrice = Number(z.fixed_price)
               break

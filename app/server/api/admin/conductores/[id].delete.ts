@@ -20,7 +20,7 @@ export default defineEventHandler(async (event) => {
     .in('bookings.status', ['pending', 'confirmed'])
     .limit(1)
 
-  if (active && (active as any[]).length > 0) {
+  if (active && (active as Array<Record<string, unknown>>).length > 0) {
     throw createError({
       statusCode: 400,
       message: 'Tiene reservas pendientes o confirmadas. Reasígnalas o cancélalas antes de darle de baja.',

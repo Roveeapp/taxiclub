@@ -4,7 +4,7 @@ export interface PayoutInput {
   isExempt: boolean
   customCommissionPct?: number | null
   customMonthlyFee?: number | null
-  config: Record<string, any>
+  config: Record<string, unknown>
 }
 
 /**
@@ -101,29 +101,28 @@ export function computeSettlement(input: SettlementInput): Settlement {
 }
 
 export async function calculateMonthlyPayout(driverId: string, month: Date) {
-  const db = useDb()
   const config = await getSystemConfig()
 
-  const { data: driver, error } = await (db.rpc as any)('get_driver_payout_data', {
+  const { data: driver, error } = await callRpc<Array<Record<string, unknown>>>('get_driver_payout_data', {
     p_driver_id: driverId,
   })
 
-  if (error || !driver || (driver as any[]).length === 0) {
+  const d = driver?.[0] as { full_name?: string | null, is_member?: boolean, is_exempt?: boolean, custom_commission_pct?: number | null, custom_monthly_fee?: number | null } | undefined
+  if (error || !d) {
     throw new Error('Driver not found')
   }
 
-  const d = driver[0] as any
 
   const monthStart = new Date(month.getFullYear(), month.getMonth(), 1)
   const monthEnd = new Date(month.getFullYear(), month.getMonth() + 1, 0, 23, 59, 59)
 
-  const { data: trips } = await (db.rpc as any)('get_trips_for_payout', {
+  const { data: trips } = await callRpc<Array<Record<string, unknown>>>('get_trips_for_payout', {
     p_driver_id: driverId,
     p_month_start: monthStart.toISOString(),
     p_month_end: monthEnd.toISOString(),
   })
 
-  const gross = (trips || []).reduce((sum: number, t: any) => sum + Number(t.total_price), 0)
+  const gross = (trips || []).reduce((sum: number, t) => sum + Number(t.total_price ?? 0), 0)
 
   const settlement = computeSettlement({
     gross,

@@ -24,7 +24,7 @@ export default defineEventHandler(async (event) => {
       .order('is_favorite', { ascending: false })
       .limit(3)
 
-    for (const addr of (saved || []) as any[]) {
+    for (const addr of (saved || []) as Array<Record<string, unknown>>) {
       results.push({
         id: addr.id as string,
         label: addr.label as string,
@@ -41,7 +41,7 @@ export default defineEventHandler(async (event) => {
     const nominatimUrl = process.env.NOMINATIM_URL || 'https://nominatim.openstreetmap.org'
 
     try {
-      const osmResults = await $fetch<Array<{ lat: string; lon: string; display_name: string; address: any }>>(
+      const osmResults = await $fetch<Array<{ lat: string; lon: string; display_name: string; address?: Record<string, unknown> }>>(
         `${nominatimUrl}/search`,
         {
           params: { q, format: 'json', limit: 5, countrycodes: 'es', addressdetails: 1 },

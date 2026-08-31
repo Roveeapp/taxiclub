@@ -1,8 +1,7 @@
 export default defineEventHandler(async (event) => {
   const user = requireAuth(event)
-  const db = useDb()
 
-  const { data: vehicles, error } = await (db.rpc as any)('get_vehicles_with_accessories', {
+  const { data: vehicles, error } = await callRpc<Array<Record<string, unknown>>>('get_vehicles_with_accessories', {
     p_driver_id: user.id,
   })
 

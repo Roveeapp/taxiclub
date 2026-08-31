@@ -65,6 +65,27 @@ export const porcentaje = z.number().min(0, 'no puede ser negativo').max(100, 'n
 /** Contraseña: el mínimo de Supabase Auth es 6, no imponemos más aquí. */
 export const password = z.string().min(6, 'necesita al menos 6 caracteres').max(200)
 
+/**
+ * Número opcional que además admite la cadena vacía como «borrar el valor».
+ *
+ * Los formularios del panel envían '' cuando se vacía un campo numérico, y las
+ * rutas lo interpretaban como null para volver al valor global. Al tipar esos
+ * campos como número puro, vaciar un campo pasaba a devolver 400 en lugar de
+ * limpiarlo — una regresión que este ayudante evita normalizando '' a null.
+ */
+export function numeroBorrable(
+  schema: z.ZodNumber,
+): z.ZodType<number | null | undefined, z.ZodTypeDef, unknown> {
+  // El tipo de retorno se declara a mano a propósito. Ni z.union ni
+  // z.preprocess propagan bien el tipo de salida a través de ZodType<T>: con la
+  // unión salía `string | number`, y con preprocess salía `{}`. Declararlo hace
+  // que readValidated infiera exactamente `number | null | undefined`.
+  return z.preprocess(
+    v => (v === '' ? null : v),
+    schema.nullable().optional(),
+  ) as z.ZodType<number | null | undefined, z.ZodTypeDef, unknown>
+}
+
 // ── Reservas ─────────────────────────────────────────────────────────────────
 
 export const crearReservaSchema = z.object({
@@ -202,7 +223,8 @@ export const perfilTaxistaSchema = z.object({
 })
 
 export const tarifaSchema = z.object({
-  pricePerKm: z.number().positive('tiene que ser mayor que cero').max(20, 'parece demasiado alta'),
+  // Admite '' y null: vaciar el campo devuelve al conductor a la tarifa global
+  pricePerKm: numeroBorrable(z.number().positive('tiene que ser mayor que cero').max(100, 'parece demasiado alta')),
 })
 
 const ofertaBase = {
@@ -235,13 +257,20 @@ export const disponibilidadSchema = z.object({
   date: isoDate.optional(),
   dateFrom: isoDate.optional(),
   dateTo: isoDate.optional(),
-  hourFrom: z.number().int().min(0).max(23).nullish(),
-  hourTo: z.number().int().min(0).max(24).nullish(),
+  // Formato antiguo, aún soportado: una sola franja como HH:MM
+  hourFrom: z.string().regex(/^\d{2}:\d{2}$/, 'usa el formato HH:MM').nullish(),
+  hourTo: z.string().regex(/^\d{2}:\d{2}$/, 'usa el formato HH:MM').nullish(),
   isAvailable: z.boolean().optional(),
+  /**
+   * Franjas horarias en formato HH:MM, que es lo que envía
+   * AvailabilityCalendar.vue: `{ from: '09:00', to: '15:00' }`. El primer
+   * esquema que escribí las declaró como { hourFrom, hourTo } numéricos, lo que
+   * habría rechazado el cuerpo real y roto la disponibilidad.
+   */
   timeSlots: z.array(z.object({
-    hourFrom: z.number().int().min(0).max(23),
-    hourTo: z.number().int().min(0).max(24),
-  }).passthrough()).max(24).optional(),
+    from: z.string().regex(/^\d{2}:\d{2}$/, 'usa el formato HH:MM'),
+    to: z.string().regex(/^\d{2}:\d{2}$/, 'usa el formato HH:MM'),
+  })).max(6, 'como máximo 6 franjas por día').optional(),
 }).refine(d => Boolean(d.date || (d.dateFrom && d.dateTo)), {
   message: 'hace falta una fecha, o un rango con inicio y fin',
   path: ['date'],
@@ -252,9 +281,9 @@ export const zonaSchema = z.object({
   mode: z.enum(['exclude', 'fixed_price'], {
     errorMap: () => ({ message: 'el modo tiene que ser exclude o fixed_price' }),
   }),
-  fromKm: z.number().nonnegative().max(1000).nullish(),
-  toKm: z.number().nonnegative().max(1000).nullish(),
-  fixedPrice: eurosPositivos.nullish(),
+  fromKm: numeroBorrable(z.number().nonnegative().max(1000)),
+  toKm: numeroBorrable(z.number().nonnegative().max(1000)),
+  fixedPrice: numeroBorrable(eurosPositivos),
 }).refine(d => d.mode !== 'fixed_price' || (d.fixedPrice != null && d.fixedPrice > 0), {
   message: 'con modo fixed_price hace falta un precio mayor que cero',
   path: ['fixedPrice'],
@@ -319,8 +348,8 @@ export const editarConductorSchema = z.object({
   isExempt: z.boolean().optional(),
   isActive: z.boolean().optional(),
   isApproved: z.boolean().optional(),
-  customMonthlyFee: eurosPositivos.nullish(),
-  customCommissionPct: porcentaje.nullish(),
+  customMonthlyFee: numeroBorrable(eurosPositivos),
+  customCommissionPct: numeroBorrable(porcentaje),
 })
 
 export const asignarReservaSchema = z.object({ driverId: uuid })

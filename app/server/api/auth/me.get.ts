@@ -13,7 +13,7 @@ export default defineEventHandler(async (event) => {
   }
 
   let driverData = null
-  if ((userData as any).role === 'driver') {
+  if (userData.role === 'driver') {
     const { data: driver } = await db
       .from('drivers')
       .select('*')
@@ -22,5 +22,5 @@ export default defineEventHandler(async (event) => {
     driverData = driver || null
   }
 
-  return { ...(userData as any), driver: driverData }
+  return { ...userData, driver: driverData }
 })

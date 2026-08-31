@@ -15,22 +15,22 @@ export default defineEventHandler(async (event) => {
     .limit(300)
 
   if (error) throw createError({ statusCode: 500, message: error.message })
-  const rows = (offers || []) as any[]
+  const rows = offers || []
 
   // Nombres de conductores y paradas
-  const driverIds = [...new Set(rows.map(o => o.driver_id).filter(Boolean))]
-  const stationIds = [...new Set(rows.map(o => o.destination_station_id).filter(Boolean))]
+  const driverIds = [...new Set(rows.map(o => o.driver_id).filter((id): id is string => Boolean(id)))]
+  const stationIds = [...new Set(rows.map(o => o.destination_station_id).filter((id): id is string => Boolean(id)))]
 
   const driverNames = new Map<string, string>()
   if (driverIds.length > 0) {
     const { data: users } = await db.from('users').select('id, full_name').in('id', driverIds)
-    for (const u of (users || []) as any[]) driverNames.set(u.id, u.full_name)
+    for (const u of users || []) driverNames.set(u.id, u.full_name || '—')
   }
 
   const stationNames = new Map<string, string>()
   if (stationIds.length > 0) {
     const { data: stations } = await db.from('stations').select('id, name').in('id', stationIds)
-    for (const s of (stations || []) as any[]) stationNames.set(s.id, s.name)
+    for (const s of stations || []) stationNames.set(s.id, s.name)
   }
 
   const totals = {
@@ -47,7 +47,7 @@ export default defineEventHandler(async (event) => {
     offers: rows.map(o => ({
       ...o,
       driver_name: driverNames.get(o.driver_id) || '—',
-      destination_station_name: stationNames.get(o.destination_station_id) || '—',
+      destination_station_name: (o.destination_station_id ? stationNames.get(o.destination_station_id) : null) || '—',
     })),
   }
 })

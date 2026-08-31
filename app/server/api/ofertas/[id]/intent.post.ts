@@ -14,7 +14,7 @@ export default defineEventHandler(async (event) => {
     .single()
 
   if (error || !offer) throw createError({ statusCode: 404, message: 'Oferta no encontrada' })
-  const o = offer as Record<string, any>
+  const o = offer as { status: string, available_until: string, final_price: number | string, deposit_amount?: number | string | null, [k: string]: unknown }
 
   if (o.status !== 'active') {
     throw createError({ statusCode: 400, message: 'Esta oferta ya no está disponible' })

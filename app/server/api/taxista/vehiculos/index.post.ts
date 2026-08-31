@@ -20,7 +20,7 @@ export default defineEventHandler(async (event) => {
       is_large_vehicle: body.isLargeVehicle || false,
     })
     .select()
-    .single()
+    .single<{ id: string }>()
 
   if (insertError || !vehicle) {
     throw createError({ statusCode: 500, message: insertError?.message || 'Failed to create vehicle' })

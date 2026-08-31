@@ -6,8 +6,8 @@ export default defineEventHandler(async (event) => {
   const body = await readValidated(event, tarifaSchema)
 
   let perKm: number | null = null
-  if (body?.pricePerKm !== null && body?.pricePerKm !== undefined && body?.pricePerKm !== '') {
-    perKm = Number(body.pricePerKm)
+  if (body.pricePerKm !== null && body.pricePerKm !== undefined) {
+    perKm = body.pricePerKm
     if (Number.isNaN(perKm) || perKm <= 0 || perKm > 100) {
       throw createError({ statusCode: 400, message: 'Tarifa no válida (entre 0,01 y 100 €/km)' })
     }

@@ -16,19 +16,19 @@ export default defineEventHandler(async (event) => {
     // El token solo autoriza reservas de invitado
     query = query.is('client_id', null)
   }
-  const { data: booking, error: findError } = await query.single()
+  const { data: booking, error: findError } = await query.single<{ status: string, pickup_at: string, stripe_payment_intent_id: string | null }>()
 
   if (findError || !booking) {
     throw createError({ statusCode: 404, message: 'Booking not found' })
   }
 
-  if ((booking as any).status === 'cancelled') {
+  if (booking.status === 'cancelled') {
     throw createError({ statusCode: 400, message: 'Booking already cancelled' })
   }
 
   const config = await getSystemConfig()
   const maxCancelHours = Number(config.max_cancel_hours_before || 24)
-  const pickupAt = new Date((booking as any).pickup_at)
+  const pickupAt = new Date(booking.pickup_at)
   const hoursUntilPickup = (pickupAt.getTime() - Date.now()) / (1000 * 60 * 60)
 
   if (hoursUntilPickup < maxCancelHours) {
@@ -49,7 +49,7 @@ export default defineEventHandler(async (event) => {
   }
 
   // Liberar la pre-autorización (best-effort)
-  const piId = (booking as any).stripe_payment_intent_id as string | undefined
+  const piId = booking.stripe_payment_intent_id ?? undefined
   if (piId && !piId.startsWith('pi_mock_')) {
     try {
       const stripe = useStripe()

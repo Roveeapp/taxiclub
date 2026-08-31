@@ -15,7 +15,7 @@ async function useResend() {
   return resend
 }
 
-function renderTemplate(template: string, data: Record<string, any>): string {
+function renderTemplate(template: string, data: Record<string, unknown>): string {
   switch (template) {
     case 'new-booking':
       return `
@@ -114,7 +114,7 @@ function renderTemplate(template: string, data: Record<string, any>): string {
   }
 }
 
-export async function sendEmail(to: string, subject: string, template: string, data: Record<string, any>) {
+export async function sendEmail(to: string, subject: string, template: string, data: Record<string, unknown>) {
   const r = await useResend()
   const html = renderTemplate(template, data)
   const from = (await getIntegration('email_from')) || 'noreply@clubtaxisasturias.es'
@@ -138,14 +138,13 @@ export async function sendSMS(to: string, message: string) {
   await client.messages.create({ body: message, from, to })
 }
 
-export async function notifyDriver(driverId: string, booking: any) {
-  const db = useDb()
-  const { data: driver } = await (db.rpc as any)('notify_driver_data', {
+export async function notifyDriver(driverId: string, booking: ReservaNotificable) {
+  const { data: driver } = await callRpc<Array<Record<string, unknown>>>('notify_driver_data', {
     p_driver_id: driverId,
   })
 
-  if (!driver || (driver as any[]).length === 0) return
-  const d = driver[0] as any
+  const d = driver?.[0] as { email?: string | null, phone?: string | null, full_name?: string | null, push_subscription?: unknown, [k: string]: unknown } | undefined
+  if (!d?.email) return
 
   const config = useRuntimeConfig()
   const appUrl = config.public.appUrl || 'https://clubtaxisasturias.es'
@@ -172,7 +171,7 @@ export async function notifyDriver(driverId: string, booking: any) {
  * Para invitados el enlace incluye un token firmado que les permite
  * consultar y cancelar la reserva sin cuenta.
  */
-export async function notifyBookingCreated(booking: any) {
+export async function notifyBookingCreated(booking: ReservaNotificable) {
   const db = useDb()
   const config = useRuntimeConfig()
   const appUrl = config.public.appUrl || 'https://clubtaxisasturias.es'
@@ -180,14 +179,14 @@ export async function notifyBookingCreated(booking: any) {
   let email: string | null = booking.guest_email || null
   if (!email && booking.client_id) {
     const { data: u } = await db.from('users').select('email').eq('id', booking.client_id).single()
-    email = (u as any)?.email || null
+    email = (u as { email?: string | null } | null)?.email || null
   }
   if (!email) return
 
   let stationName = booking.origin_address || ''
   if (booking.origin_station_id) {
     const { data: s } = await db.from('stations').select('name').eq('id', booking.origin_station_id).single()
-    stationName = (s as any)?.name || stationName
+    stationName = (s as { name?: string } | null)?.name || stationName
   }
 
   const isGuest = !booking.client_id
@@ -203,13 +202,13 @@ export async function notifyBookingCreated(booking: any) {
 }
 
 export async function notifyClientConfirmed(bookingId: string) {
-  const db = useDb()
-  const { data } = await (db.rpc as any)('notify_client_confirmed_data', {
+  const { data } = await callRpc<Array<Record<string, unknown>>>('notify_client_confirmed_data', {
     p_booking_id: bookingId,
   })
 
-  if (!data || (data as any[]).length === 0) return
-  const row = data[0] as any
+  if (!data || (data as Array<Record<string, unknown>>).length === 0) return
+  const row = data?.[0] as { email?: string | null, confirmed_plate?: string | null, confirmed_phone?: string | null, [k: string]: unknown } | undefined
+  if (!row?.email) return
 
   const config = useRuntimeConfig()
   const appUrl = config.public.appUrl || 'https://clubtaxisasturias.es'
@@ -222,13 +221,13 @@ export async function notifyClientConfirmed(bookingId: string) {
 }
 
 export async function notifyClientCancelled(bookingId: string, reason: string) {
-  const db = useDb()
-  const { data } = await (db.rpc as any)('notify_client_cancelled_data', {
+  const { data } = await callRpc<Array<Record<string, unknown>>>('notify_client_cancelled_data', {
     p_booking_id: bookingId,
   })
 
-  if (!data || (data as any[]).length === 0) return
-  const row = data[0] as any
+  if (!data || (data as Array<Record<string, unknown>>).length === 0) return
+  const row = data?.[0] as { email?: string | null, confirmed_plate?: string | null, confirmed_phone?: string | null, [k: string]: unknown } | undefined
+  if (!row?.email) return
 
   await sendEmail(row.email, 'Reserva cancelada', 'booking-cancelled', { reason })
 }

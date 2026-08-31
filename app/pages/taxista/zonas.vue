@@ -391,7 +391,6 @@ let circleLayers: any[] = []
 async function initMap() {
   if (!mapEl.value || map) return
   const mod = await import('leaflet')
-  // @ts-expect-error css import
   await import('leaflet/dist/leaflet.css')
   L = mod.default || mod
   map = L.map(mapEl.value).setView([43.3619, -5.8594], 10)

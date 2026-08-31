@@ -1,7 +1,6 @@
 export default defineEventHandler(async (event) => {
   requireRole(event, 'admin')
   const body = await readValidated(event, configuracionSchema)
-  const db = useDb()
 
   const upserts = Object.entries(body).map(([key, value]) => ({
     key,
@@ -9,7 +8,7 @@ export default defineEventHandler(async (event) => {
     updated_at: new Date().toISOString(),
   }))
 
-  const { error } = await db.from('system_config').upsert(upserts as any, {
+  const { error } = await writeTable('system_config').upsert(upserts, {
     onConflict: 'key',
   })
 

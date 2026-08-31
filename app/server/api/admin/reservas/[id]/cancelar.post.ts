@@ -28,7 +28,7 @@ export default defineEventHandler(async (event) => {
     .single()
 
   // Liberar la pre-autorización (best-effort)
-  const piId = (booking as any)?.stripe_payment_intent_id as string | undefined
+  const piId = (booking as { stripe_payment_intent_id?: string | null } | null)?.stripe_payment_intent_id ?? undefined
   if (piId && !piId.startsWith('pi_mock_')) {
     try {
       const stripe = useStripe()

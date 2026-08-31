@@ -12,7 +12,7 @@ export default defineEventHandler(async (event) => {
       lat: body.lat || null,
       lng: body.lng || null,
       is_favorite: body.is_favorite || false,
-    } as any)
+    })
     .select('id, label, address, lat, lng, is_favorite')
     .single()
 
