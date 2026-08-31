@@ -68,13 +68,44 @@ Role-scoped routes are prefixed: `/api/taxista/*` (drivers), `/api/admin/*` (adm
 
 ### Scheduled Tasks
 
-Configured in `nuxt.config.ts` under `nitro.experimental.tasks` and `scheduledTasks`:
-- `*/5 * * * *` → `expire-offers`
-- `*/15 * * * *` → `remind-unconfirmed`
-- `0 8 1 * *` → `process-payouts`
-- `0 9 1 * *` → `charge-memberships`
+Cron jobs live in the database (`pg_cron`), not in Nitro. Each one does an
+`net.http_post` to the `scheduled-tasks` Edge Function with a `{ "task": ... }`
+body:
 
-Tasks live in `app/server/tasks/`.
+| Schedule | Task | Status |
+|---|---|---|
+| `*/5 * * * *` | `expire-offers` | implemented (marks expired `return_offers`) |
+| `*/15 * * * *` | `remind-unconfirmed` | implemented, but needs the `RESEND_API_KEY` function secret to actually send email |
+| `0 8 1 * *` | `process-payouts` | **stub** — counts drivers, pays nobody. Real logic sits unused in `app/server/services/payouts.ts` |
+| `0 9 1 * *` | `charge-memberships` | **stub** — logs `Charging fee to driver X`, charges nothing |
+
+The task code is in `supabase/functions/scheduled-tasks/`. It authenticates by
+comparing the `Authorization` header against `SUPABASE_SERVICE_ROLE_KEY`, which
+is why the function is deployed with `verify_jwt = false`.
+
+The jobs read that key from Supabase Vault (`vault.decrypted_secrets`, secret
+name `service_role_key`) — it used to be hardcoded in each job's command text.
+To rotate it, one statement is enough:
+
+```sql
+SELECT vault.update_secret(
+  (SELECT id FROM vault.secrets WHERE name = 'service_role_key'),
+  '<new-key>'
+);
+```
+
+Inspect the jobs with `SELECT * FROM cron.job`, their outcome with
+`cron.job_run_details`, and the HTTP response of each call with
+`net._http_response`. Watch out: `job_run_details` reports `succeeded` as long
+as the SQL ran, even when the HTTP call returned 404 or 500 — the real result is
+only visible in `net._http_response`.
+
+`stripe-webhook` is **not deployed**, on purpose: its handler is commented out,
+so deploying it would answer Stripe with 200 while doing nothing, turning a
+loud failure into a silent one. See `supabase/functions/stripe-webhook/`.
+
+There is no working server-side payment confirmation: nothing updates a booking
+from a Stripe event.
 
 ### Notification Services
 
