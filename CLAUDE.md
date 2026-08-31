@@ -94,11 +94,28 @@ SELECT vault.update_secret(
 );
 ```
 
-Inspect the jobs with `SELECT * FROM cron.job`, their outcome with
-`cron.job_run_details`, and the HTTP response of each call with
-`net._http_response`. Watch out: `job_run_details` reports `succeeded` as long
-as the SQL ran, even when the HTTP call returned 404 or 500 — the real result is
-only visible in `net._http_response`.
+**Never trust `cron.job_run_details` alone.** It reports `succeeded` as long as
+the SQL ran, even when the HTTP call returned 404 or 401 — which is how all four
+tasks stayed broken for months with the cron history showing green.
+
+Use the health views instead, which cross both sources:
+
+```sql
+SELECT * FROM public.cron_task_status;  -- one row per task, last real outcome
+SELECT * FROM public.cron_task_health;  -- every run, with its HTTP response
+```
+
+They join on the `request_id` that each task now records in
+`public.cron_task_runs`. A purely time-based join would be ambiguous: the `*/5`
+and `*/15` tasks fire together at :00, :15, :30 and :45, so it would attribute
+responses to the wrong task four times an hour. `net._http_response` stores
+neither URL nor body, so capturing the id is the only exact way.
+
+`GET /api/admin/tareas` exposes the same thing, with a `hayProblemas` flag for
+the panel.
+
+When editing a task, remember `cron.schedule()` **reactivates** the job it
+reprograms — re-pause the money tasks afterwards if payments are still off.
 
 `stripe-webhook` is **not deployed**, on purpose: its handler is commented out,
 so deploying it would answer Stripe with 200 while doing nothing, turning a

@@ -36,7 +36,3 @@
 INSERT INTO public.system_config (key, value)
 VALUES ('payments_enabled', 'false')
 ON CONFLICT (key) DO NOTHING;
-
-SELECT cron.alter_job(jobid, active := false)
-FROM cron.job
-WHERE jobname IN ('process-payouts', 'charge-memberships');
