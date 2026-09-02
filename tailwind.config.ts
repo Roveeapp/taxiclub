@@ -66,6 +66,15 @@ export default <Config>{
           container: '#93000a',
         },
         outline: { DEFAULT: '#929095', variant: '#47464b' },
+        // Tarjetas blancas sobre la app oscura: el formulario de búsqueda y el
+        // de acceso. Los tonos de `on-surface` están pensados para leerse sobre
+        // fondo oscuro y aquí no sirven. Ver main.css.
+        'on-light': {
+          DEFAULT: '#0f172a',
+          variant: '#334155',
+          muted: '#94a3b8',
+        },
+        'light-border': '#e2e8f0',
         status: {
           success: '#1a9e6a',
           warning: '#e5990a',

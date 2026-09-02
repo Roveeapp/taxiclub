@@ -236,7 +236,7 @@
 .pay-btn-gold {
   background: var(--secondary);
   border-color: var(--secondary);
-  color: #0c0c13;
+  color: var(--color-brand-dark);
   font-weight: 600;
 }
 .pay-btn-red:hover:not(:disabled) {

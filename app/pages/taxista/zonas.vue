@@ -418,7 +418,10 @@ function drawZones() {
   let maxRadius = 5000
   for (const z of sorted) {
     const isExclude = z.mode === 'exclude'
-    const color = isExclude ? '#ef4444' : '#fabd32'
+    // Leaflet quiere una cadena, así que el token se lee del tema
+    const color = isExclude
+      ? colorDeToken('--status-error', '#d93025')
+      : colorDeToken('--color-brand-gold', '#fabd32')
     const outer = L.circle(center, {
       radius: Number(z.radius_to_km) * 1000,
       color,
@@ -607,8 +610,8 @@ async function removeRoute(r: any) {
 }
 .mode-btn-exclude {
   background: rgba(239, 68, 68, 0.15);
-  border-color: #ef4444;
-  color: #ff8a80;
+  border-color: var(--status-error);
+  color: var(--error);
   font-weight: 600;
 }
 .mode-btn-fixed {

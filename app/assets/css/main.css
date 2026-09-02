@@ -61,6 +61,21 @@
     --status-error: #d93025;
     --status-info: #2563eb;
 
+    /*
+     * Panel claro sobre fondo oscuro.
+     *
+     * El formulario de búsqueda y el de acceso son tarjetas BLANCAS encima de
+     * la app oscura, así que necesitan su propia familia de tonos: los de
+     * `--on-surface` están pensados para leerse sobre oscuro y aquí no valen.
+     * Esos cuatro valores estaban escritos a mano —dieciséis de los veintiocho
+     * hexadecimales inline del proyecto— porque no existía el token, no por
+     * descuido. Existir es lo que evita que el diecisiete sea otro tono.
+     */
+    --on-light: #0f172a;
+    --on-light-variant: #334155;
+    --on-light-muted: #94a3b8;
+    --light-border: #e2e8f0;
+
     --gold-50: #fffbeb;
     --gold-100: #fef3c7;
     --gold-200: #fde68a;

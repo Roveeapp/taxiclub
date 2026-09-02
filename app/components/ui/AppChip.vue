@@ -65,19 +65,19 @@ defineEmits<{
 .chip-active {
   background: var(--secondary);
   border-color: var(--secondary);
-  color: #0c0c13;
+  color: var(--color-brand-dark);
   font-weight: 600;
   box-shadow: 0 2px 10px rgba(250, 189, 50, 0.25);
 }
 
 .chip-active .chip-icon,
 .chip-active:hover .chip-icon {
-  color: #0c0c13;
+  color: var(--color-brand-dark);
 }
 
 .chip-active:hover {
   border-color: var(--secondary);
-  color: #0c0c13;
+  color: var(--color-brand-dark);
   filter: brightness(1.05);
 }
 </style>

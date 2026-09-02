@@ -386,10 +386,13 @@ async function mountStripeElements(pk: string) {
     clientSecret,
     appearance: {
       theme: 'night',
+      // Los colores salen del tema, no copiados aquí: el oro de marca repetido
+      // dentro de la configuración de Stripe es el que nadie encontraría el día
+      // que la marca cambie. Ver composables/useTokens.ts.
       variables: {
-        colorPrimary: '#fabd32',
-        colorBackground: '#1f1f29',
-        colorText: '#e4e1ef',
+        colorPrimary: colorDeToken('--color-brand-gold', '#fabd32'),
+        colorBackground: colorDeToken('--surface-container', '#1f1f29'),
+        colorText: colorDeToken('--on-surface', '#e4e1ef'),
         borderRadius: '12px',
         fontFamily: 'Inter, system-ui, sans-serif',
       },

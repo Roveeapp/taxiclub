@@ -515,7 +515,7 @@ async function applyBatch() {
 .state-btn-off {
   background: rgba(217, 48, 37, 0.15);
   border-color: var(--status-error);
-  color: #ff8a80;
+  color: var(--error);
   font-weight: 600;
 }
 

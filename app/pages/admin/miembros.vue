@@ -92,7 +92,7 @@
   padding: 8px 12px;
   font-size: 13px;
   font-weight: 600;
-  color: #0c0c13;
+  color: var(--color-brand-dark);
   outline: none;
   cursor: pointer;
 }

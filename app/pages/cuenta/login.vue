@@ -243,18 +243,18 @@ function translateAuthError(message?: string) {
 .login-input {
   width: 100%;
   height: 3rem;
-  background: #ffffff;
+  background: var(--color-brand-white);
   border: 2px solid var(--secondary);
   border-radius: 0.75rem;
   padding: 0 0.75rem 0 2.75rem;
   font-size: 0.875rem;
   font-weight: 500;
-  color: #0f172a;
+  color: var(--on-light);
   outline: none;
   transition: box-shadow 0.15s ease;
 }
 .login-input::placeholder {
-  color: #94a3b8;
+  color: var(--on-light-muted);
   font-weight: 400;
 }
 .login-input:focus {
