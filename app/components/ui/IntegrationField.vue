@@ -46,22 +46,22 @@ const effectivePlaceholder = computed(() => {
 <style scoped>
 .int-input {
   width: 100%;
-  background: var(--surface-container);
-  border: 1px solid var(--outline-variant);
+  background: rgb(var(--surface-container));
+  border: 1px solid rgb(var(--outline-variant));
   border-radius: 10px;
   padding: 10px 14px;
   font-size: 13px;
   font-family: ui-monospace, monospace;
-  color: var(--on-surface);
+  color: rgb(var(--on-surface));
   outline: none;
   transition: border-color 0.15s ease;
 }
 .int-input:focus {
-  border-color: var(--secondary);
+  border-color: rgb(var(--secondary));
 }
 .int-input::placeholder {
   font-family: Inter, system-ui, sans-serif;
-  color: var(--on-surface-variant);
+  color: rgb(var(--on-surface-variant));
   opacity: 0.5;
 }
 </style>

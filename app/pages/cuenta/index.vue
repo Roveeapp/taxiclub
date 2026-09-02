@@ -163,8 +163,11 @@ const checkboxPt = {
   input: { class: '!accent-secondary' },
 }
 
+// El rol lo dice el servidor: un administrador promovido en la tabla tenía
+// metadata de `driver` y aquí se le mostraba «Taxista». Ver composables/useRol.ts.
+const { rol } = useRol()
 const roleLabel = computed(() => {
-  switch (user.value?.user_metadata?.role) {
+  switch (rol.value) {
     case 'client': return 'Cliente'
     case 'driver': return 'Taxista'
     case 'admin': return 'Administrador'

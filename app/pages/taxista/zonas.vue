@@ -577,20 +577,20 @@ async function removeRoute(r: any) {
 <style scoped>
 .zone-input {
   width: 100%;
-  background: var(--surface-container);
-  border: 1px solid var(--outline-variant);
+  background: rgb(var(--surface-container));
+  border: 1px solid rgb(var(--outline-variant));
   border-radius: 10px;
   padding: 9px 12px;
   font-size: 14px;
-  color: var(--on-surface);
+  color: rgb(var(--on-surface));
   outline: none;
   transition: border-color 0.15s ease;
 }
 .zone-input:focus {
-  border-color: var(--secondary);
+  border-color: rgb(var(--secondary));
 }
 .zone-input option {
-  background: var(--surface-container-low);
+  background: rgb(var(--surface-container-low));
 }
 
 .mode-btn {
@@ -600,9 +600,9 @@ async function removeRoute(r: any) {
   gap: 6px;
   padding: 9px 12px;
   border-radius: 10px;
-  border: 1px solid var(--outline-variant);
-  background: var(--surface-container);
-  color: var(--on-surface-variant);
+  border: 1px solid rgb(var(--outline-variant));
+  background: rgb(var(--surface-container));
+  color: rgb(var(--on-surface-variant));
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
@@ -610,14 +610,14 @@ async function removeRoute(r: any) {
 }
 .mode-btn-exclude {
   background: rgba(239, 68, 68, 0.15);
-  border-color: var(--status-error);
-  color: var(--error);
+  border-color: rgb(var(--status-error));
+  color: rgb(var(--error));
   font-weight: 600;
 }
 .mode-btn-fixed {
   background: rgba(250, 189, 50, 0.15);
-  border-color: var(--secondary);
-  color: var(--secondary);
+  border-color: rgb(var(--secondary));
+  color: rgb(var(--secondary));
   font-weight: 600;
 }
 
@@ -628,7 +628,7 @@ async function removeRoute(r: any) {
   border-radius: 8px;
   border: none;
   background: transparent;
-  color: var(--on-surface-variant);
+  color: rgb(var(--on-surface-variant));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -637,7 +637,7 @@ async function removeRoute(r: any) {
 }
 .remove-btn:hover {
   background: rgba(217, 48, 37, 0.15);
-  color: var(--status-error);
+  color: rgb(var(--status-error));
 }
 
 /* AutoComplete de rutas fijas (tema oscuro) */
@@ -650,13 +650,13 @@ async function removeRoute(r: any) {
   top: 50%;
   transform: translateY(-50%);
   z-index: 2;
-  color: var(--secondary);
+  color: rgb(var(--secondary));
   pointer-events: none;
 }
 :deep(.route-ac-wrap .p-autocomplete) {
-  border: 1px solid var(--outline-variant) !important;
+  border: 1px solid rgb(var(--outline-variant)) !important;
   border-radius: 10px !important;
-  background: var(--surface-container) !important;
+  background: rgb(var(--surface-container)) !important;
   padding: 0 !important;
   min-height: 38px !important;
   display: flex !important;
@@ -673,20 +673,20 @@ async function removeRoute(r: any) {
   border-radius: 0 !important;
   font-size: 14px !important;
   font-weight: 400 !important;
-  color: var(--on-surface) !important;
+  color: rgb(var(--on-surface)) !important;
   min-height: 36px !important;
 }
 :deep(.route-ac-wrap .p-autocomplete-input::placeholder) {
-  color: var(--on-surface-variant) !important;
+  color: rgb(var(--on-surface-variant)) !important;
   opacity: 0.5 !important;
 }
 :deep(.route-ac-wrap .p-autocomplete:focus-within) {
-  border-color: var(--secondary) !important;
+  border-color: rgb(var(--secondary)) !important;
 }
 :deep(.route-ac-wrap .p-autocomplete-overlay) {
-  border: 1px solid var(--outline-variant) !important;
+  border: 1px solid rgb(var(--outline-variant)) !important;
   border-radius: 10px !important;
-  background: var(--surface-container-low) !important;
+  background: rgb(var(--surface-container-low)) !important;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4) !important;
   margin-top: 4px !important;
   width: 100% !important;
@@ -696,13 +696,13 @@ async function removeRoute(r: any) {
 }
 :deep(.route-ac-wrap .p-autocomplete-option) {
   padding: 8px 12px !important;
-  color: var(--on-surface) !important;
+  color: rgb(var(--on-surface)) !important;
   cursor: pointer !important;
   border-radius: 0 !important;
   margin: 0 !important;
 }
 :deep(.route-ac-wrap .p-autocomplete-option:hover),
 :deep(.route-ac-wrap .p-autocomplete-option-selected) {
-  background: var(--surface-container) !important;
+  background: rgb(var(--surface-container)) !important;
 }
 </style>

@@ -206,9 +206,9 @@ async function handleSubmit() {
   gap: 12px;
   padding: 10px 14px;
   border-radius: 12px;
-  border: 1px solid var(--outline-variant);
-  background: var(--surface-container);
-  color: var(--on-surface);
+  border: 1px solid rgb(var(--outline-variant));
+  background: rgb(var(--surface-container));
+  color: rgb(var(--on-surface));
   cursor: pointer;
   transition: all 0.15s ease;
 }
@@ -216,7 +216,7 @@ async function handleSubmit() {
   border-color: rgba(250, 189, 50, 0.5);
 }
 .vehicle-option-active {
-  border-color: var(--secondary);
+  border-color: rgb(var(--secondary));
   background: rgba(250, 189, 50, 0.08);
 }
 

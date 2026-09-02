@@ -51,8 +51,8 @@ function change(delta: number) {
   justify-content: space-between;
   gap: 8px;
   width: 100%;
-  background: var(--surface-container);
-  border: 1px solid var(--outline-variant);
+  background: rgb(var(--surface-container));
+  border: 1px solid rgb(var(--outline-variant));
   border-radius: 12px;
   padding: 6px;
 }
@@ -67,7 +67,7 @@ function change(delta: number) {
   align-items: center;
   justify-content: center;
   background: rgba(250, 189, 50, 0.12);
-  color: var(--secondary);
+  color: rgb(var(--secondary));
   cursor: pointer;
   transition: background 0.15s ease, transform 0.1s ease;
 }
@@ -88,7 +88,7 @@ function change(delta: number) {
 .stepper-value {
   font-size: 15px;
   font-weight: 600;
-  color: var(--on-surface);
+  color: rgb(var(--on-surface));
   text-align: center;
   min-width: 2ch;
   font-variant-numeric: tabular-nums;

@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen" style="background: var(--surface)">
+  <div class="min-h-screen" style="background: rgb(var(--surface))">
     <AppHeader />
     <main class="mx-auto max-w-mobile px-md pb-24">
       <slot />

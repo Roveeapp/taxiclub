@@ -17,5 +17,11 @@
 export function colorDeToken(token: `--${string}`, reserva: string): string {
   if (import.meta.server || typeof document === 'undefined') return reserva
   const valor = getComputedStyle(document.documentElement).getPropertyValue(token).trim()
-  return valor || reserva
+  if (!valor) return reserva
+  // La paleta se guarda en canales RGB —«18 18 28»— porque es el único formato
+  // con el que Tailwind puede aplicar opacidad. Stripe y Leaflet esperan un
+  // color CSS, así que hay que envolverlo. Sin esto recibirían la cadena de
+  // canales tal cual, que no es un color válido, y pintarían sus valores por
+  // defecto sin dar ningún error.
+  return /^\d[\d\s]*$/.test(valor) ? `rgb(${valor})` : valor
 }

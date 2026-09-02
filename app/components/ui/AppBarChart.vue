@@ -8,14 +8,14 @@
           :width="slotW - gap"
           :height="barH(item.count)"
           rx="3"
-          :fill="item.count > 0 ? 'var(--secondary)' : 'var(--outline-variant)'"
+          :fill="item.count > 0 ? 'rgb(var(--secondary))' : 'rgb(var(--outline-variant))'"
           :fill-opacity="item.count > 0 ? (hovered === i ? 1 : 0.85) : 0.4"
           class="transition-all cursor-pointer"
           @mouseenter="hovered = i"
           @mouseleave="hovered = null"
         />
       </g>
-      <line :x1="0" :y1="height - baseline" :x2="width" :y2="height - baseline" stroke="var(--outline-variant)" stroke-width="1" />
+      <line :x1="0" :y1="height - baseline" :x2="width" :y2="height - baseline" stroke="rgb(var(--outline-variant))" stroke-width="1" />
     </svg>
     <div class="flex justify-between text-[10px] text-on-surface-variant mt-1 px-0.5">
       <span>{{ formatDay(data[0]?.date) }}</span>

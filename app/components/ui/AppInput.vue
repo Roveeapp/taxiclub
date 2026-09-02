@@ -79,23 +79,23 @@ const numberPt = {
 /* PrimeVue InputNumber focus overrides */
 :deep(.p-inputnumber input),
 :deep(.p-inputtext) {
-  background: var(--surface-container) !important;
-  color: var(--on-surface) !important;
-  border-color: var(--outline-variant) !important;
+  background: rgb(var(--surface-container)) !important;
+  color: rgb(var(--on-surface)) !important;
+  border-color: rgb(var(--outline-variant)) !important;
   box-shadow: none !important;
 }
 
 :deep(.p-inputnumber input:focus),
 :deep(.p-inputtext:focus) {
-  background: var(--surface-container) !important;
-  color: var(--on-surface) !important;
-  border-color: var(--color-brand-gold) !important;
+  background: rgb(var(--surface-container)) !important;
+  color: rgb(var(--on-surface)) !important;
+  border-color: rgb(var(--color-brand-gold)) !important;
   box-shadow: none !important;
   outline: none !important;
 }
 
 :deep(.p-inputnumber) {
-  background: var(--surface-container) !important;
+  background: rgb(var(--surface-container)) !important;
   width: 100% !important;
   max-width: 100% !important;
 }

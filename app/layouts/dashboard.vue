@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen flex flex-col md:flex-row" style="background: var(--surface-container-lowest)">
+  <div class="min-h-screen flex flex-col md:flex-row" style="background: rgb(var(--surface-container-lowest))">
     
     <!-- Mobile Header -->
     <header class="md:hidden flex items-center justify-between p-4 bg-surface-container border-b border-outline-variant sticky top-0 z-40">
@@ -27,7 +27,7 @@
       v-model:visible="mobileMenuOpen" 
       class="w-[280px] !bg-primary-container !border-none !p-0"
       :pt="{ 
-        root: { style: 'background: var(--primary-container)' },
+        root: { style: 'background: rgb(var(--primary-container))' },
         header: { class: 'hidden' },
         content: { class: '!p-0' }
       }"
@@ -53,6 +53,19 @@
 <script setup lang="ts">
 
 import Drawer from 'primevue/drawer'
+
+/**
+ * Tema claro de los paneles — design.md §7.
+ *
+ * El atributo va en <html> y no en el div de este layout por los teleports:
+ * el diálogo de confirmación y el Drawer de PrimeVue se montan en <body>, así
+ * que fuera de este árbol. Puesto arriba, la variable cascada a todo, incluidos
+ * los teleports, y la barra lateral vuelve a oscuro con su propio atributo.
+ *
+ * La app de cliente no lo lleva y sigue oscura. Nuxt retira el atributo al
+ * desmontar el layout, así que navegar de /admin a / vuelve al tema oscuro.
+ */
+useHead({ htmlAttrs: { 'data-tema': 'claro' } })
 
 const { estado: confirmacion, responder: responderConfirmacion } = useConfirmacion()
 

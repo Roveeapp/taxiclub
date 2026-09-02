@@ -183,35 +183,40 @@ async function handleSubmit() {
   error.value = ''
 
   try {
-    let authedUser: { user_metadata?: Record<string, any> } | null = null
-
     if (isLogin.value) {
-      const { data, error: signInError } = await supabase.auth.signInWithPassword({
+      const { error: signInError } = await supabase.auth.signInWithPassword({
         email: email.value,
         password: password.value,
       })
       if (signInError) throw signInError
-      authedUser = data.user
     } else {
-      const { data, error: signUpError } = await supabase.auth.signUp({
+      const { error: signUpError } = await supabase.auth.signUp({
         email: email.value,
         password: password.value,
         options: {
           data: {
+            // El servidor solo admite `client` y `driver` aquí: el trigger de
+            // alta acota el rol autoasignable. Ver la migración
+            // 20260902081530_trigger_clamps_self_assigned_role.
             role: accountType.value,
             full_name: fullName.value,
           },
         },
       })
       if (signUpError) throw signUpError
-      authedUser = data.user
     }
 
-    const role = authedUser?.user_metadata?.role
-    if (role === 'driver') {
-      await router.push('/taxista')
-    } else if (role === 'admin') {
+    // A dónde va después de entrar lo decide el rol de la tabla, no la
+    // metadata: un administrador promovido cambiando `public.users.role`
+    // aterrizaba en /taxista, o en la portada, según lo que dijera su
+    // metadata. Ver composables/useRol.ts.
+    const { olvidar, asegurar } = useRol()
+    olvidar()
+    const rol = await asegurar()
+    if (rol === 'admin') {
       await router.push('/admin')
+    } else if (rol === 'driver') {
+      await router.push('/taxista')
     } else {
       await router.push('/')
     }
@@ -243,18 +248,18 @@ function translateAuthError(message?: string) {
 .login-input {
   width: 100%;
   height: 3rem;
-  background: var(--color-brand-white);
-  border: 2px solid var(--secondary);
+  background: rgb(var(--color-brand-white));
+  border: 2px solid rgb(var(--secondary));
   border-radius: 0.75rem;
   padding: 0 0.75rem 0 2.75rem;
   font-size: 0.875rem;
   font-weight: 500;
-  color: var(--on-light);
+  color: rgb(var(--on-light));
   outline: none;
   transition: box-shadow 0.15s ease;
 }
 .login-input::placeholder {
-  color: var(--on-light-muted);
+  color: rgb(var(--on-light-muted));
   font-weight: 400;
 }
 .login-input:focus {

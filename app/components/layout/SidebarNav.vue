@@ -1,6 +1,17 @@
 <template>
-  <aside class="h-full w-full text-white flex flex-col" style="background: var(--primary-container)">
-    <div class="p-6 border-b" style="border-color: var(--outline-variant)">
+  <!--
+    La barra lateral se queda OSCURA sobre el panel claro, que es lo que pide
+    design.md §7 («Sidebar: #0c0c13»). Con `data-tema="oscuro"` recupera toda la
+    paleta oscura para su subárbol, en lugar de ir corrigiendo color por color:
+    sin esto, `--on-surface-variant` y `--secondary` se vuelven oscuros en el
+    tema claro y los enlaces del menú quedarían negro sobre negro.
+  -->
+  <aside
+    data-tema="oscuro"
+    class="h-full w-full text-white flex flex-col"
+    style="background: rgb(var(--primary-container))"
+  >
+    <div class="p-6 border-b" style="border-color: rgb(var(--outline-variant))">
       <NuxtLink :to="dashboardLink" class="flex items-center gap-2" @click="$emit('close')">
         <BrandDot />
         <span class="font-semibold text-base">Club Taxis</span>
@@ -20,7 +31,7 @@
         <span>{{ item.label }}</span>
       </NuxtLink>
     </nav>
-    <div class="p-4 border-t" style="border-color: var(--outline-variant)">
+    <div class="p-4 border-t" style="border-color: rgb(var(--outline-variant))">
       <Button
         severity="secondary"
         text
@@ -114,20 +125,20 @@ const handleLogout = async () => {
 }
 
 const logoutPt = {
-  root: { class: '!text-[var(--on-surface-variant)] !py-2 !px-2 !text-sm !font-normal !justify-start !border-none !shadow-none' },
+  root: { class: '!text-[rgb(var(--on-surface-variant))] !py-2 !px-2 !text-sm !font-normal !justify-start !border-none !shadow-none' },
 }
 </script>
 
 <style scoped>
 .nav-idle {
-  color: var(--on-surface-variant);
+  color: rgb(var(--on-surface-variant));
 }
 .nav-idle:hover {
-  color: var(--on-surface);
+  color: rgb(var(--on-surface));
   background: rgba(255, 255, 255, 0.03);
 }
 .nav-active {
-  color: var(--secondary);
+  color: rgb(var(--secondary));
   background: rgba(250, 189, 50, 0.08);
   font-weight: 500;
 }
@@ -139,6 +150,6 @@ const logoutPt = {
   width: 3px;
   height: 22px;
   border-radius: 0 3px 3px 0;
-  background: var(--secondary);
+  background: rgb(var(--secondary));
 }
 </style>

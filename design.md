@@ -62,7 +62,11 @@ gold-50:  #fffbeb   (fondos de badges, hover suave)
 gold-100: #fef3c7   (chips seleccionados, fondo de alertas)
 gold-200: #fde68a   (bordes de elementos gold)
 gold-400: #fabd32   (acento principal — color de marca, `brand-gold`)
-gold-500: #f0b429   (tono más profundo; en el tema de PrimeVue es el 500)
+gold-500: #f0b429   (tono más profundo; es el `primary.500` del tema de
+                     PrimeVue, así que hasta 272a2a9 lo pintaba en TODOS los
+                     botones primarios con etiqueta blanca — 1,86 de contraste.
+                     Ahora el CTA usa los tokens de marca; este tono queda solo
+                     como paso de la rampa)
 gold-600: #d97706   (hover sobre gold, texto sobre gold-100)
 gold-800: #92400e   (texto sobre gold-50)
 ```
@@ -291,7 +295,7 @@ El punto dorado pulsante en el header y en la sección "Última Hora" es un elem
 
 La **app para clientes** usa predominantemente el fondo oscuro `#0c0c13` como pantalla de inicio y navegación, con tarjetas blancas para los formularios. Este contraste es intencional y diferenciador.
 
-El **panel de taxistas** y el **panel de administración** pueden usar un tema más claro (fondo `#f8f8fc`, tarjetas blancas) para facilitar el trabajo prolongado frente a la pantalla.
+El **panel de taxistas** y el **panel de administración** usan un tema claro (fondo `#f8f8fc`, tarjetas blancas) para facilitar el trabajo prolongado frente a la pantalla, a menudo a plena luz dentro de un coche. El cliente entra dos minutos a pedir un taxi, así que su app sigue siendo oscura.
 
 ```
 App cliente:
@@ -304,6 +308,35 @@ Panel taxista / Admin:
   - Tarjetas: #ffffff con border 1px #ebebf0
   - Sidebar: #0c0c13
 ```
+
+### Cómo está implementado
+
+La paleta vive en variables CSS en `app/assets/css/main.css`, y los colores de
+Tailwind apuntan a ellas. El layout `dashboard` marca `data-tema="claro"` en
+`<html>` y eso redefine los tokens para todo el subárbol; la barra lateral
+vuelve a la paleta oscura con `data-tema="oscuro"` sobre su `<aside>`.
+
+Dos detalles que conviene no deshacer:
+
+- **Los valores son canales RGB** (`--surface: 18 18 28`), no hexadecimales.
+  Es el único formato con el que Tailwind puede aplicar los modificadores de
+  opacidad: con un hexadecimal, `bg-secondary/10` no emite ninguna regla y
+  desaparece en silencio. En CSS suelto se escriben `rgb(var(--surface))`.
+- **El atributo va en `<html>`**, no en el div del layout, porque el diálogo de
+  confirmación y el Drawer se montan en `<body>` con teleport.
+
+### El oro sobre fondo claro
+
+`#fabd32` como **texto** sobre blanco da 1,69 de contraste: ilegible. Y en los
+paneles el oro es texto o icono en 88 sitios frente a 20 de relleno. Así que en
+el tema claro el oro pasa a `#8a6100` (5,54 sobre blanco, 5,23 sobre `#f8f8fc`),
+que además admite texto blanco encima para los rellenos sólidos.
+
+Los estados semánticos también se oscurecen: con los valores del tema oscuro
+sobre blanco, el aviso daba 2,36 y el error `#ffb4ab` daba 1,70. Todos los
+colores de texto del tema claro se comprobaron contra los tres fondos
+(`#f8f8fc`, `#ffffff`, `#f4f4f8`) y dan AA o mejor; el contrato está fijado en
+`tests/unit/tema.spec.ts`.
 
 ---
 

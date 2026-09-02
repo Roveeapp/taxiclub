@@ -400,15 +400,15 @@ async function applyBatch() {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--on-surface-variant);
+  color: rgb(var(--on-surface-variant));
   background: transparent;
   border: none;
   cursor: pointer;
   transition: background 0.15s ease;
 }
 .nav-btn:hover {
-  background: var(--surface-container-high);
-  color: var(--on-surface);
+  background: rgb(var(--surface-container-high));
+  color: rgb(var(--on-surface));
 }
 
 .day-cell {
@@ -439,7 +439,7 @@ async function applyBatch() {
 .day-full {
   background: rgba(26, 158, 106, 0.08);
   border-color: rgba(26, 158, 106, 0.35);
-  color: var(--on-surface);
+  color: rgb(var(--on-surface));
 }
 .day-full:hover {
   background: rgba(26, 158, 106, 0.16);
@@ -448,7 +448,7 @@ async function applyBatch() {
 .day-partial {
   background: rgba(250, 189, 50, 0.1);
   border-color: rgba(250, 189, 50, 0.5);
-  color: var(--on-surface);
+  color: rgb(var(--on-surface));
 }
 .day-partial:hover {
   background: rgba(250, 189, 50, 0.18);
@@ -457,7 +457,7 @@ async function applyBatch() {
 .day-off {
   background: rgba(217, 48, 37, 0.08);
   border-color: rgba(217, 48, 37, 0.35);
-  color: var(--on-surface-variant);
+  color: rgb(var(--on-surface-variant));
 }
 .day-off:hover {
   background: rgba(217, 48, 37, 0.16);
@@ -470,25 +470,25 @@ async function applyBatch() {
 .day-past {
   background: transparent;
   border-color: transparent;
-  color: var(--on-surface-variant);
+  color: rgb(var(--on-surface-variant));
   opacity: 0.3;
   cursor: not-allowed;
 }
 
 .av-input {
   width: 100%;
-  background: var(--surface-container);
-  border: 1px solid var(--outline-variant);
+  background: rgb(var(--surface-container));
+  border: 1px solid rgb(var(--outline-variant));
   border-radius: 10px;
   padding: 9px 12px;
   font-size: 14px;
-  color: var(--on-surface);
+  color: rgb(var(--on-surface));
   outline: none;
   transition: border-color 0.15s ease;
   color-scheme: dark;
 }
 .av-input:focus {
-  border-color: var(--secondary);
+  border-color: rgb(var(--secondary));
 }
 
 .state-btn {
@@ -498,9 +498,9 @@ async function applyBatch() {
   gap: 6px;
   padding: 9px 16px;
   border-radius: 10px;
-  border: 1px solid var(--outline-variant);
-  background: var(--surface-container);
-  color: var(--on-surface-variant);
+  border: 1px solid rgb(var(--outline-variant));
+  background: rgb(var(--surface-container));
+  color: rgb(var(--on-surface-variant));
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
@@ -508,14 +508,14 @@ async function applyBatch() {
 }
 .state-btn-on {
   background: rgba(26, 158, 106, 0.15);
-  border-color: var(--status-success);
-  color: var(--status-success);
+  border-color: rgb(var(--status-success));
+  color: rgb(var(--status-success));
   font-weight: 600;
 }
 .state-btn-off {
   background: rgba(217, 48, 37, 0.15);
-  border-color: var(--status-error);
-  color: var(--error);
+  border-color: rgb(var(--status-error));
+  color: rgb(var(--error));
   font-weight: 600;
 }
 
@@ -526,7 +526,7 @@ async function applyBatch() {
   border-radius: 8px;
   border: none;
   background: transparent;
-  color: var(--on-surface-variant);
+  color: rgb(var(--on-surface-variant));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -535,7 +535,7 @@ async function applyBatch() {
 }
 .remove-btn:hover {
   background: rgba(217, 48, 37, 0.15);
-  color: var(--status-error);
+  color: rgb(var(--status-error));
 }
 
 .add-slot-btn {
@@ -547,7 +547,7 @@ async function applyBatch() {
   border-radius: 9999px;
   border: 1px dashed rgba(250, 189, 50, 0.5);
   background: transparent;
-  color: var(--secondary);
+  color: rgb(var(--secondary));
   font-size: 12px;
   font-weight: 500;
   cursor: pointer;

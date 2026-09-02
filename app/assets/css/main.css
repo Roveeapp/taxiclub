@@ -3,85 +3,137 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
-    --color-brand-dark: #0c0c13;
-    --color-brand-gold: #fabd32;
-    --color-brand-white: #ffffff;
+  /*
+   * PALETA EN CANALES RGB, NO EN HEXADECIMAL
+   *
+   * `--surface: 18 18 28` en lugar de `#12121c` porque es el único formato con
+   * el que Tailwind puede aplicar los modificadores de opacidad. Comprobado:
+   * con `surface: 'var(--surface)'` en la configuración, `bg-surface` funciona
+   * pero `bg-surface/10` NO EMITE REGLA — desaparece en silencio. Y el proyecto
+   * usa esos modificadores en 58 sitios (`bg-secondary/10`,
+   * `border-outline-variant/30`, `text-on-surface-variant/60`…).
+   *
+   * Con `rgb(var(--surface) / <alpha-value>)` funcionan los dos. En CSS suelto
+   * se escriben como `rgb(var(--surface))`.
+   *
+   * Que la paleta pase por variables es lo que permite el tema claro de los
+   * paneles: 721 utilidades de Tailwind en /taxista y /admin compilaban a
+   * hexadecimal literal, así que ninguna cantidad de CSS sobrescrito las habría
+   * cambiado. Ahora todas apuntan aquí.
+   */
+  :root,
+  [data-tema="oscuro"] {
+    --color-brand-dark: 12 12 19;   /* #0c0c13 */
+    --color-brand-gold: 250 189 50;   /* #fabd32 */
+    --color-brand-white: 255 255 255;   /* #ffffff */
+    --surface: 18 18 28;   /* #12121c */
+    --surface-dim: 18 18 28;   /* #12121c */
+    --surface-bright: 57 56 67;   /* #393843 */
+    --surface-container-lowest: 13 13 23;   /* #0d0d17 */
+    --surface-container-low: 27 27 37;   /* #1b1b25 */
+    --surface-container: 31 31 41;   /* #1f1f29 */
+    --surface-container-high: 41 41 52;   /* #292934 */
+    --surface-container-highest: 52 52 63;   /* #34343f */
+    --surface-dark: 20 20 30;   /* #14141e */
+    --surface-input: 244 244 248;   /* #f4f4f8 */
+    --surface-divider: 235 235 240;   /* #ebebf0 */
+    --on-surface: 228 225 239;   /* #e4e1ef */
+    --on-surface-variant: 200 197 203;   /* #c8c5cb */
+    --on-primary: 48 48 56;   /* #303038 */
+    --on-primary-container: 123 121 131;   /* #7b7983 */
+    --on-secondary: 65 45 0;   /* #412d00 */
+    --on-secondary-container: 76 53 0;   /* #4c3500 */
+    --on-background: 228 225 239;   /* #e4e1ef */
+    --on-error: 105 0 5;   /* #690005 */
+    --on-error-container: 255 218 214;   /* #ffdad6 */
+    --primary: 200 197 207;   /* #c8c5cf */
+    --primary-container: 12 12 19;   /* #0c0c13 */
+    --primary-fixed: 228 225 236;   /* #e4e1ec */
+    --primary-fixed-dim: 200 197 207;   /* #c8c5cf */
+    --inverse-primary: 94 93 102;   /* #5e5d66 */
+    --secondary: 250 189 50;   /* #fabd32 */
+    --secondary-container: 210 154 0;   /* #d29a00 */
+    --secondary-fixed: 255 222 164;   /* #ffdea4 */
+    --secondary-fixed-dim: 250 189 50;   /* #fabd32 */
+    --error: 255 180 171;   /* #ffb4ab */
+    --error-container: 147 0 10;   /* #93000a */
+    --outline: 146 144 149;   /* #929095 */
+    --outline-variant: 71 70 75;   /* #47464b */
+    --inverse-surface: 228 225 239;   /* #e4e1ef */
+    --inverse-on-surface: 48 47 58;   /* #302f3a */
+    --surface-tint: 200 197 207;   /* #c8c5cf */
+    --status-success: 26 158 106;   /* #1a9e6a */
+    --status-warning: 229 153 10;   /* #e5990a */
+    --status-error: 217 48 37;   /* #d93025 */
+    --status-info: 37 99 235;   /* #2563eb */
+    --on-light: 15 23 42;   /* #0f172a */
+    --on-light-variant: 51 65 85;   /* #334155 */
+    --on-light-muted: 148 163 184;   /* #94a3b8 */
+    --light-border: 226 232 240;   /* #e2e8f0 */
+    --gold-50: 255 251 235;   /* #fffbeb */
+    --gold-100: 254 243 199;   /* #fef3c7 */
+    --gold-200: 253 230 138;   /* #fde68a */
+    --gold-400: 250 189 50;   /* #fabd32 */
+    --gold-600: 217 119 6;   /* #d97706 */
+    --gold-800: 146 64 14;   /* #92400e */
+  }
 
-    --surface: #12121c;
-    --surface-dim: #12121c;
-    --surface-bright: #393843;
-    --surface-container-lowest: #0d0d17;
-    --surface-container-low: #1b1b25;
-    --surface-container: #1f1f29;
-    --surface-container-high: #292934;
-    --surface-container-highest: #34343f;
-    --surface-dark: #14141e;
-    --surface-variant: #34343f;
-    --surface-card: rgba(255, 255, 255, 0.05);
-    --surface-card-border: rgba(255, 255, 255, 0.09);
-    --surface-input: #f4f4f8;
-    --surface-divider: #ebebf0;
-
-    --on-surface: #e4e1ef;
-    --on-surface-variant: #c8c5cb;
-    --on-primary: #303038;
-    --on-primary-container: #7b7983;
-    --on-secondary: #412d00;
-    --on-secondary-container: #4c3500;
-    --on-background: #e4e1ef;
-    --on-error: #690005;
-    --on-error-container: #ffdad6;
-
-    --primary: #c8c5cf;
-    --primary-container: #0c0c13;
-    --primary-fixed: #e4e1ec;
-    --primary-fixed-dim: #c8c5cf;
-    --inverse-primary: #5e5d66;
-
-    --secondary: #fabd32;
-    --secondary-container: #d29a00;
-    --secondary-fixed: #ffdea4;
-    --secondary-fixed-dim: #fabd32;
-
-    --tertiary: #c6c6c7;
-    --tertiary-container: #0b0d0d;
-
-    --error: #ffb4ab;
-    --error-container: #93000a;
-
-    --outline: #929095;
-    --outline-variant: #47464b;
-    --inverse-surface: #e4e1ef;
-    --inverse-on-surface: #302f3a;
-    --surface-tint: #c8c5cf;
-
-    --status-success: #1a9e6a;
-    --status-warning: #e5990a;
-    --status-error: #d93025;
-    --status-info: #2563eb;
-
-    /*
-     * Panel claro sobre fondo oscuro.
-     *
-     * El formulario de búsqueda y el de acceso son tarjetas BLANCAS encima de
-     * la app oscura, así que necesitan su propia familia de tonos: los de
-     * `--on-surface` están pensados para leerse sobre oscuro y aquí no valen.
-     * Esos cuatro valores estaban escritos a mano —dieciséis de los veintiocho
-     * hexadecimales inline del proyecto— porque no existía el token, no por
-     * descuido. Existir es lo que evita que el diecisiete sea otro tono.
-     */
-    --on-light: #0f172a;
-    --on-light-variant: #334155;
-    --on-light-muted: #94a3b8;
-    --light-border: #e2e8f0;
-
-    --gold-50: #fffbeb;
-    --gold-100: #fef3c7;
-    --gold-200: #fde68a;
-    --gold-400: #fabd32;
-    --gold-600: #d97706;
-    --gold-800: #92400e;
+  /*
+   * TEMA CLARO DE LOS PANELES — design.md §7
+   *
+   *   Panel taxista / Admin:
+   *     - Fondo general: #f8f8fc
+   *     - Tarjetas: #ffffff con border 1px #ebebf0
+   *     - Sidebar: #0c0c13
+   *
+   * Solo se redefine lo que cambia de papel; el resto conserva el valor oscuro
+   * a propósito, y el caso que importa es `--primary-container` (#0c0c13), que
+   * es el fondo de la barra lateral: design.md la quiere oscura también aquí.
+   *
+   * La app de cliente NO lleva este atributo y sigue siendo oscura. El
+   * razonamiento de design.md sigue en pie: taxistas y administradores pasan
+   * sesiones largas en estos paneles, y a menudo a plena luz dentro de un
+   * coche; el cliente entra dos minutos a pedir un taxi.
+   *
+   * Los valores no están elegidos a ojo: cada color de texto se comprobó contra
+   * los tres fondos claros (#f8f8fc, #ffffff, #f4f4f8) y todos dan AA o mejor.
+   */
+  [data-tema="claro"] {
+    --surface: 248 248 252;   /* #f8f8fc */
+    --surface-dim: 241 241 246;   /* #f1f1f6 */
+    --surface-bright: 255 255 255;   /* #ffffff */
+    --surface-container-lowest: 248 248 252;   /* #f8f8fc */
+    --surface-container-low: 244 244 248;   /* #f4f4f8 */
+    --surface-container: 255 255 255;   /* #ffffff */
+    --surface-container-high: 244 244 248;   /* #f4f4f8 */
+    --surface-container-highest: 235 235 240;   /* #ebebf0 */
+    --surface-dark: 255 255 255;   /* #ffffff */
+    --surface-input: 255 255 255;   /* #ffffff */
+    --on-surface: 12 12 19;   /* #0c0c13 */
+    --on-surface-variant: 85 85 95;   /* #55555f */
+    --on-background: 12 12 19;   /* #0c0c13 */
+    --inverse-surface: 12 12 19;   /* #0c0c13 */
+    --inverse-on-surface: 248 248 252;   /* #f8f8fc */
+    --outline: 138 138 149;   /* #8a8a95 */
+    --outline-variant: 235 235 240;   /* #ebebf0 */
+    --color-brand-gold: 138 97 0;   /* #8a6100 */
+    --secondary: 138 97 0;   /* #8a6100 */
+    --secondary-container: 250 189 50;   /* #fabd32 */
+    --secondary-fixed-dim: 138 97 0;   /* #8a6100 */
+    --on-secondary: 255 255 255;   /* #ffffff */
+    --gold-400: 138 97 0;   /* #8a6100 */
+    --gold-600: 122 85 0;   /* #7a5500 */
+    --primary: 94 93 102;   /* #5e5d66 */
+    --on-primary: 255 255 255;   /* #ffffff */
+    --surface-tint: 94 93 102;   /* #5e5d66 */
+    --inverse-primary: 200 197 207;   /* #c8c5cf */
+    --status-success: 15 122 80;   /* #0f7a50 */
+    --status-warning: 138 90 0;   /* #8a5a00 */
+    --status-error: 192 39 26;   /* #c0271a */
+    --status-info: 30 79 196;   /* #1e4fc4 */
+    --error: 179 38 30;   /* #b3261e */
+    --error-container: 255 218 214;   /* #ffdad6 */
+    --on-error: 255 255 255;   /* #ffffff */
   }
 
   * {
@@ -98,8 +150,8 @@
 
   body {
     min-height: 100vh;
-    background-color: var(--surface);
-    color: var(--on-surface);
+    background-color: rgb(var(--surface));
+    color: rgb(var(--on-surface));
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -116,7 +168,7 @@
 @layer components {
   .btn-primary {
     @apply border-none rounded-btn px-5 text-[15px] font-medium w-full transition-all;
-    background: var(--primary-container);
+    background: rgb(var(--primary-container));
     color: #ffffff;
     padding: 15px;
   }
@@ -130,8 +182,8 @@
   }
 
   .btn-gold {
-    background: var(--secondary);
-    color: var(--on-secondary);
+    background: rgb(var(--secondary));
+    color: rgb(var(--on-secondary));
   }
 
   .active-scale:active {
@@ -148,7 +200,7 @@
   .badge-discount {
     @apply text-[11px] font-semibold rounded-full py-[3px] px-2;
     background: rgba(250, 189, 50, 0.18);
-    color: var(--secondary);
+    color: rgb(var(--secondary));
   }
 
   .badge-pending {
@@ -177,18 +229,18 @@
 
   .brand-dot {
     @apply w-[7px] h-[7px] rounded-full;
-    background: var(--secondary);
+    background: rgb(var(--secondary));
     animation: pulse 2s ease-in-out infinite;
   }
 
   .icon-wrap-dark {
     @apply w-7 h-7 rounded-full flex items-center justify-center;
-    background: var(--primary-container);
+    background: rgb(var(--primary-container));
   }
 
   .icon-wrap-gold {
     @apply w-7 h-7 rounded-full flex items-center justify-center;
-    background: var(--secondary);
+    background: rgb(var(--secondary));
   }
 
   .icon-wrap-subtle {
@@ -198,17 +250,17 @@
 
   .field-label {
     @apply text-label-caps uppercase;
-    color: var(--on-surface-variant);
+    color: rgb(var(--on-surface-variant));
   }
 
   .field-value {
     @apply text-body-md font-normal;
-    color: var(--primary-container);
+    color: rgb(var(--primary-container));
   }
 
   .card-surface {
-    background: var(--surface-container-lowest);
-    border: 1px solid var(--outline-variant);
+    background: rgb(var(--surface-container-lowest));
+    border: 1px solid rgb(var(--outline-variant));
   }
 
   .card-white {
@@ -238,14 +290,14 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
-    background: var(--surface-container);
-    border: 1px solid var(--outline-variant);
+    background: rgb(var(--surface-container));
+    border: 1px solid rgb(var(--outline-variant));
     border-radius: 14px;
     padding: 14px 16px;
   }
 
   .responsive-table tbody tr:hover {
-    background: var(--surface-container-high);
+    background: rgb(var(--surface-container-high));
   }
 
   .responsive-table tbody td {
@@ -262,7 +314,7 @@
     font-weight: 500;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: var(--on-surface-variant);
+    color: rgb(var(--on-surface-variant));
     flex-shrink: 0;
     min-width: 80px;
   }
@@ -275,7 +327,7 @@
   .responsive-table tbody td.mobile-actions {
     justify-content: flex-end;
     padding-top: 4px !important;
-    border-top: 1px solid var(--outline-variant);
+    border-top: 1px solid rgb(var(--outline-variant));
     margin-top: 4px;
   }
 

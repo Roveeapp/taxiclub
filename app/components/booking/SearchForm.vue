@@ -330,7 +330,7 @@ watch(date, () => {
 
 <style scoped>
 :deep(.p-select) {
-  border: 2px solid var(--secondary) !important;
+  border: 2px solid rgb(var(--secondary)) !important;
   border-radius: 0.75rem !important;
   background: white !important;
   padding: 0 !important;
@@ -348,7 +348,7 @@ watch(date, () => {
   border-radius: 0 !important;
   font-size: 0.875rem !important;
   font-weight: 500 !important;
-  color: var(--on-light) !important;
+  color: rgb(var(--on-light)) !important;
   display: flex !important;
   align-items: center !important;
   min-height: 2.75rem !important;
@@ -358,14 +358,14 @@ watch(date, () => {
   border: none !important;
   width: 2.5rem !important;
   height: 2.5rem !important;
-  color: var(--on-light-muted) !important;
+  color: rgb(var(--on-light-muted)) !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
   margin-right: 0.25rem !important;
 }
 :deep(.p-select-overlay) {
-  border: 1px solid var(--light-border) !important;
+  border: 1px solid rgb(var(--light-border)) !important;
   border-radius: 0.75rem !important;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
   margin-top: 0.5rem !important;
@@ -373,22 +373,22 @@ watch(date, () => {
 :deep(.p-select-option) {
   padding: 0.625rem 1rem !important;
   font-size: 0.875rem !important;
-  color: var(--on-light-variant) !important;
+  color: rgb(var(--on-light-variant)) !important;
   border-radius: 0.5rem !important;
   margin: 0 0.5rem !important;
   margin-bottom: 0.125rem !important;
   cursor: pointer !important;
 }
 :deep(.p-select-option:hover) {
-  background: var(--gold-50) !important;
+  background: rgb(var(--gold-50)) !important;
 }
 :deep(.p-select-option-selected) {
-  background: var(--gold-100) !important;
-  color: var(--on-light) !important;
+  background: rgb(var(--gold-100)) !important;
+  color: rgb(var(--on-light)) !important;
 }
 
 :deep(.p-autocomplete) {
-  border: 2px solid var(--secondary) !important;
+  border: 2px solid rgb(var(--secondary)) !important;
   border-radius: 0.75rem !important;
   background: white !important;
   padding: 0 !important;
@@ -406,7 +406,7 @@ watch(date, () => {
   border-radius: 0 !important;
   font-size: 0.875rem !important;
   font-weight: 500 !important;
-  color: var(--on-light) !important;
+  color: rgb(var(--on-light)) !important;
   display: flex !important;
   align-items: center !important;
   min-height: 2.75rem !important;
@@ -416,14 +416,14 @@ watch(date, () => {
   border: none !important;
   width: 2.5rem !important;
   height: 2.5rem !important;
-  color: var(--on-light-muted) !important;
+  color: rgb(var(--on-light-muted)) !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
   margin-right: 0.25rem !important;
 }
 :deep(.p-autocomplete-overlay) {
-  border: 1px solid var(--light-border) !important;
+  border: 1px solid rgb(var(--light-border)) !important;
   border-radius: 0.75rem !important;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
   margin-top: 0.5rem !important;
@@ -433,7 +433,7 @@ watch(date, () => {
 }
 
 :deep(.p-datepicker) {
-  border: 2px solid var(--secondary) !important;
+  border: 2px solid rgb(var(--secondary)) !important;
   border-radius: 0.75rem !important;
   background: white !important;
   padding: 0 !important;
@@ -451,7 +451,7 @@ watch(date, () => {
   border-radius: 0 !important;
   font-size: 0.875rem !important;
   font-weight: 500 !important;
-  color: var(--on-light) !important;
+  color: rgb(var(--on-light)) !important;
   display: flex !important;
   align-items: center !important;
   min-height: 2.75rem !important;
@@ -461,7 +461,7 @@ watch(date, () => {
   border: none !important;
   width: 2.5rem !important;
   height: 2.5rem !important;
-  color: var(--on-light-muted) !important;
+  color: rgb(var(--on-light-muted)) !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;

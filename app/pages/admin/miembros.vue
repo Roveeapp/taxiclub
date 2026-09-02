@@ -86,19 +86,19 @@
 <style scoped>
 .add-member-select {
   max-width: 220px;
-  background: var(--secondary);
+  background: rgb(var(--secondary));
   border: none;
   border-radius: 10px;
   padding: 8px 12px;
   font-size: 13px;
   font-weight: 600;
-  color: var(--color-brand-dark);
+  color: rgb(var(--color-brand-dark));
   outline: none;
   cursor: pointer;
 }
 .add-member-select option {
-  background: var(--surface-container-low);
-  color: var(--on-surface);
+  background: rgb(var(--surface-container-low));
+  color: rgb(var(--on-surface));
   font-weight: 400;
 }
 </style>

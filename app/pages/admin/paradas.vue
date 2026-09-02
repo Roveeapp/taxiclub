@@ -237,26 +237,26 @@ async function toggleActive(station: any) {
 <style scoped>
 .excl-select {
   max-width: 190px;
-  background: var(--surface-container);
-  border: 1px solid var(--outline-variant);
+  background: rgb(var(--surface-container));
+  border: 1px solid rgb(var(--outline-variant));
   border-radius: 9px;
   padding: 6px 10px;
   font-size: 12px;
-  color: var(--on-surface-variant);
+  color: rgb(var(--on-surface-variant));
   outline: none;
   cursor: pointer;
   transition: border-color 0.15s ease;
 }
 .excl-select:focus {
-  border-color: var(--secondary);
+  border-color: rgb(var(--secondary));
 }
 .excl-select-set {
   border-color: rgba(250, 189, 50, 0.6);
-  color: var(--secondary);
+  color: rgb(var(--secondary));
   font-weight: 500;
 }
 .excl-select option {
-  background: var(--surface-container-low);
-  color: var(--on-surface);
+  background: rgb(var(--surface-container-low));
+  color: rgb(var(--on-surface));
 }
 </style>

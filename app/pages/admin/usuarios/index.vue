@@ -123,16 +123,16 @@ onMounted(async () => {
 <style scoped>
 .usr-input {
   width: 100%;
-  background: var(--surface-container);
-  border: 1px solid var(--outline-variant);
+  background: rgb(var(--surface-container));
+  border: 1px solid rgb(var(--outline-variant));
   border-radius: 10px;
   padding: 9px 14px;
   font-size: 14px;
-  color: var(--on-surface);
+  color: rgb(var(--on-surface));
   outline: none;
   transition: border-color 0.15s ease;
 }
 .usr-input:focus {
-  border-color: var(--secondary);
+  border-color: rgb(var(--secondary));
 }
 </style>

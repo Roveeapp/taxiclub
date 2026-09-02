@@ -170,7 +170,7 @@ onMounted(async () => {
   width: 88px;
   height: 88px;
   border-radius: 50%;
-  background: var(--secondary);
+  background: rgb(var(--secondary));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -207,6 +207,6 @@ onMounted(async () => {
   transition: border-color 0.15s ease;
 }
 .return-input:focus {
-  border-color: var(--secondary);
+  border-color: rgb(var(--secondary));
 }
 </style>

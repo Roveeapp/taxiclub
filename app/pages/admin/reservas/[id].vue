@@ -194,22 +194,22 @@
 
 <style scoped>
 .assign-select {
-  background: var(--surface-container);
-  border: 1px solid var(--outline-variant);
+  background: rgb(var(--surface-container));
+  border: 1px solid rgb(var(--outline-variant));
   border-radius: 12px;
   padding: 10px 14px;
   font-size: 14px;
-  color: var(--on-surface);
+  color: rgb(var(--on-surface));
   outline: none;
   transition: border-color 0.15s ease;
   min-width: 0;
 }
 .assign-select:focus {
-  border-color: var(--secondary);
+  border-color: rgb(var(--secondary));
 }
 .assign-select option {
-  background: var(--surface-container-low);
-  color: var(--on-surface);
+  background: rgb(var(--surface-container-low));
+  color: rgb(var(--on-surface));
 }
 
 .pay-btn {
@@ -218,30 +218,30 @@
   gap: 6px;
   padding: 8px 14px;
   border-radius: 10px;
-  border: 1px solid var(--outline-variant);
-  background: var(--surface-container);
-  color: var(--on-surface);
+  border: 1px solid rgb(var(--outline-variant));
+  background: rgb(var(--surface-container));
+  color: rgb(var(--on-surface));
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.15s ease;
 }
 .pay-btn:hover:not(:disabled) {
-  border-color: var(--secondary);
+  border-color: rgb(var(--secondary));
 }
 .pay-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 .pay-btn-gold {
-  background: var(--secondary);
-  border-color: var(--secondary);
-  color: var(--color-brand-dark);
+  background: rgb(var(--secondary));
+  border-color: rgb(var(--secondary));
+  color: rgb(var(--color-brand-dark));
   font-weight: 600;
 }
 .pay-btn-red:hover:not(:disabled) {
-  border-color: var(--status-error);
-  color: var(--status-error);
+  border-color: rgb(var(--status-error));
+  color: rgb(var(--status-error));
 }
 </style>
 

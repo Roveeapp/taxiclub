@@ -306,32 +306,32 @@ async function clearRate() {
 <style scoped>
 .rate-input {
   width: 100%;
-  background: var(--surface-container);
-  border: 1px solid var(--outline-variant);
+  background: rgb(var(--surface-container));
+  border: 1px solid rgb(var(--outline-variant));
   border-radius: 10px;
   padding: 10px 44px 10px 14px;
   font-size: 14px;
-  color: var(--on-surface);
+  color: rgb(var(--on-surface));
   outline: none;
   transition: border-color 0.15s ease;
 }
 .rate-input:focus {
-  border-color: var(--secondary);
+  border-color: rgb(var(--secondary));
 }
 
 .profile-input {
   width: 100%;
-  background: var(--surface-container);
-  border: 1px solid var(--outline-variant);
+  background: rgb(var(--surface-container));
+  border: 1px solid rgb(var(--outline-variant));
   border-radius: 10px;
   padding: 10px 14px;
   font-size: 14px;
-  color: var(--on-surface);
+  color: rgb(var(--on-surface));
   outline: none;
   transition: border-color 0.15s ease;
 }
 .profile-input:focus {
-  border-color: var(--secondary);
+  border-color: rgb(var(--secondary));
 }
 .profile-input:disabled {
   opacity: 0.6;
@@ -348,24 +348,24 @@ async function clearRate() {
 }
 
 .station-select {
-  background: var(--surface-container);
-  border: 1px solid var(--outline-variant);
+  background: rgb(var(--surface-container));
+  border: 1px solid rgb(var(--outline-variant));
   border-radius: 9px;
   padding: 6px 12px;
   font-size: 13px;
-  color: var(--on-surface);
+  color: rgb(var(--on-surface));
   outline: none;
   cursor: pointer;
   max-width: 200px;
 }
 .station-select option {
-  background: var(--surface-container-low);
-  color: var(--on-surface);
+  background: rgb(var(--surface-container-low));
+  color: rgb(var(--on-surface));
 }
 
 .add-station-btn {
-  background: var(--secondary);
-  color: var(--on-secondary);
+  background: rgb(var(--secondary));
+  color: rgb(var(--on-secondary));
   border: none;
   border-radius: 9px;
   width: 32px;
@@ -387,7 +387,7 @@ async function clearRate() {
   border-radius: 8px;
   border: none;
   background: transparent;
-  color: var(--on-surface-variant);
+  color: rgb(var(--on-surface-variant));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -396,7 +396,7 @@ async function clearRate() {
 }
 .remove-station-btn:hover:not(:disabled) {
   background: rgba(217, 48, 37, 0.15);
-  color: var(--status-error);
+  color: rgb(var(--status-error));
 }
 .remove-station-btn:disabled {
   opacity: 0.5;

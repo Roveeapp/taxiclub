@@ -35,16 +35,16 @@ defineEmits<{
   gap: 6px;
   padding: 8px 14px;
   border-radius: 9999px;
-  border: 1px solid var(--outline-variant);
-  background: var(--surface-container);
-  color: var(--on-surface-variant);
+  border: 1px solid rgb(var(--outline-variant));
+  background: rgb(var(--surface-container));
+  color: rgb(var(--on-surface-variant));
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .chip:hover {
   border-color: rgba(250, 189, 50, 0.5);
-  color: var(--on-surface);
+  color: rgb(var(--on-surface));
 }
 
 .chip:active {
@@ -52,32 +52,32 @@ defineEmits<{
 }
 
 .chip-icon {
-  color: var(--on-surface-variant);
+  color: rgb(var(--on-surface-variant));
   transition: color 0.15s ease;
   flex-shrink: 0;
 }
 
 .chip:hover .chip-icon {
-  color: var(--secondary);
+  color: rgb(var(--secondary));
 }
 
 /* Seleccionado: dorado sólido, inconfundible */
 .chip-active {
-  background: var(--secondary);
-  border-color: var(--secondary);
-  color: var(--color-brand-dark);
+  background: rgb(var(--secondary));
+  border-color: rgb(var(--secondary));
+  color: rgb(var(--color-brand-dark));
   font-weight: 600;
   box-shadow: 0 2px 10px rgba(250, 189, 50, 0.25);
 }
 
 .chip-active .chip-icon,
 .chip-active:hover .chip-icon {
-  color: var(--color-brand-dark);
+  color: rgb(var(--color-brand-dark));
 }
 
 .chip-active:hover {
-  border-color: var(--secondary);
-  color: var(--color-brand-dark);
+  border-color: rgb(var(--secondary));
+  color: rgb(var(--color-brand-dark));
   filter: brightness(1.05);
 }
 </style>
