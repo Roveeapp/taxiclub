@@ -63,10 +63,10 @@ export default defineEventHandler(async (event) => {
 
   // Descuento → recalcular precio final sobre el precio base de la oferta
   if (body.discountPct !== undefined) {
-    const pct = Number(body.discountPct)
-    if (Number.isNaN(pct) || pct < 0 || pct > 40) {
-      throw createError({ statusCode: 400, message: 'Descuento no válido (0–40%)' })
-    }
+    // El 40 estaba escrito a mano aquí, existiendo
+    // `system_config.max_return_offer_discount_pct` con ese mismo valor y sin
+    // que nadie lo leyera. Ahora las dos rutas comprueban lo mismo.
+    const pct = await assertDescuentoOfertaPermitido(Number(body.discountPct))
     updateData.discount_pct = pct
     updateData.final_price = Math.round(Number(o.base_price) * (1 - pct / 100) * 100) / 100
   }

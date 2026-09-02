@@ -24,7 +24,10 @@ export default defineEventHandler(async (event) => {
     pickupAt: body.availableFrom,
   })
 
-  const descuento = body.discountPct ?? 0
+  // El tope lo comprueba el servidor. El deslizador del formulario llega hasta
+  // 40, pero esta ruta aceptaba hasta 100 y una oferta al 100 % no devenga
+  // comisión para el club.
+  const descuento = await assertDescuentoOfertaPermitido(Number(body.discountPct ?? 0))
   const basePrice = quote.basePrice
   const finalPrice = Math.round(basePrice * (1 - descuento / 100) * 100) / 100
 

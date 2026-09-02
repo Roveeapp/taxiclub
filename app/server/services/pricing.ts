@@ -330,10 +330,54 @@ export const BOOKING_EXTRAS_DEFECTO = {
 /** Precio de último recurso si no hay tarifa fija ni estimación por distancia. */
 export const FALLBACK_FARE_DEFECTO = 25
 
+/** Tope de descuento de una oferta de retorno, si la clave no está en la tabla. */
+export const MAX_DESCUENTO_OFERTA_DEFECTO = 40
+
 /** Lee un número de la configuración, con valor por defecto si falta o no es válido. */
 function numeroDeConfig(config: Record<string, unknown>, clave: string, defecto: number): number {
   const valor = Number(config[clave])
   return Number.isFinite(valor) && valor >= 0 ? valor : defecto
+}
+
+/**
+ * Valida el descuento de una oferta de retorno contra el tope configurado.
+ *
+ * El tope existía en tres sitios y ninguno era el que hacía falta: el deslizador
+ * del formulario lo limitaba a 40, la ruta de EDICIÓN lo comprobaba con un 40
+ * escrito a mano, y `system_config.max_return_offer_discount_pct` lo guardaba
+ * sin que nadie lo leyera. La ruta de CREACIÓN no lo comprobaba en absoluto:
+ * su esquema acepta `porcentaje`, que es 0–100.
+ *
+ * Un taxista podía publicar una oferta al 100 % de descuento —precio final 0 €—
+ * saltándose el deslizador con una petición directa. Y como la comisión del club
+ * se calcula sobre el importe del viaje, un viaje de 0 € no devenga comisión:
+ * cobrando en mano y publicando al 100 %, el taxista no le debe nada a la
+ * plataforma.
+ */
+export async function assertDescuentoOfertaPermitido(descuento: number): Promise<number> {
+  const config = await getSystemConfig()
+  const tope = numeroDeConfig(config, 'max_return_offer_discount_pct', MAX_DESCUENTO_OFERTA_DEFECTO)
+
+  if (!descuentoOfertaValido(descuento, tope)) {
+    throw createError({
+      statusCode: 400,
+      message: `El descuento debe estar entre 0 y ${tope} %`,
+    })
+  }
+  return descuento
+}
+
+/**
+ * La regla, aparte de la lectura de configuración, para poder probarla.
+ *
+ * Exige entero además de rango: `return_offers.discount_pct` es una columna
+ * `integer`, así que un 40,5 llegaba a Postgres y volvía como
+ * «invalid input syntax for type integer: "40.5"» en un 500, con el error de la
+ * base de datos en crudo hacia el cliente. Ahora es un 400 con un mensaje que
+ * dice qué se esperaba.
+ */
+export function descuentoOfertaValido(descuento: number, tope: number): boolean {
+  return Number.isInteger(descuento) && descuento >= 0 && descuento <= tope
 }
 
 export interface BookingQuoteInput {

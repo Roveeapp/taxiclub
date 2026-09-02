@@ -1,19 +1,3 @@
-/**
- * Tipos del esquema de Supabase.
- *
- * GENERADO — no editar a mano. Para regenerarlo:
- *
- *   supabase gen types typescript --db-url "$DATABASE_URL" > app/types/database.ts
- *
- * El fichero anterior estaba escrito y mantenido a mano (586 líneas), y por eso
- * se había desincronizado del esquema real: `stripe-webhook` referenciaba una
- * columna `payment_status` que no existe en `bookings`, y el compilador no podía
- * decirlo. Ahora sale del esquema, que además está sincronizado con las
- * migraciones desde la baseline 20260831000000.
- *
- * Incluye también las firmas de las funciones RPC del proyecto, así que a medio
- * plazo permite retirar los casts de utils/db.ts y usar el cliente tipado.
- */
 export type Json =
   | string
   | number
@@ -23,30 +7,10 @@ export type Json =
   | Json[]
 
 export type Database = {
-  graphql_public: {
-    Tables: {
-      [_ in never]: never
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      graphql: {
-        Args: {
-          extensions?: Json
-          operationName?: string
-          query?: string
-          variables?: Json
-        }
-        Returns: Json
-      }
-    }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "14.5"
   }
   public: {
     Tables: {
@@ -126,6 +90,13 @@ export type Database = {
             columns: ["booking_id"]
             isOneToOne: false
             referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "booking_assignments_booking_id_bookings_id_fk"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings_sin_geocodificar"
             referencedColumns: ["id"]
           },
           {
@@ -574,8 +545,8 @@ export type Database = {
           is_exempt: boolean | null
           is_member: boolean | null
           last_assigned_at: string | null
-          license_city: string
-          license_number: string
+          license_city: string | null
+          license_number: string | null
           member_since: string | null
           stripe_account_id: string | null
           updated_at: string | null
@@ -591,8 +562,8 @@ export type Database = {
           is_exempt?: boolean | null
           is_member?: boolean | null
           last_assigned_at?: string | null
-          license_city: string
-          license_number: string
+          license_city?: string | null
+          license_number?: string | null
           member_since?: string | null
           stripe_account_id?: string | null
           updated_at?: string | null
@@ -608,8 +579,8 @@ export type Database = {
           is_exempt?: boolean | null
           is_member?: boolean | null
           last_assigned_at?: string | null
-          license_city?: string
-          license_number?: string
+          license_city?: string | null
+          license_number?: string | null
           member_since?: string | null
           stripe_account_id?: string | null
           updated_at?: string | null
@@ -804,6 +775,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "return_offers_booked_by_id_bookings_id_fk"
+            columns: ["booked_by_id"]
+            isOneToOne: false
+            referencedRelation: "bookings_sin_geocodificar"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "return_offers_destination_station_id_stations_id_fk"
             columns: ["destination_station_id"]
             isOneToOne: false
@@ -822,6 +800,13 @@ export type Database = {
             columns: ["origin_booking_id"]
             isOneToOne: false
             referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "return_offers_origin_booking_id_bookings_id_fk"
+            columns: ["origin_booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings_sin_geocodificar"
             referencedColumns: ["id"]
           },
         ]
@@ -1138,6 +1123,56 @@ export type Database = {
       }
     }
     Views: {
+      bookings_sin_geocodificar: {
+        Row: {
+          base_price: number | null
+          created_at: string | null
+          destination_address: string | null
+          destination_station_id: string | null
+          falta: string | null
+          id: string | null
+          origin_address: string | null
+          pickup_at: string | null
+          status: string | null
+          tenia_parada: boolean | null
+          total_price: number | null
+        }
+        Insert: {
+          base_price?: number | null
+          created_at?: string | null
+          destination_address?: string | null
+          destination_station_id?: string | null
+          falta?: never
+          id?: string | null
+          origin_address?: string | null
+          pickup_at?: string | null
+          status?: string | null
+          tenia_parada?: never
+          total_price?: number | null
+        }
+        Update: {
+          base_price?: number | null
+          created_at?: string | null
+          destination_address?: string | null
+          destination_station_id?: string | null
+          falta?: never
+          id?: string | null
+          origin_address?: string | null
+          pickup_at?: string | null
+          status?: string | null
+          tenia_parada?: never
+          total_price?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bookings_destination_station_id_stations_id_fk"
+            columns: ["destination_station_id"]
+            isOneToOne: false
+            referencedRelation: "stations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cron_task_health: {
         Row: {
           error_msg: string | null
@@ -1657,6 +1692,7 @@ export type Database = {
         Returns: number
       }
       is_admin: { Args: never; Returns: boolean }
+      marcar_turno_conductor: { Args: { p_driver_id: string }; Returns: string }
       notify_client_cancelled_data: {
         Args: { p_booking_id: string }
         Returns: {
@@ -1819,11 +1855,7 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
-  graphql_public: {
-    Enums: {},
-  },
   public: {
     Enums: {},
   },
 } as const
-

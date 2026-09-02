@@ -22,6 +22,18 @@
  *   el `duplicate key value violates unique constraint "users_pkey"` que
  *   devolvía 500 en cada registro. La ficha de driver pasa a upsert por el
  *   mismo motivo: el trigger también la crea cuando el rol es driver.
+ *
+ * EL ALTA DE TAXISTA ESTABA ROTA A PARTIR DEL SEGUNDO
+ *   `drivers.license_number` es UNIQUE, y tanto esta ruta como el trigger
+ *   escribían el literal 'PENDING' cuando no había número. El primer taxista
+ *   ocupaba ese valor y todos los siguientes chocaban con la clave única; al
+ *   usuario le llegaba «Database error creating new user» y el alta se
+ *   deshacía. Ocurría incluso aportando el número, porque el trigger solo lee
+ *   la metadata y aquí no se metía.
+ *
+ *   Ahora los datos de licencia viajan en el user_metadata, para que el trigger
+ *   los use, y si no vienen la columna se queda a NULL —que es lo que significa
+ *   «todavía no lo ha dado»— en lugar de inventarse una palabra.
  */
 export default defineEventHandler(async (event) => {
   const body = await readValidated(event, registroSchema)
@@ -35,6 +47,11 @@ export default defineEventHandler(async (event) => {
     user_metadata: {
       role,
       full_name: body.fullName || '',
+      phone: body.phone || '',
+      // El trigger crea la ficha de conductor y solo ve la metadata: si los
+      // datos de licencia no llegan aquí, no llegan a ningún sitio.
+      license_number: body.licenseNumber || '',
+      license_city: body.licenseCity || '',
     },
   })
 
@@ -42,13 +59,15 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, message: error?.message || 'No se pudo crear la cuenta' })
   }
 
-  // El perfil de public.users lo crea el trigger on_auth_user_created a partir
-  // del user_metadata. Solo completamos lo que el trigger no sabe.
+  // El perfil de public.users y la ficha de drivers los crea el trigger
+  // on_auth_user_created a partir del user_metadata, ya con los datos de
+  // licencia. Este upsert solo cubre el caso de que el trigger no exista o no
+  // haya llegado a crearla; nunca inventa un valor.
   if (role === 'driver') {
     const { error: driverError } = await writeTable('drivers').insert({
       id: data.user.id,
-      license_number: body.licenseNumber || 'PENDING',
-      license_city: body.licenseCity || 'PENDING',
+      license_number: body.licenseNumber?.trim() || null,
+      license_city: body.licenseCity?.trim() || null,
     })
 
     // El trigger ya pudo crear la ficha; un choque de clave aquí no es un fallo

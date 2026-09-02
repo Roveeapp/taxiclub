@@ -160,6 +160,10 @@ export const registroSchema = z.object({
   email,
   password,
   fullName: z.string().trim().max(120).optional(),
+  // El trigger de alta ya leía `phone` del user_metadata, pero nadie lo enviaba,
+  // así que public.users.phone quedaba vacío. Y ese teléfono es el que se le da
+  // al cliente como contacto del taxista al reservar una oferta.
+  phone: telefono.optional(),
   role: z.enum(['client', 'driver'], {
     errorMap: () => ({ message: 'solo se puede registrar como cliente o taxista' }),
   }).optional(),
