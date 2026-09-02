@@ -4,6 +4,7 @@ export default defineEventHandler(async (event) => {
 
   const { data, error } = await db
     .from('driver_fixed_routes')
+    // `*` a propósito: la pantalla de rutas fijas edita todos los campos, así que aquí la fila ES la respuesta.
     .select('*')
     .eq('driver_id', user.id)
     .order('created_at', { ascending: false })

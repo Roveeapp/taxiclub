@@ -15,9 +15,17 @@ export default defineEventHandler(async (event) => {
   const db = useDb()
 
   // 1. Reserva válida
+  // Las columnas se enumeran, pero NO solo las que esta ruta lee: la fila
+  // entera se pasa después a notifyDriver() con un spread, y el aviso al
+  // taxista saca de ahí el destino, la hora y el precio. Narrarlo a las cuatro
+  // que se usan aquí habría dejado el correo y el SMS sin el viaje dentro, sin
+  // romper nada visible. Los campos son los de ReservaNotificable.
   const { data: booking, error: bookingError } = await db
     .from('bookings')
-    .select('*')
+    // En una sola línea a propósito: el cliente tipado de Supabase deduce el
+    // tipo de la fila a partir del literal, y una cadena concatenada le deja
+    // `GenericStringError`.
+    .select('id, status, offer_id, client_id, guest_email, guest_name, guest_phone, origin_station_id, origin_address, destination_address, pickup_at, passengers, total_price')
     .eq('id', id)
     .single()
 
@@ -42,7 +50,7 @@ export default defineEventHandler(async (event) => {
   //    automática pero no asignar a conductores desactivados)
   const { data: driver, error: driverError } = await db
     .from('drivers')
-    .select('*')
+    .select('id, is_active')
     .eq('id', driverId)
     .single()
 

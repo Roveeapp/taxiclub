@@ -4,9 +4,10 @@ export default defineEventHandler(async (event) => {
   if (!id) throw createError({ statusCode: 400, message: 'Missing id' })
   const db = useDb()
 
+  // Comprobación de permiso, no lectura: la fila no se usa para nada más.
   const { data: assignment, error: findError } = await db
     .from('booking_assignments')
-    .select('*')
+    .select('booking_id')
     .eq('booking_id', id)
     .eq('driver_id', user.id)
     .single()

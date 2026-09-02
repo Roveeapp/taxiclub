@@ -4,6 +4,7 @@ export default defineEventHandler(async (event) => {
 
   const { data: zones, error } = await db
     .from('driver_station_zones')
+    // `*` a propósito: la pantalla de zonas edita todos los campos, así que aquí la fila ES la respuesta.
     .select('*')
     .eq('driver_id', user.id)
     .order('station_id')

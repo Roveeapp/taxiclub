@@ -436,16 +436,29 @@ async function fixedRoutePrice(originId: string, destinationId: string): Promise
  * cliente: todo se deriva del origen, el destino y la configuración.
  */
 export async function quoteBooking(input: BookingQuoteInput): Promise<BookingQuote> {
-  const config = await getSystemConfig()
+  // La configuración y los accesorios son dos consultas a Supabase que no
+  // dependen la una de la otra, y se esperaban en serie en la ruta más
+  // sensible de la aplicación.
+  const [config, flags] = await Promise.all([
+    getSystemConfig(),
+    resolveAccessoryFlags(input.accessoryIds),
+  ])
 
   // 1. Extras: acepta flags directos o IDs de accesorios
-  const flags = await resolveAccessoryFlags(input.accessoryIds)
   const needsChildSeat = Boolean(input.needsChildSeat) || flags.needsChildSeat
   const needsPetFriendly = Boolean(input.needsPetFriendly) || flags.needsPetFriendly
   const needsAccessible = Boolean(input.needsAccessible) || flags.needsAccessible
   const needsLargeVehicle = Boolean(input.needsLargeVehicle) || flags.needsLargeVehicle
 
   // 2. Coordenadas (reutiliza las recibidas; geocodifica solo si faltan)
+  //
+  // Las dos geocodificaciones —origen y destino— son independientes, y la
+  // auditoría proponía lanzarlas con Promise.all. NO se hace, a propósito:
+  // Nominatim admite UNA petición por segundo, y pasarse devuelve 429. Como el
+  // fallo de geocodificación acaba en el precio de último recurso, paralelizar
+  // aquí cambiaría un poco de latencia por cobrar de menos de vez en cuando.
+  // En serie, además, casi siempre solo hay una: el buscador manda ya las
+  // coordenadas del destino.
   //
   // Se guarda si ya se INTENTÓ geocodificar, no solo el resultado: cuando el
   // intento falla, `destinationCoords` queda a null y el cálculo por distancia

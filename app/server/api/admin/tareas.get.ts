@@ -16,6 +16,7 @@ export default defineEventHandler(async (event) => {
 
   const { data: estado, error } = await db
     .from('cron_task_status')
+    // `*` a propósito: es una vista de diagnóstico: se quiere ver todo lo que trae, así que aquí la fila ES la respuesta.
     .select('*')
     .order('jobname')
 

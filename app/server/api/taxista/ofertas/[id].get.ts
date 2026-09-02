@@ -6,6 +6,7 @@ export default defineEventHandler(async (event) => {
 
   const { data: offer, error } = await db
     .from('return_offers')
+    // `*` a propósito: el formulario de edición necesita la oferta completa, así que aquí la fila ES la respuesta.
     .select('*')
     .eq('id', id)
     .eq('driver_id', user.id)

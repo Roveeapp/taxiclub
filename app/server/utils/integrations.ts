@@ -30,23 +30,46 @@ let cache: Record<string, string> | null = null
 let loadedAt = 0
 const TTL_MS = 5 * 60 * 1000
 
+/**
+ * Carga en vuelo, para que varias peticiones simultáneas con el caché frío no
+ * lancen la misma consulta a la vez.
+ *
+ * `await` no es un cerrojo: con el caché caducado y tres peticiones entrando
+ * juntas, las tres pasaban la comprobación del TTL antes de que ninguna
+ * escribiera el resultado, y las tres consultaban. Guardando la promesa, la
+ * primera consulta y las otras dos esperan a esa misma.
+ */
+let cargaEnVuelo: Promise<void> | null = null
+
 export async function loadIntegrationCache(force = false): Promise<void> {
   if (!force && cache && Date.now() - loadedAt < TTL_MS) return
-  try {
-    const db = useDb()
-    const { data } = await db.from('integration_settings').select('key, value')
-    const next: Record<string, string> = {}
-    for (const row of (data || []) as Array<{ key: string, value: string }>) {
-      if (row.value) next[row.key] = row.value
+  if (!force && cargaEnVuelo) return cargaEnVuelo
+
+  cargaEnVuelo = (async () => {
+    try {
+      const db = useDb()
+      const { data } = await db.from('integration_settings').select('key, value')
+      const next: Record<string, string> = {}
+      for (const row of (data || []) as Array<{ key: string, value: string }>) {
+        if (row.value) next[row.key] = row.value
+      }
+      cache = next
+      loadedAt = Date.now()
+    } catch (e) {
+      // El comentario original decía «tabla aún sin crear (migración 025)»,
+      // pero integration_settings existe. El fallback a las variables de
+      // entorno sigue siendo el comportamiento correcto —la tabla está vacía y
+      // la configuración vive en el entorno—, así que el catch se queda; lo que
+      // no se queda es la explicación equivocada.
+      if (!cache) cache = {}
+      loadedAt = Date.now()
+      console.error('[Integrations] No se pudo cargar integration_settings; se usan las variables de entorno:', (e as Error)?.message)
+    } finally {
+      cargaEnVuelo = null
     }
-    cache = next
-    loadedAt = Date.now()
-  } catch (e) {
-    // Tabla aún sin crear (migración 025): seguimos con env
-    if (!cache) cache = {}
-    loadedAt = Date.now()
-    console.error('[Integrations] No se pudo cargar integration_settings:', (e as Error)?.message)
-  }
+  })()
+
+  return cargaEnVuelo
 }
 
 function envFallback(key: IntegrationKey): string {
@@ -78,6 +101,13 @@ export function getIntegrationSync(key: IntegrationKey): string {
 /** Origen del valor efectivo, para mostrarlo en el panel. */
 export async function getIntegrationSource(key: IntegrationKey): Promise<'panel' | 'env' | 'none'> {
   await loadIntegrationCache()
+  if (cache?.[key]) return 'panel'
+  if (envFallback(key)) return 'env'
+  return 'none'
+}
+
+/** Origen del valor, usando el caché ya cargado. Pareja síncrona de la anterior. */
+export function getIntegrationSourceSync(key: IntegrationKey): 'panel' | 'env' | 'none' {
   if (cache?.[key]) return 'panel'
   if (envFallback(key)) return 'env'
   return 'none'

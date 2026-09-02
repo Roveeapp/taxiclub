@@ -12,6 +12,7 @@ export default defineEventHandler(async (event) => {
 
   const { data: offer, error: findError } = await db
     .from('return_offers')
+    // `*` a propósito: se devuelve la oferta entera cuando no hay nada que cambiar, así que aquí la fila ES la respuesta.
     .select('*')
     .eq('id', id)
     .eq('driver_id', user.id)

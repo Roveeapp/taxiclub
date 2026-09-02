@@ -1,4 +1,4 @@
-import { INTEGRATION_KEYS, getIntegration, getIntegrationSource } from '../../../utils/integrations'
+import { INTEGRATION_KEYS, loadIntegrationCache, getIntegrationSync, getIntegrationSourceSync } from '../../../utils/integrations'
 
 /** Claves sensibles: nunca se devuelven completas, solo enmascaradas. */
 const SECRET_KEYS = new Set([
@@ -17,14 +17,19 @@ function mask(value: string): string {
 export default defineEventHandler(async (event) => {
   requireRole(event, 'admin')
 
+  // Una sola carga y luego los accesores síncronos. El bucle hacía dos `await`
+  // por clave, dieciséis en total, y todos menos el primero devolvían el caché
+  // sin consultar nada: eran esperas que no esperaban a nada y hacían pensar
+  // que había dieciséis viajes a la base de datos.
+  await loadIntegrationCache()
+
   const result: Record<string, { value: string, source: 'panel' | 'env' | 'none', isSecret: boolean }> = {}
   for (const key of INTEGRATION_KEYS) {
-    const value = await getIntegration(key)
-    const source = await getIntegrationSource(key)
+    const value = getIntegrationSync(key)
     const isSecret = SECRET_KEYS.has(key)
     result[key] = {
       value: isSecret ? mask(value) : value,
-      source,
+      source: getIntegrationSourceSync(key),
       isSecret,
     }
   }

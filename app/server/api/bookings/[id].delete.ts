@@ -9,7 +9,13 @@ export default defineEventHandler(async (event) => {
   const hasValidToken = verifyBookingToken(id, token)
   const user = hasValidToken ? event.context.user : requireAuth(event)
 
-  let query = db.from('bookings').select('*').eq('id', id)
+  // Las tres columnas que se usan, que son justo las que el `.single<>()` de
+  // abajo ya declaraba: el `*` traía la reserva completa —con el email y el
+  // teléfono del invitado— para leer tres campos.
+  let query = db
+    .from('bookings')
+    .select('status, pickup_at, stripe_payment_intent_id')
+    .eq('id', id)
   if (!hasValidToken) {
     query = query.eq('client_id', user!.id)
   } else {

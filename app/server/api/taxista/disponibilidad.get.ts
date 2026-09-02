@@ -4,6 +4,7 @@ export default defineEventHandler(async (event) => {
 
   const { data: availability } = await db
     .from('driver_availability')
+    // `*` a propósito: el calendario del taxista pinta la fila entera, así que aquí la fila ES la respuesta.
     .select('*')
     .eq('driver_id', user.id)
     .order('date')

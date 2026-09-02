@@ -4,6 +4,7 @@ export default defineEventHandler(async (event) => {
 
   const { data, error } = await db
     .from('accessories')
+    // `*` a propósito: el panel edita todos los campos del accesorio, así que aquí la fila ES la respuesta.
     .select('*')
     .order('name')
 

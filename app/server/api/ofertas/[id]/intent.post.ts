@@ -7,14 +7,16 @@ export default defineEventHandler(async (event) => {
   if (!id) throw createError({ statusCode: 400, message: 'Missing id' })
   const db = useDb()
 
+  // Ruta pública: solo lo necesario para validar la oferta y calcular la
+  // señal. Con `*` viajaba también el `driver_id`, que es de quien publica.
   const { data: offer, error } = await db
     .from('return_offers')
-    .select('*')
+    .select('status, available_until, final_price')
     .eq('id', id)
     .single()
 
   if (error || !offer) throw createError({ statusCode: 404, message: 'Oferta no encontrada' })
-  const o = offer as { status: string, available_until: string, final_price: number | string, deposit_amount?: number | string | null, [k: string]: unknown }
+  const o = offer as { status: string, available_until: string, final_price: number | string }
 
   if (o.status !== 'active') {
     throw createError({ statusCode: 400, message: 'Esta oferta ya no está disponible' })

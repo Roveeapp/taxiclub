@@ -5,9 +5,12 @@ export default defineEventHandler(async (event) => {
   const body = await readValidated(event, confirmarReservaSchema)
   const db = useDb()
 
+  // Esta consulta no lee datos: comprueba que la reserva está asignada a
+  // QUIEN la confirma. `select('*')` disfrazaba eso de lectura —la variable no
+  // se usaba— y traía la fila entera para tirarla.
   const { data: assignment, error: findError } = await db
     .from('booking_assignments')
-    .select('*')
+    .select('booking_id')
     .eq('booking_id', id)
     .eq('driver_id', user.id)
     .single()

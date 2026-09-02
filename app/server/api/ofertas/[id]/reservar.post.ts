@@ -16,9 +16,12 @@ export default defineEventHandler(async (event) => {
   }
 
   // 1. Oferta válida (y bloqueo optimista del estado)
+  // Columnas explícitas: son las que se leen abajo, y coinciden con las que
+  // el `as` de la línea siguiente ya declaraba. Esta es además una ruta
+  // pública, así que no conviene traer más de lo que se usa.
   const { data: offer, error: findError } = await db
     .from('return_offers')
-    .select('*')
+    .select('id, driver_id, status, available_from, available_until, origin_address, destination_station_id, base_price, final_price, max_passengers')
     .eq('id', id)
     .single()
 

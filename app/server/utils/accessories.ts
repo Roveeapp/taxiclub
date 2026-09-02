@@ -21,10 +21,14 @@ export async function resolveAccessoryFlags(accessoryIds?: string[]): Promise<Ac
   if (!accessoryIds || accessoryIds.length === 0) return flags
 
   const db = useDb()
-  // select('*') para tolerar que la columna `slug` aún no exista (migración 015)
+  // El comentario decía «select('*') para tolerar que la columna `slug` aún no
+  // exista (migración 015)». La columna existe desde entonces y los nueve
+  // accesorios la tienen rellena, así que ese `*` ya no toleraba nada. Es el
+  // mismo patrón que los tres catch de pricing.ts: una defensa contra una
+  // migración que llegó hace muchas versiones.
   const { data } = await db
     .from('accessories')
-    .select('*')
+    .select('id, name, slug')
     .in('id', accessoryIds)
 
   for (const acc of (data || []) as Array<{ id: string, name: string, slug?: string | null }>) {

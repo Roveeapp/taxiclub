@@ -10,6 +10,7 @@ export default defineEventHandler(async (event) => {
 
   const { data: offers, error } = await db
     .from('return_offers')
+    // `*` a propósito: la tabla del panel muestra todas las columnas, así que aquí la fila ES la respuesta.
     .select('*')
     .order('created_at', { ascending: false })
     .limit(300)
