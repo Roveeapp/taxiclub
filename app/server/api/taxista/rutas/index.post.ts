@@ -1,4 +1,4 @@
-import { geocodeAddress } from '~/server/services/pricing'
+import { geocodeAddress } from '~/server/services/geocoding'
 
 export default defineEventHandler(async (event) => {
   const user = requireAuth(event)
