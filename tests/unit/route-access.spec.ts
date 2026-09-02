@@ -89,10 +89,10 @@ const PUBLICAS: Record<string, string> = {
   'POST /api/log-error': 'errores del cliente; limitada por IP',
 }
 
-const ROLES = ['anon', 'client', 'driver', 'admin'] as const
+type Rol = 'anon' | 'client' | 'driver' | 'admin'
 
 /** Qué debería pasar con cada rol en una ruta dada. */
-function esperado(ruta: Ruta, rol: typeof ROLES[number]) {
+function esperado(ruta: Ruta, rol: Rol) {
   const rolesExigidos = requiredRolesForPath(ruta.urlPath)
   const clave = `${ruta.metodo} ${ruta.urlPath}`
 

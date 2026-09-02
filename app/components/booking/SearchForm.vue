@@ -8,8 +8,8 @@
           <Icon name="tabler:map-pin-2" size="18" class="text-secondary" />
         </div>
         <AutoComplete
-          v-model="originQuery"
-          :suggestions="originSuggestions"
+          v-model="origen.consulta"
+          :suggestions="origen.sugerencias"
           option-label="description"
           placeholder="¿Dónde te recogemos?"
           class="w-full"
@@ -17,8 +17,8 @@
           append-to="self"
           :delay="400"
           :min-length="3"
-          @complete="onOriginSearch"
-          @item-select="selectOrigin"
+          @complete="origen.buscar"
+          @item-select="origen.elegir"
         >
           <template #option="{ option }">
             <div class="flex items-center gap-3">
@@ -44,8 +44,8 @@
             <Icon name="tabler:search" size="18" class="text-secondary" />
           </div>
         <AutoComplete
-          v-model="destQuery"
-          :suggestions="destSuggestions"
+          v-model="destino.consulta"
+          :suggestions="destino.sugerencias"
           option-label="description"
           placeholder="Escribe una dirección..."
           class="w-full"
@@ -53,10 +53,8 @@
           append-to="self"
           :delay="400"
           :min-length="3"
-          @complete="onDestSearch"
-          @item-select="selectDest"
-          @focus="destFocused = true"
-          @blur="destFocused = false"
+          @complete="destino.buscar"
+          @item-select="destino.elegir"
         >
           <template #option="{ option }">
             <div class="flex items-center gap-3">
@@ -208,76 +206,18 @@ const emit = defineEmits<{ search: [data: SearchFormData] }>()
 
 const { minAdvanceHours, load: loadConfig } = useSystemConfig()
 
-// Origen libre: texto con sugerencias (paradas registradas + direcciones)
-const originStationId = ref('')
-const originQuery = ref<string | { description?: string, label?: string }>('')
-// Las sugerencias ya vienen con coordenadas del autocompletado. Guardarlas
-// ahorra al servidor una llamada a Nominatim que puede fallar en silencio y
-// dejar la reserva sin coordenadas —y sin coordenadas la asignación por zonas
-// del conductor se degrada sin que nadie se entere.
-const originCoords = ref<{ lat: number, lng: number } | null>(null)
-const originSuggestions = ref<Array<{ id: string, label: string, description: string, source: string, lat?: number, lng?: number }>>([])
-let originDebounce: ReturnType<typeof setTimeout> | null = null
+// Origen y destino usan la MISMA implementación. Antes eran dos bloques casi
+// idénticos que habían divergido: el de origen ofrecía las paradas del club y
+// guardaba el id, el de destino no, y el servidor tenía que adivinar la parada
+// a partir del texto — que es lo que decidía la tarifa fija del trayecto.
+// Ver composables/useBuscadorLugar.ts.
+const paradas = () => props.stations
+// `reactive` para que la plantilla y el resto del script accedan a los campos
+// sin `.value`: Vue solo desenvuelve las refs del nivel superior del setup, y
+// las de dentro de un objeto llegarían a la plantilla como Ref.
+const origen = reactive(useBuscadorLugar({ paradas }))
+const destino = reactive(useBuscadorLugar({ paradas }))
 
-const effectiveOrigin = computed(() => {
-  const q = originQuery.value
-  if (typeof q === 'string') return q.trim()
-  return (q?.description || q?.label || '').trim()
-})
-
-function onOriginSearch(event: { query: string }) {
-  if (originDebounce) clearTimeout(originDebounce)
-  originDebounce = setTimeout(async () => {
-    const q = event.query.toLowerCase()
-    // Paradas registradas que coincidan, primero
-    const stationMatches = props.stations
-      .filter(s => s.name.toLowerCase().includes(q))
-      .map(s => ({ id: s.id, label: s.name, description: s.name, source: 'station' }))
-
-    if (q.length < 2) {
-      originSuggestions.value = stationMatches
-      return
-    }
-    try {
-      const data = await $fetch(`/api/addresses/search?q=${encodeURIComponent(event.query)}`) as any[]
-      originSuggestions.value = [...stationMatches, ...(data || [])]
-    } catch {
-      originSuggestions.value = stationMatches
-    }
-  }, 300)
-}
-
-function selectOrigin(event: { value: { id: string, label: string, description: string, source: string, lat?: number, lng?: number } }) {
-  const v = event.value
-  originQuery.value = v.source === 'station' ? v.label : v.description
-  // Si eligió una parada registrada, la aprovechamos para tarifas fijas y round-robin
-  originStationId.value = v.source === 'station' ? v.id : ''
-  originCoords.value = typeof v.lat === 'number' && typeof v.lng === 'number'
-    ? { lat: v.lat, lng: v.lng }
-    : null
-  originSuggestions.value = []
-}
-
-const destQuery = ref<string | { description?: string, label?: string }>('')
-const destination = ref('')
-// El destino no ofrecía las paradas registradas —solo el origen lo hacía—, así
-// que el cliente no tenía forma de decir «voy a la estación de Oviedo». El
-// servidor lo adivinaba con un `includes` sobre el texto y se equivocaba en las
-// dos direcciones: ataba «Calle Uría, Pravia» a la parada de Pravia y no
-// reconocía «Oviedo — RENFE» por la raya del nombre.
-const destinationStationId = ref('')
-const destinationCoords = ref<{ lat: number, lng: number } | null>(null)
-
-// El usuario puede escribir el destino sin elegir sugerencia:
-// usamos siempre el texto actual como destino efectivo.
-const effectiveDestination = computed(() => {
-  const q = destQuery.value
-  if (typeof q === 'string') return q.trim()
-  return (q?.description || q?.label || '').trim()
-})
-const destFocused = ref(false)
-const destSuggestions = ref<Array<{ id: string; label: string; description: string; source: string; icon?: string; lat?: number; lng?: number }>>([])
-let destDebounce: ReturnType<typeof setTimeout> | null = null
 
 const now = new Date()
 const date = ref<Date>(now)
@@ -291,37 +231,6 @@ const selectedAccessories = ref(new Set<string>())
 
 const minDateObj = computed(() => new Date())
 
-// Si el usuario edita el texto tras elegir una parada, deja de ser esa parada.
-// Y tampoco valen ya las coordenadas: eran las del sitio anterior, y unas
-// coordenadas equivocadas son peor que ninguna, porque el servidor se las cree.
-watch(originQuery, (q) => {
-  if (typeof q !== 'string') return
-  if (originStationId.value) {
-    const station = props.stations.find(s => s.id === originStationId.value)
-    if (!station || station.name !== q) {
-      originStationId.value = ''
-      originCoords.value = null
-    }
-  } else if (originCoords.value && q.trim() !== effectiveOrigin.value) {
-    originCoords.value = null
-  }
-})
-
-// El mismo criterio en el destino, que es donde la parada decide la tarifa fija
-watch(destQuery, (q) => {
-  if (typeof q !== 'string') return
-  const texto = q.trim()
-  if (destinationStationId.value) {
-    const station = props.stations.find(s => s.id === destinationStationId.value)
-    if (!station || station.name !== texto) {
-      destinationStationId.value = ''
-      destinationCoords.value = null
-    }
-  } else if (destinationCoords.value && texto !== destination.value) {
-    destinationCoords.value = null
-  }
-})
-
 const luggageSummary = computed(() => {
   const parts: string[] = []
   if (luggageBig.value > 0) parts.push(`${luggageBig.value} ${luggageBig.value === 1 ? 'maleta G' : 'maletas G'}`)
@@ -331,8 +240,8 @@ const luggageSummary = computed(() => {
 })
 
 const isFormValid = computed(() =>
-  (effectiveOrigin.value.length >= 3 || !!originStationId.value)
-  && effectiveDestination.value.length >= 3
+  (origen.texto.length >= 3 || !!origen.stationId)
+  && destino.texto.length >= 3
   && !!time.value,
 )
 
@@ -377,36 +286,6 @@ const timeSlots = computed(() => {
   return slots
 })
 
-function onDestSearch(event: { query: string }) {
-  if (destDebounce) clearTimeout(destDebounce)
-  destDebounce = setTimeout(async () => {
-    const q = event.query.toLowerCase()
-    // Paradas registradas primero, igual que en el origen
-    const stationMatches = props.stations
-      .filter(s => s.name.toLowerCase().includes(q))
-      .map(s => ({ id: s.id, label: s.name, description: s.name, source: 'station' }))
-
-    if (event.query.length < 2) { destSuggestions.value = stationMatches; return }
-    try {
-      const data = await $fetch(`/api/addresses/search?q=${encodeURIComponent(event.query)}`) as any[]
-      destSuggestions.value = [...stationMatches, ...(data || [])]
-    } catch { destSuggestions.value = stationMatches }
-  }, 300)
-}
-
-function selectDest(event: { value: { id: string; label: string; description: string; source?: string; lat?: number; lng?: number } }) {
-  const v = event.value
-  const texto = v.source === 'station' ? v.label : v.description
-  destination.value = texto
-  destQuery.value = texto
-  // Que el cliente elija la parada es lo que evita que el servidor la adivine
-  destinationStationId.value = v.source === 'station' ? v.id : ''
-  destinationCoords.value = typeof v.lat === 'number' && typeof v.lng === 'number'
-    ? { lat: v.lat, lng: v.lng }
-    : null
-  destSuggestions.value = []
-}
-
 function toggleAccessory(id: string) {
   const next = new Set(selectedAccessories.value)
   if (next.has(id)) next.delete(id)
@@ -417,14 +296,14 @@ function toggleAccessory(id: string) {
 function handleSearch() {
   if (!isFormValid.value) return
   emit('search', {
-    originStationId: originStationId.value,
-    originAddress: effectiveOrigin.value,
-    originLat: originCoords.value?.lat ?? null,
-    originLng: originCoords.value?.lng ?? null,
-    destination: effectiveDestination.value || destination.value,
-    destinationStationId: destinationStationId.value,
-    destinationLat: destinationCoords.value?.lat ?? null,
-    destinationLng: destinationCoords.value?.lng ?? null,
+    originStationId: origen.stationId,
+    originAddress: origen.texto,
+    originLat: origen.coords?.lat ?? null,
+    originLng: origen.coords?.lng ?? null,
+    destination: destino.texto,
+    destinationStationId: destino.stationId,
+    destinationLat: destino.coords?.lat ?? null,
+    destinationLng: destino.coords?.lng ?? null,
     date: date.value.toISOString().split('T')[0] ?? '',
     time: time.value,
     passengers: passengers.value,

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import {describe, it, expect, vi, afterEach} from 'vitest'
 
 // El módulo usa los auto-imports de Nitro; los declaramos antes de importarlo.
 const g = globalThis as Record<string, unknown>
