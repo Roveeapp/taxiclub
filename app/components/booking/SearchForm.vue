@@ -1,8 +1,8 @@
 <template>
-  <div class="bg-white rounded-card shadow-2xl shadow-black/30 p-md space-y-md">
+  <div class="bg-form-surface rounded-card shadow-2xl shadow-black/30 p-md space-y-md">
     <!-- ORIGEN (texto libre con sugerencias: paradas + direcciones) -->
     <div class="space-y-1">
-      <label class="text-[11px] font-medium text-slate-400 uppercase tracking-[0.08em] block">Origen</label>
+      <label class="text-[11px] font-medium text-on-form-muted uppercase tracking-[0.08em] block">Origen</label>
       <div class="relative flex items-center" style="height: 3rem;">
         <div class="absolute left-4 z-10 pointer-events-none" style="top: 50%; transform: translateY(-50%);">
           <Icon name="tabler:map-pin-2" size="18" class="text-secondary" />
@@ -26,8 +26,8 @@
                 <Icon :name="option.source === 'station' ? 'tabler:map-pin-2' : 'tabler:map-pin'" size="18" />
               </div>
               <div class="flex-1 min-w-0">
-                <p class="text-sm font-semibold text-slate-900 truncate">{{ option.label }}</p>
-                <p class="text-xs text-slate-500 truncate">{{ option.description }}</p>
+                <p class="text-sm font-semibold text-on-form truncate">{{ option.label }}</p>
+                <p class="text-xs text-on-form-muted truncate">{{ option.description }}</p>
               </div>
               <span v-if="option.source === 'station'" class="text-[10px] bg-secondary/10 text-secondary px-2 py-0.5 rounded-full font-medium">Parada</span>
             </div>
@@ -38,7 +38,7 @@
 
     <!-- DESTINO -->
     <div class="space-y-1">
-      <label class="text-[11px] font-medium text-slate-400 uppercase tracking-[0.08em] block">Destino</label>
+      <label class="text-[11px] font-medium text-on-form-muted uppercase tracking-[0.08em] block">Destino</label>
         <div class="relative flex items-center" style="height: 3rem;">
           <div class="absolute left-4 z-10 pointer-events-none" style="top: 50%; transform: translateY(-50%);">
             <Icon name="tabler:search" size="18" class="text-secondary" />
@@ -62,8 +62,8 @@
                 <Icon :name="option.source === 'station' ? 'tabler:map-pin-2' : 'tabler:map-pin'" size="18" />
               </div>
               <div class="flex-1 min-w-0">
-                <p class="text-sm font-semibold text-slate-900 truncate">{{ option.label }}</p>
-                <p class="text-xs text-slate-500 truncate">{{ option.description }}</p>
+                <p class="text-sm font-semibold text-on-form truncate">{{ option.label }}</p>
+                <p class="text-xs text-on-form-muted truncate">{{ option.description }}</p>
               </div>
               <span v-if="option.source === 'station'" class="text-[10px] bg-secondary/10 text-secondary px-2 py-0.5 rounded-full font-medium">Parada</span>
               <span v-else-if="option.source === 'saved'" class="text-[10px] bg-secondary/10 text-secondary px-2 py-0.5 rounded-full font-medium">Guardado</span>
@@ -76,7 +76,7 @@
     <!-- FECHA y HORA -->
     <div class="grid grid-cols-2 gap-sm">
       <div class="space-y-1">
-        <label class="text-[11px] font-medium text-slate-400 uppercase tracking-[0.08em] block">Fecha</label>
+        <label class="text-[11px] font-medium text-on-form-muted uppercase tracking-[0.08em] block">Fecha</label>
         <div class="relative flex items-center" style="height: 3rem;">
           <div class="absolute left-4 z-10 pointer-events-none" style="top: 50%; transform: translateY(-50%);">
             <Icon name="tabler:calendar" size="18" class="text-secondary" />
@@ -97,7 +97,7 @@
         </div>
       </div>
       <div class="space-y-1">
-        <label class="text-[11px] font-medium text-slate-400 uppercase tracking-[0.08em] block">Hora</label>
+        <label class="text-[11px] font-medium text-on-form-muted uppercase tracking-[0.08em] block">Hora</label>
         <Select
           v-model="time"
           :options="timeSlots"
@@ -111,13 +111,13 @@
           <template #value="slotProps">
             <div class="flex items-center gap-3">
               <Icon name="tabler:clock" size="18" class="text-secondary flex-shrink-0" />
-              <span class="text-sm font-medium text-slate-900">
+              <span class="text-sm font-medium text-on-form">
                 {{ timeSlots.find(s => s.value === slotProps.value)?.label || slotProps.placeholder }}
               </span>
             </div>
           </template>
           <template #dropdownicon>
-            <Icon name="tabler:chevron-down" size="18" class="text-slate-400" />
+            <Icon name="tabler:chevron-down" size="18" class="text-on-form-muted" />
           </template>
         </Select>
       </div>
@@ -126,8 +126,8 @@
     <!-- PASAJEROS y EQUIPAJE -->
     <div class="grid grid-cols-2 gap-sm">
       <div class="space-y-1">
-        <label class="text-[11px] font-medium text-slate-400 uppercase tracking-[0.08em] block">Pasajeros</label>
-        <div class="flex items-center gap-3 bg-white border-2 border-secondary rounded-xl px-4 h-12">
+        <label class="text-[11px] font-medium text-on-form-muted uppercase tracking-[0.08em] block">Pasajeros</label>
+        <div class="flex items-center gap-3 bg-form-surface border-2 border-secondary rounded-xl px-4 h-12">
           <Icon name="tabler:users" size="18" class="text-secondary flex-shrink-0" />
           <button
             type="button"
@@ -137,7 +137,7 @@
           >
             -
           </button>
-          <span class="text-sm font-medium text-slate-900 w-6 text-center">{{ passengers }}</span>
+          <span class="text-sm font-medium text-on-form w-6 text-center">{{ passengers }}</span>
           <button
             type="button"
             class="w-8 h-8 rounded-full bg-secondary/15 text-secondary hover:bg-secondary/25 text-sm font-bold flex items-center justify-center transition-colors"
@@ -149,14 +149,14 @@
         </div>
       </div>
       <div class="space-y-1">
-        <label class="text-[11px] font-medium text-slate-400 uppercase tracking-[0.08em] block">Equipaje</label>
+        <label class="text-[11px] font-medium text-on-form-muted uppercase tracking-[0.08em] block">Equipaje</label>
         <div
-          class="flex items-center gap-3 bg-white border-2 border-secondary rounded-xl px-4 h-12 cursor-pointer overflow-hidden"
+          class="flex items-center gap-3 bg-form-surface border-2 border-secondary rounded-xl px-4 h-12 cursor-pointer overflow-hidden"
           @click="luggageDialogVisible = true"
         >
           <Icon name="tabler:luggage" size="18" class="text-secondary flex-shrink-0" />
-          <span class="text-sm font-medium text-slate-900 flex-1 truncate whitespace-nowrap">{{ luggageSummary }}</span>
-          <Icon name="tabler:chevron-down" size="18" class="text-slate-400 flex-shrink-0" />
+          <span class="text-sm font-medium text-on-form flex-1 truncate whitespace-nowrap">{{ luggageSummary }}</span>
+          <Icon name="tabler:chevron-down" size="18" class="text-on-form-muted flex-shrink-0" />
         </div>
       </div>
 
@@ -174,10 +174,10 @@
         v-for="acc in accessories"
         :key="acc.id"
         class="flex items-center gap-1.5 px-3 py-1.5 rounded-full border transition-all"
-        :class="selectedAccessories.has(acc.id) ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-600 border-slate-200'"
+        :class="selectedAccessories.has(acc.id) ? 'bg-secondary text-on-secondary border-secondary' : 'bg-form-surface text-on-form-variant border-form-border'"
         @click="toggleAccessory(acc.id)"
       >
-        <Icon :name="acc.icon" size="14" :class="selectedAccessories.has(acc.id) ? 'text-secondary' : 'text-slate-400'" />
+        <Icon :name="acc.icon" size="14" :class="selectedAccessories.has(acc.id) ? 'text-secondary' : 'text-on-form-muted'" />
         <span class="text-xs font-medium">{{ acc.name }}</span>
       </button>
     </div>
@@ -332,7 +332,7 @@ watch(date, () => {
 :deep(.p-select) {
   border: 2px solid rgb(var(--secondary)) !important;
   border-radius: 0.75rem !important;
-  background: white !important;
+  background: rgb(var(--form-surface)) !important;
   padding: 0 !important;
   min-height: 3rem !important;
   display: flex !important;
@@ -348,7 +348,7 @@ watch(date, () => {
   border-radius: 0 !important;
   font-size: 0.875rem !important;
   font-weight: 500 !important;
-  color: rgb(var(--on-light)) !important;
+  color: rgb(var(--on-form)) !important;
   display: flex !important;
   align-items: center !important;
   min-height: 2.75rem !important;
@@ -358,14 +358,14 @@ watch(date, () => {
   border: none !important;
   width: 2.5rem !important;
   height: 2.5rem !important;
-  color: rgb(var(--on-light-muted)) !important;
+  color: rgb(var(--on-form-muted)) !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
   margin-right: 0.25rem !important;
 }
 :deep(.p-select-overlay) {
-  border: 1px solid rgb(var(--light-border)) !important;
+  border: 1px solid rgb(var(--form-border)) !important;
   border-radius: 0.75rem !important;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
   margin-top: 0.5rem !important;
@@ -373,7 +373,7 @@ watch(date, () => {
 :deep(.p-select-option) {
   padding: 0.625rem 1rem !important;
   font-size: 0.875rem !important;
-  color: rgb(var(--on-light-variant)) !important;
+  color: rgb(var(--on-form-variant)) !important;
   border-radius: 0.5rem !important;
   margin: 0 0.5rem !important;
   margin-bottom: 0.125rem !important;
@@ -384,13 +384,13 @@ watch(date, () => {
 }
 :deep(.p-select-option-selected) {
   background: rgb(var(--gold-100)) !important;
-  color: rgb(var(--on-light)) !important;
+  color: rgb(var(--on-form)) !important;
 }
 
 :deep(.p-autocomplete) {
   border: 2px solid rgb(var(--secondary)) !important;
   border-radius: 0.75rem !important;
-  background: white !important;
+  background: rgb(var(--form-surface)) !important;
   padding: 0 !important;
   min-height: 3rem !important;
   display: flex !important;
@@ -406,7 +406,7 @@ watch(date, () => {
   border-radius: 0 !important;
   font-size: 0.875rem !important;
   font-weight: 500 !important;
-  color: rgb(var(--on-light)) !important;
+  color: rgb(var(--on-form)) !important;
   display: flex !important;
   align-items: center !important;
   min-height: 2.75rem !important;
@@ -416,14 +416,14 @@ watch(date, () => {
   border: none !important;
   width: 2.5rem !important;
   height: 2.5rem !important;
-  color: rgb(var(--on-light-muted)) !important;
+  color: rgb(var(--on-form-muted)) !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
   margin-right: 0.25rem !important;
 }
 :deep(.p-autocomplete-overlay) {
-  border: 1px solid rgb(var(--light-border)) !important;
+  border: 1px solid rgb(var(--form-border)) !important;
   border-radius: 0.75rem !important;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
   margin-top: 0.5rem !important;
@@ -435,7 +435,7 @@ watch(date, () => {
 :deep(.p-datepicker) {
   border: 2px solid rgb(var(--secondary)) !important;
   border-radius: 0.75rem !important;
-  background: white !important;
+  background: rgb(var(--form-surface)) !important;
   padding: 0 !important;
   min-height: 3rem !important;
   display: flex !important;
@@ -451,7 +451,7 @@ watch(date, () => {
   border-radius: 0 !important;
   font-size: 0.875rem !important;
   font-weight: 500 !important;
-  color: rgb(var(--on-light)) !important;
+  color: rgb(var(--on-form)) !important;
   display: flex !important;
   align-items: center !important;
   min-height: 2.75rem !important;
@@ -461,7 +461,7 @@ watch(date, () => {
   border: none !important;
   width: 2.5rem !important;
   height: 2.5rem !important;
-  color: rgb(var(--on-light-muted)) !important;
+  color: rgb(var(--on-form-muted)) !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;

@@ -76,10 +76,33 @@
     --status-warning: 229 153 10;   /* #e5990a */
     --status-error: 217 48 37;   /* #d93025 */
     --status-info: 37 99 235;   /* #2563eb */
-    --on-light: 15 23 42;   /* #0f172a */
-    --on-light-variant: 51 65 85;   /* #334155 */
-    --on-light-muted: 148 163 184;   /* #94a3b8 */
-    --light-border: 226 232 240;   /* #e2e8f0 */
+    /*
+     * LA TARJETA DE FORMULARIO DE LA APP DE CLIENTE
+     *
+     * El buscador de la portada y el formulario de acceso son una tarjeta con
+     * su propia superficie encima del fondo oscuro. design.md §7 la quiere
+     * BLANCA: «tarjetas blancas para los formularios. Este contraste es
+     * intencional y diferenciador».
+     *
+     * Los tonos se llaman por su PAPEL y no por su color —`--on-form` y no
+     * `--on-light`— porque si algún día se decide que el formulario va oscuro,
+     * esto es lo único que cambia: cinco valores aquí y nada en el formulario.
+     * Antes eran 78 utilidades crudas de Tailwind (`bg-white`, `text-slate-900`)
+     * repartidas por cuatro ficheros, así que la decisión no vivía en un sitio.
+     */
+    --form-surface: 255 255 255;   /* #ffffff */
+    --on-form: 15 23 42;   /* #0f172a */
+    --on-form-variant: 51 65 85;   /* #334155 */
+    /*
+     * Las etiquetas del formulario (ORIGEN, DESTINO, FECHA, HORA…) y los
+     * placeholders. Era #94a3b8, que sobre blanco da 2,56 de contraste: FALLA.
+     * Venía de las 78 utilidades crudas de Tailwind que había antes —era
+     * `text-slate-400`— y al pasarlas a token heredé el valor sin comprobarlo.
+     * #64748b da 4,76 y es el paso siguiente de la misma rampa, así que la
+     * jerarquía visual no cambia.
+     */
+    --on-form-muted: 100 116 139;   /* #64748b */
+    --form-border: 226 232 240;   /* #e2e8f0 */
     --gold-50: 255 251 235;   /* #fffbeb */
     --gold-100: 254 243 199;   /* #fef3c7 */
     --gold-200: 253 230 138;   /* #fde68a */

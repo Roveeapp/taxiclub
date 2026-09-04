@@ -1,11 +1,11 @@
 <template>
   <div class="bg-white rounded-card p-6">
-    <h3 class="text-lg font-medium text-text-on-light mb-4">Resumen de ingresos</h3>
+    <h3 class="text-lg font-medium text-text-on-form mb-4">Resumen de ingresos</h3>
 
     <div class="grid grid-cols-2 gap-4 mb-4">
       <div class="p-3 bg-surface-input rounded-input">
         <p class="text-xs text-text-muted-light mb-1">Bruto</p>
-        <p class="text-xl font-semibold text-text-on-light">{{ formatCurrency(gross) }}</p>
+        <p class="text-xl font-semibold text-text-on-form">{{ formatCurrency(gross) }}</p>
       </div>
       <div class="p-3 bg-surface-input rounded-input">
         <p class="text-xs text-text-muted-light mb-1">Comisión ({{ commissionPct }}%)</p>
@@ -24,7 +24,7 @@
     <div class="pt-4 border-t border-surface-divider">
       <div class="flex items-center justify-between text-sm">
         <span class="text-text-muted-light">Viajes completados</span>
-        <span class="font-medium text-text-on-light">{{ tripsCount }}</span>
+        <span class="font-medium text-text-on-form">{{ tripsCount }}</span>
       </div>
     </div>
   </div>

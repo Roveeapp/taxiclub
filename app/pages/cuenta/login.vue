@@ -14,10 +14,10 @@
       </p>
     </div>
 
-    <div class="bg-white rounded-card p-6">
+    <div class="bg-form-surface rounded-card p-6">
       <div class="space-y-4">
         <div>
-          <label class="text-[11px] font-medium text-slate-400 uppercase tracking-[0.08em] block mb-1">Email</label>
+          <label class="text-[11px] font-medium text-on-form-muted uppercase tracking-[0.08em] block mb-1">Email</label>
           <div class="relative">
             <Icon name="tabler:mail" size="18" class="text-secondary absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
@@ -32,7 +32,7 @@
         </div>
 
         <div>
-          <label class="text-[11px] font-medium text-slate-400 uppercase tracking-[0.08em] block mb-1">Contraseña</label>
+          <label class="text-[11px] font-medium text-on-form-muted uppercase tracking-[0.08em] block mb-1">Contraseña</label>
           <div class="relative">
             <Icon name="tabler:lock" size="18" class="text-secondary absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
@@ -44,7 +44,7 @@
             >
             <button
               type="button"
-              class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+              class="absolute right-3 top-1/2 -translate-y-1/2 text-on-form-muted hover:text-on-form-variant transition-colors"
               :aria-label="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
               @click="showPassword = !showPassword"
             >
@@ -55,7 +55,7 @@
         </div>
 
         <div v-if="!isLogin">
-          <label class="text-[11px] font-medium text-slate-400 uppercase tracking-[0.08em] block mb-1">Nombre completo</label>
+          <label class="text-[11px] font-medium text-on-form-muted uppercase tracking-[0.08em] block mb-1">Nombre completo</label>
           <div class="relative">
             <Icon name="tabler:user" size="18" class="text-secondary absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
@@ -76,7 +76,7 @@
               class="flex items-center justify-center gap-2 px-4 py-3 rounded-input border text-sm font-medium transition-all"
               :class="accountType === 'client'
                 ? 'border-brand-dark bg-brand-dark text-white'
-                : 'border-gray-200 text-gray-600 hover:border-brand-dark'"
+                : 'border-form-border text-on-form-variant hover:border-brand-dark'"
               @click="accountType = 'client'"
             >
               <Icon name="tabler:user" size="16" />
@@ -86,7 +86,7 @@
               class="flex items-center justify-center gap-2 px-4 py-3 rounded-input border text-sm font-medium transition-all"
               :class="accountType === 'driver'
                 ? 'border-brand-dark bg-brand-dark text-white'
-                : 'border-gray-200 text-gray-600 hover:border-brand-dark'"
+                : 'border-form-border text-on-form-variant hover:border-brand-dark'"
               @click="accountType = 'driver'"
             >
               <Icon name="tabler:steering-wheel" size="16" />
@@ -254,12 +254,12 @@ function translateAuthError(message?: string) {
   padding: 0 0.75rem 0 2.75rem;
   font-size: 0.875rem;
   font-weight: 500;
-  color: rgb(var(--on-light));
+  color: rgb(var(--on-form));
   outline: none;
   transition: box-shadow 0.15s ease;
 }
 .login-input::placeholder {
-  color: rgb(var(--on-light-muted));
+  color: rgb(var(--on-form-muted));
   font-weight: 400;
 }
 .login-input:focus {

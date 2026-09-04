@@ -71,15 +71,18 @@ export default <Config>{
           DEFAULT: 'rgb(var(--outline) / <alpha-value>)',
           variant: 'rgb(var(--outline-variant) / <alpha-value>)',
         },
-        // Tarjetas blancas sobre la app oscura: el formulario de búsqueda y el
-        // de acceso. Los tonos de `on-surface` están pensados para leerse sobre
-        // fondo oscuro y aquí no sirven. Ver main.css.
-        'on-light': {
-          DEFAULT: 'rgb(var(--on-light) / <alpha-value>)',
-          variant: 'rgb(var(--on-light-variant) / <alpha-value>)',
-          muted: 'rgb(var(--on-light-muted) / <alpha-value>)',
+        // La tarjeta de formulario de la app de cliente: el buscador de la
+        // portada y el de acceso. Tiene su propia superficie sobre el fondo
+        // oscuro, y los tonos de `on-surface` están pensados para leerse SOBRE
+        // oscuro, así que aquí no sirven. Nombrados por papel y no por color,
+        // para que cambiar la decisión sea cambiar cinco valores. Ver main.css.
+        'form-surface': 'rgb(var(--form-surface) / <alpha-value>)',
+        'on-form': {
+          DEFAULT: 'rgb(var(--on-form) / <alpha-value>)',
+          variant: 'rgb(var(--on-form-variant) / <alpha-value>)',
+          muted: 'rgb(var(--on-form-muted) / <alpha-value>)',
         },
-        'light-border': 'rgb(var(--light-border) / <alpha-value>)',
+        'form-border': 'rgb(var(--form-border) / <alpha-value>)',
         status: {
           success: 'rgb(var(--status-success) / <alpha-value>)',
           warning: 'rgb(var(--status-warning) / <alpha-value>)',

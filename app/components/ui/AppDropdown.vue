@@ -16,7 +16,7 @@
         <Icon v-if="icon" :name="icon" size="16" class="text-brand-gold" />
         <span>{{ selectedLabel }}</span>
       </div>
-      <span v-else class="text-slate-400">{{ placeholder }}</span>
+      <span v-else class="text-on-form-muted">{{ placeholder }}</span>
     </template>
     <template #option="slotProps">
       <div class="flex items-center gap-2">
@@ -59,16 +59,16 @@ const selectedLabel = computed(() => {
 })
 
 const selectPt = {
-  root: { class: 'w-full !bg-white !border-2 !border-secondary !rounded-xl !shadow-sm !flex !items-center !p-0' },
+  root: { class: 'w-full !bg-form-surface !border-2 !border-secondary !rounded-xl !shadow-sm !flex !items-center !p-0' },
   input: { 
-    class: '!text-sm !font-medium !text-slate-900 !flex-1 !min-w-0 !p-3 !px-4 !m-0', 
+    class: '!text-sm !font-medium !text-on-form !flex-1 !min-w-0 !p-3 !px-4 !m-0', 
     style: 'width: 100%; background: transparent; border: none; box-shadow: none; outline: none; border-radius: 0; appearance: none;' 
   },
-  trigger: { class: '!w-8 !h-8 !text-slate-400 hover:!text-slate-600 !ml-2 !flex-shrink-0' },
-  overlay: { class: '!bg-slate-50 !border !border-slate-200 !rounded-xl !shadow-lg !mt-2 !overflow-hidden' },
+  trigger: { class: '!w-8 !h-8 !text-on-form-muted hover:!text-on-form-variant !ml-2 !flex-shrink-0' },
+  overlay: { class: '!bg-form-surface !border !border-form-border !rounded-xl !shadow-lg !mt-2 !overflow-hidden' },
   list: { class: '!py-2' },
-  option: { class: '!px-4 !py-2.5 !text-slate-700 !text-sm hover:!bg-amber-50 !rounded-lg !mx-2 !mb-0.5 !cursor-pointer' },
-  optionSelected: { class: '!bg-amber-100 !text-slate-900' },
+  option: { class: '!px-4 !py-2.5 !text-on-form-variant !text-sm hover:!bg-amber-50 !rounded-lg !mx-2 !mb-0.5 !cursor-pointer' },
+  optionSelected: { class: '!bg-amber-100 !text-on-form' },
   optionCheckIcon: { class: '!text-brand-gold !w-4 !h-4 !ml-auto' },
   focusRing: { class: '!ring-0 !ring-offset-0' },
 }
