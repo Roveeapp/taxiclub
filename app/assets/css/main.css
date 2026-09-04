@@ -36,6 +36,16 @@
     --surface-container-highest: 52 52 63;   /* #34343f */
     --surface-dark: 20 20 30;   /* #14141e */
     --surface-input: 244 244 248;   /* #f4f4f8 */
+    /*
+     * La superficie de una TARJETA, que no es lo mismo que el fondo de la
+     * página aunque en el tema oscuro coincidieran. `.card-surface` —103 usos—
+     * se apoyaba en `--surface-container-lowest`, que además es el fondo del
+     * layout de panel: en oscuro funciona porque ese tono es MÁS oscuro que el
+     * fondo y la tarjeta se lee como un hueco; en claro las 103 tarjetas
+     * quedaban del mismo gris que el fondo y desaparecían. Se vio en la vista
+     * previa, no en los colores calculados.
+     */
+    --card: 13 13 23;   /* #0d0d17 */
     --surface-divider: 235 235 240;   /* #ebebf0 */
     --on-surface: 228 225 239;   /* #e4e1ef */
     --on-surface-variant: 200 197 203;   /* #c8c5cb */
@@ -103,12 +113,13 @@
     --surface-dim: 241 241 246;   /* #f1f1f6 */
     --surface-bright: 255 255 255;   /* #ffffff */
     --surface-container-lowest: 248 248 252;   /* #f8f8fc */
-    --surface-container-low: 244 244 248;   /* #f4f4f8 */
+    --surface-container-low: 255 255 255;   /* #ffffff — tarjetas y paneles deslizantes */
     --surface-container: 255 255 255;   /* #ffffff */
-    --surface-container-high: 244 244 248;   /* #f4f4f8 */
+    --surface-container-high: 241 241 246;   /* #f1f1f6 — elevado DENTRO de una tarjeta */
     --surface-container-highest: 235 235 240;   /* #ebebf0 */
     --surface-dark: 255 255 255;   /* #ffffff */
     --surface-input: 255 255 255;   /* #ffffff */
+    --card: 255 255 255;   /* #ffffff — design.md §7: «Tarjetas: #ffffff» */
     --on-surface: 12 12 19;   /* #0c0c13 */
     --on-surface-variant: 85 85 95;   /* #55555f */
     --on-background: 12 12 19;   /* #0c0c13 */
@@ -168,8 +179,12 @@
 @layer components {
   .btn-primary {
     @apply border-none rounded-btn px-5 text-[15px] font-medium w-full transition-all;
+    /* `--primary-container` es #0c0c13 en los dos temas —design.md pide la
+       barra lateral oscura también en claro—, así que el blanco encima es
+       correcto siempre; se toma del token para no dejar el único hexadecimal
+       suelto del fichero. */
     background: rgb(var(--primary-container));
-    color: #ffffff;
+    color: rgb(var(--color-brand-white));
     padding: 15px;
   }
 
@@ -258,18 +273,16 @@
     color: rgb(var(--primary-container));
   }
 
+  /*
+   * La tarjeta del panel. En oscuro es un hueco más oscuro que el fondo; en
+   * claro es blanca sobre el gris, con el hairline que especifica design.md §7.
+   *
+   * `.card-white` y `.card-glass` se retiran: cero usos, y la primera tenía el
+   * blanco escrito a mano, que en el tema oscuro habría sido un error.
+   */
   .card-surface {
-    background: rgb(var(--surface-container-lowest));
+    background: rgb(var(--card));
     border: 1px solid rgb(var(--outline-variant));
-  }
-
-  .card-white {
-    background: #ffffff;
-  }
-
-  .card-glass {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(8px);
   }
 }
 
