@@ -2,19 +2,7 @@
   <div>
     <div class="flex items-center justify-between mb-6">
       <h1 class="text-2xl font-semibold">Mis reservas</h1>
-      <div class="flex gap-2">
-        <button
-          v-for="filter in filters"
-          :key="filter.value"
-          class="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
-          :class="activeFilter === filter.value
-            ? 'bg-brand-dark text-white'
-            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'"
-          @click="activeFilter = filter.value"
-        >
-          {{ filter.label }}
-        </button>
-      </div>
+      <AppFilterTabs v-model="activeFilter" :opciones="filters" />
     </div>
 
     <div v-if="loading" class="space-y-3">

@@ -8,14 +8,25 @@
           :width="slotW - gap"
           :height="barH(item.count)"
           rx="3"
-          :fill="item.count > 0 ? 'rgb(var(--secondary))' : 'rgb(var(--outline-variant))'"
-          :fill-opacity="item.count > 0 ? (hovered === i ? 1 : 0.85) : 0.4"
+          :fill="item.count > 0 ? 'rgb(var(--secondary))' : 'rgb(var(--outline))'"
+          :fill-opacity="item.count > 0 ? (hovered === i ? 1 : 0.85) : 0.5"
           class="transition-all cursor-pointer"
           @mouseenter="hovered = i"
           @mouseleave="hovered = null"
         />
       </g>
-      <line :x1="0" :y1="height - baseline" :x2="width" :y2="height - baseline" stroke="rgb(var(--outline-variant))" stroke-width="1" />
+      <!--
+        El eje va en `--outline` y no en `--outline-variant`: este último es el
+        hairline de las tarjetas (#ebebf0 en el tema claro), y sobre una tarjeta
+        blanca da 1,19 de contraste — el eje desaparecía y con él la referencia
+        de dónde apoyan las barras. `--outline` da 3,41 en claro y 5,17 en
+        oscuro, que es el umbral de los elementos no textuales.
+
+        Las barras de los días sin reservas van al 50 % del mismo token, para que
+        se lean como un tic tenue en lugar de como nada: al 40 % de
+        `--outline-variant` no se veían.
+      -->
+      <line :x1="0" :y1="height - baseline" :x2="width" :y2="height - baseline" stroke="rgb(var(--outline))" stroke-width="1" />
     </svg>
     <div class="flex justify-between text-[10px] text-on-surface-variant mt-1 px-0.5">
       <span>{{ formatDay(data[0]?.date) }}</span>

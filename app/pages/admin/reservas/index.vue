@@ -2,19 +2,7 @@
   <div>
     <div class="flex items-center justify-between mb-6">
       <h1 class="text-2xl font-semibold">Reservas</h1>
-      <div class="flex gap-2">
-        <button
-          v-for="filter in filters"
-          :key="filter.value"
-          class="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
-          :class="activeFilter === filter.value
-            ? 'bg-secondary text-on-secondary'
-            : 'bg-surface-container-high text-on-surface-variant hover:bg-surface-container-highest'"
-          @click="activeFilter = filter.value"
-        >
-          {{ filter.label }}
-        </button>
-      </div>
+      <AppFilterTabs v-model="activeFilter" :opciones="filters" />
     </div>
 
     <div v-if="loading" class="card-surface rounded-xl p-6">

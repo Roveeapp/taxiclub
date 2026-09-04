@@ -5,19 +5,7 @@
         <h1 class="text-2xl font-semibold text-on-surface">Ofertas</h1>
         <p class="text-sm text-on-surface-variant mt-1">Todas las ofertas de Última Hora de la plataforma</p>
       </div>
-      <div class="flex flex-wrap gap-2">
-        <button
-          v-for="f in filters"
-          :key="f.value"
-          class="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
-          :class="activeFilter === f.value
-            ? 'bg-secondary text-on-secondary'
-            : 'bg-surface-container-high text-on-surface-variant hover:bg-surface-container-highest'"
-          @click="activeFilter = f.value"
-        >
-          {{ f.label }}
-        </button>
-      </div>
+      <AppFilterTabs v-model="activeFilter" :opciones="filters" />
     </div>
 
     <div v-if="loading" class="card-surface rounded-xl p-6">

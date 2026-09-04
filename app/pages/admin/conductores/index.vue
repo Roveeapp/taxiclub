@@ -7,17 +7,7 @@
           <Icon name="tabler:user-plus" size="16" class="mr-1.5" />
           Nuevo conductor
         </AppButton>
-        <button
-          v-for="filter in filters"
-          :key="filter.value"
-          class="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
-          :class="activeFilter === filter.value
-            ? 'bg-secondary text-on-secondary'
-            : 'bg-surface-container-high text-on-surface-variant hover:bg-surface-container-highest'"
-          @click="activeFilter = filter.value"
-        >
-          {{ filter.label }}
-        </button>
+        <AppFilterTabs v-model="activeFilter" :opciones="filters" />
       </div>
     </div>
 
